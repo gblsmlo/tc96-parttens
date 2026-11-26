@@ -136,13 +136,13 @@ const estimateFilterOptions = taskEstimateRanges.map(
 
 type ViewScope = 'all' | 'mine' | 'open'
 
-interface ViewSettings {
+interface SavedViewSettings {
   groupBy: string | null
   layout: CollectionLayout
   query: TaskQuery
 }
 
-interface SavedView extends ViewSettings {
+interface SavedView extends SavedViewSettings {
   id: string
   label: string
   scope: ViewScope
@@ -160,7 +160,7 @@ const createSavedViews = (layout: CollectionLayout): readonly SavedView[] =>
     query: emptyTaskQuery,
   }))
 
-const sameSettings = (a: ViewSettings, b: ViewSettings) =>
+const sameSettings = (a: SavedViewSettings, b: SavedViewSettings) =>
   a.layout === b.layout &&
   a.groupBy === b.groupBy &&
   sameTaskQuery(a.query, b.query)
@@ -322,7 +322,7 @@ export function CollectionScreen({
     setPage(1)
   }
 
-  const currentSettings: ViewSettings = {
+  const currentSettings: SavedViewSettings = {
     groupBy: preferences.groupBy,
     layout,
     query,

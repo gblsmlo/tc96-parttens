@@ -39,8 +39,8 @@ import {
   useDataGrid,
   useDataTable,
   ViewSettings,
-  type ViewSettingsProps,
   type ViewSettingsMode,
+  type ViewSettingsProps,
   ViewSettingsSection,
 } from '@tc96/ui/patterns'
 import { useState } from 'react'
