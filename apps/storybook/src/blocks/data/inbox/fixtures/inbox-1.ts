@@ -26,6 +26,7 @@ export interface Inbox1Query {
 export interface Inbox1Page {
   items: Inbox1FixtureEntry[]
   nextCursor: number | null
+  total: number
 }
 
 export const pageSize = 6
@@ -300,5 +301,6 @@ export function readInbox(
   return {
     items: matching.slice(cursor, end),
     nextCursor: end < matching.length ? end : null,
+    total: matching.length,
   }
 }

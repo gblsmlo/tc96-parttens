@@ -63,17 +63,14 @@ export function Inbox1({
   entries,
   error,
   filtered: filteredProp,
-  hasMore = false,
   kindFilter: kindFilterProp,
   labels: labelsProp,
-  loadingMore = false,
-  loadMoreError = false,
   markError = false,
   onCategoryChange,
   onKindFilterChange,
-  onLoadMore,
   onMarkRead,
   onOpen,
+  onPageChange,
   onReadChange,
   onReadFilterChange,
   onReceivedFilterChange,
@@ -81,11 +78,15 @@ export function Inbox1({
   onSelectedIdsChange,
   onSortChange,
   originColors,
+  page: pageProp,
+  pageCount,
+  pageSize,
   pending,
   readFilter: readFilterProp,
   receivedFilter: receivedFilterProp,
   selectedIds: selectedIdsProp,
   sort: sortProp,
+  total,
 }: Readonly<Inbox1Props>) {
   const labels = useMemo(() => resolveInbox1Labels(labelsProp), [labelsProp])
   const categories = useMemo(
@@ -126,6 +127,7 @@ export function Inbox1({
     noSelection,
     onSelectedIdsChange,
   )
+  const [page, setPage] = useControllable(pageProp, 1, onPageChange)
   const open = useStableHandler(onOpen)
   const changeRead = useStableHandler(onReadChange)
 
@@ -235,12 +237,13 @@ export function Inbox1({
           emptyMessage={filtered ? labels.emptyFiltered : labels.empty}
           footer={
             <Inbox1Footer
-              hasMore={hasMore}
               labels={labels}
-              loadingMore={loadingMore}
-              loadMoreError={loadMoreError}
               markError={markError}
-              onLoadMore={onLoadMore}
+              onPageChange={setPage}
+              page={page}
+              pageCount={entries.length > 0 ? pageCount : undefined}
+              pageSize={pageSize}
+              total={total}
             />
           }
           getRowCanOpen={opensEntry}

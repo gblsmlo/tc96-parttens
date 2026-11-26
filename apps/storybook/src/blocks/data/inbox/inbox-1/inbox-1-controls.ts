@@ -11,7 +11,6 @@ export interface Inbox1Controls {
   colors: boolean
   counts: boolean
   empty: boolean
-  loadMoreError: boolean
   markError: boolean
   member: boolean
   openable: boolean
@@ -24,7 +23,6 @@ export const inbox1ControlArgs: Inbox1Controls = {
   colors: true,
   counts: false,
   empty: false,
-  loadMoreError: false,
   markError: false,
   member: false,
   openable: true,
@@ -53,11 +51,6 @@ export const inbox1ControlArgTypes: Partial<ArgTypes<Inbox1Controls>> = {
     control: 'boolean',
     description:
       'Passes no entries, which renders the empty message, or the filtered one while a category or a filter is set.',
-  },
-  loadMoreError: {
-    control: 'boolean',
-    description:
-      'Passes `loadMoreError`, which renders the alert above Carregar mais.',
   },
   markError: {
     control: 'boolean',

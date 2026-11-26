@@ -1,3 +1,4 @@
+import type { CollectionPaginationButtonLabels } from '@tc96/ui/patterns/collection-pagination/components/collection-pagination'
 import type {
   DataCollectionLoadLabels,
   DataCollectionLoadProps,
@@ -79,14 +80,15 @@ export interface Inbox1Labels extends DataCollectionLoadLabels {
   filters: string
   kind: string
   kinds: Record<Inbox1Kind, string>
-  loadMore: string
-  loadMoreError: string
   markError: string
   markRead: (title: string) => string
   markUnread: (title: string) => string
   noDue: string
   noDueMark: string
   openEntry: (title: string) => string
+  pageRange: (first: number, last: number, total: number) => string
+  pagination: string
+  paginationButtons: CollectionPaginationButtonLabels
   origins: Record<Inbox1Origin, string>
   readFilter: string
   readFilters: Record<Inbox1ReadFilter, string>
@@ -111,6 +113,7 @@ type Inbox1NestedLabels =
   | 'columns'
   | 'kinds'
   | 'origins'
+  | 'paginationButtons'
   | 'readFilters'
   | 'readStates'
   | 'receivedFilters'
@@ -129,25 +132,26 @@ export interface Inbox1Props extends DataCollectionLoadProps {
   counts?: Partial<Record<'all' | Inbox1Category, number>>
   entries: Inbox1Entry[]
   filtered?: boolean
-  hasMore?: boolean
   kindFilter?: Inbox1Kind | null
   labels?: Inbox1LabelsOverride
-  loadingMore?: boolean
-  loadMoreError?: boolean
   markError?: boolean
   onCategoryChange?: (category: Inbox1Category | null) => void
   onKindFilterChange?: (kind: Inbox1Kind | null) => void
-  onLoadMore?: () => void
   onMarkRead?: (entryIds: string[]) => void
   onOpen?: (entryId: string) => void
+  onPageChange?: (page: number) => void
   onReadChange?: (entryId: string, read: boolean) => void
   onReadFilterChange?: (filter: Inbox1ReadFilter | null) => void
   onReceivedFilterChange?: (filter: Inbox1ReceivedFilter | null) => void
   onSelectedIdsChange?: (entryIds: string[]) => void
   onSortChange?: (sort: Inbox1Sort) => void
   originColors?: Inbox1OriginColors
+  page?: number
+  pageCount?: number
+  pageSize?: number
   readFilter?: Inbox1ReadFilter | null
   receivedFilter?: Inbox1ReceivedFilter | null
   selectedIds?: string[]
   sort?: Inbox1Sort
+  total?: number
 }

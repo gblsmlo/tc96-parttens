@@ -1,51 +1,48 @@
-import { Button } from '@tc96/ui/button'
+import { CollectionPagination } from '@tc96/ui/patterns/collection-pagination/components/collection-pagination'
 import type { Inbox1Labels } from './types'
 
 export interface Inbox1FooterProps {
-  hasMore: boolean
   labels: Inbox1Labels
-  loadingMore: boolean
-  loadMoreError: boolean
   markError: boolean
-  onLoadMore?: () => void
+  onPageChange: (page: number) => void
+  page: number
+  pageCount?: number
+  pageSize?: number
+  total?: number
 }
 
 export function Inbox1Footer({
-  hasMore,
   labels,
-  loadingMore,
-  loadMoreError,
   markError,
-  onLoadMore,
+  onPageChange,
+  page,
+  pageCount,
+  pageSize,
+  total,
 }: Readonly<Inbox1FooterProps>) {
-  const showsLoadMore = hasMore && Boolean(onLoadMore)
-  if (!loadMoreError && !markError && !showsLoadMore) return null
+  if (!markError && pageCount === undefined) return null
 
   return (
-    <div
-      className="flex flex-col items-center gap-2"
-      data-slot="inbox-1-footer"
-    >
-      {loadMoreError ? (
-        <p className="text-destructive-foreground text-sm" role="alert">
-          {labels.loadMoreError}
-        </p>
-      ) : null}
+    <div className="flex flex-col gap-2" data-slot="inbox-1-footer">
       {markError ? (
-        <p className="text-destructive-foreground text-sm" role="alert">
+        <p
+          className="text-center text-destructive-foreground text-sm"
+          role="alert"
+        >
           {labels.markError}
         </p>
       ) : null}
-      {showsLoadMore ? (
-        <Button
-          disabled={loadingMore}
-          onClick={onLoadMore}
-          size="sm"
-          type="button"
-          variant="outline"
-        >
-          {labels.loadMore}
-        </Button>
+      {pageCount !== undefined ? (
+        <CollectionPagination
+          buttonLabels={labels.paginationButtons}
+          formatRange={labels.pageRange}
+          label={labels.pagination}
+          onPageChange={onPageChange}
+          page={page}
+          pageCount={pageCount}
+          pageSize={pageSize}
+          total={total}
+        />
       ) : null}
     </div>
   )
