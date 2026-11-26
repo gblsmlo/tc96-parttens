@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { useInfiniteQuery, useMutation } from '@tanstack/react-query'
+import { keepPreviousData, useMutation, useQuery } from '@tanstack/react-query'
 import {
   Inbox1,
   type Inbox1Category,
@@ -14,6 +14,7 @@ import { inbox1Handlers } from '../../../../mocks/inbox-1.ts'
 import {
   type Inbox1Page,
   originColors,
+  pageSize,
   withReadState,
 } from '../fixtures/inbox-1.ts'
 
@@ -50,13 +51,13 @@ const InboxScreen = () => {
     received: null,
     sort: 'newest',
   })
+  const [page, setPage] = useState(1)
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [marks, setMarks] = useState<ReadonlyMap<string, boolean>>(new Map())
-  const inbox = useInfiniteQuery({
-    getNextPageParam: (page: Inbox1Page) => page.nextCursor,
-    initialPageParam: 0,
-    queryFn: ({ pageParam }) => fetchJson<Inbox1Page>(pathOf(query, pageParam)),
-    queryKey: ['data', 'inbox', 'entries', query],
+  const inbox = useQuery({
+    placeholderData: keepPreviousData,
+    queryFn: () => fetchJson<Inbox1Page>(pathOf(query, (page - 1) * pageSize)),
+    queryKey: ['data', 'inbox', 'entries', query, page],
     retry: false,
   })
   const marking = useMutation({
@@ -76,28 +77,26 @@ const InboxScreen = () => {
   }
   const change = (next: Partial<InboxQuery>) => {
     setQuery((current) => ({ ...current, ...next }))
+    setPage(1)
     setSelectedIds([])
   }
-  const pages = inbox.data?.pages ?? []
+  const total = inbox.data?.total ?? 0
 
   return (
     <Inbox1
       category={query.category}
-      entries={withReadState(
-        pages.flatMap((page) => page.items),
-        marks,
-      )}
-      error={inbox.isError && pages.length === 0}
-      hasMore={inbox.hasNextPage}
+      entries={withReadState(inbox.data?.items ?? [], marks)}
+      error={inbox.isError}
       kindFilter={query.kind}
-      loadingMore={inbox.isFetchingNextPage}
-      loadMoreError={inbox.isFetchNextPageError}
       markError={marking.isError}
       onCategoryChange={(category) => change({ category })}
       onKindFilterChange={(kind) => change({ kind })}
-      onLoadMore={() => inbox.fetchNextPage()}
       onMarkRead={(ids) => mark(ids, true)}
       onOpen={(id) => mark([id], true)}
+      onPageChange={(next) => {
+        setPage(next)
+        setSelectedIds([])
+      }}
       onReadChange={(id, read) => mark([id], read)}
       onReadFilterChange={(read) => change({ read })}
       onReceivedFilterChange={(received) => change({ received })}
@@ -105,11 +104,15 @@ const InboxScreen = () => {
       onSelectedIdsChange={setSelectedIds}
       onSortChange={(sort) => change({ sort })}
       originColors={originColors}
+      page={page}
+      pageCount={Math.ceil(total / pageSize)}
+      pageSize={pageSize}
       pending={inbox.isPending}
       readFilter={query.read}
       receivedFilter={query.received}
       selectedIds={selectedIds}
       sort={query.sort}
+      total={total}
     />
   )
 }
@@ -128,18 +131,6 @@ type Story = StoryObj<typeof meta>
 export const Loaded: Story = {
   beforeEach: ({ msw }) => {
     msw.use(...inbox1Handlers.loaded)
-  },
-}
-
-export const LoadsMoreByCursor: Story = {
-  beforeEach: ({ msw }) => {
-    msw.use(...inbox1Handlers.loaded)
-  },
-}
-
-export const LoadMoreFailed: Story = {
-  beforeEach: ({ msw }) => {
-    msw.use(...inbox1Handlers.moreFailed)
   },
 }
 

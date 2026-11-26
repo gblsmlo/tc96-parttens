@@ -1,18 +1,25 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Inbox1 } from '@tc96/ui/blocks/data/inbox/inbox-1'
 import { fn } from 'storybook/test'
-import { entries, originColors, readInbox } from '../fixtures/inbox-1.ts'
+import {
+  entries,
+  originColors,
+  pageSize,
+  readInbox,
+} from '../fixtures/inbox-1.ts'
 
 const meta = {
   args: {
     entries: readInbox(entries).items,
-    hasMore: true,
     onCategoryChange: fn(),
-    onLoadMore: fn(),
     onMarkRead: fn(),
     onOpen: fn(),
+    onPageChange: fn(),
     onReadChange: fn(),
     originColors,
+    pageCount: Math.ceil(entries.length / pageSize),
+    pageSize,
+    total: entries.length,
   },
   component: Inbox1,
   parameters: { layout: 'padded' },

@@ -29,12 +29,15 @@ import { Inbox1 } from '@tc96/ui/blocks/data/inbox/inbox-1'
 <Inbox1
   category={category}
   entries={page.items}
-  hasMore={page.nextCursor !== null}
   onCategoryChange={setCategory}
-  onLoadMore={loadMore}
   onMarkRead={markRead}
   onOpen={openEntry}
+  onPageChange={setPage}
   onReadChange={setRead}
+  page={page}
+  pageCount={pageCount}
+  pageSize={pageSize}
+  total={total}
 />
 ```
 
@@ -56,9 +59,9 @@ import { Inbox1 } from '@tc96/ui/blocks/data/inbox/inbox-1'
 | `onReadChange` | `(entryId: string, read: boolean) => void` | - | Turns the read dot into the toggle, named by `labels.markRead` or `labels.markUnread`. |
 | `onMarkRead` | `(entryIds: string[]) => void` | - | Renders Marcar como lida in the action bar; receives only the unread selected ids. |
 | `markError` | `boolean` | `false` | Renders `labels.markError` with `role="alert"`. |
-| `hasMore`, `onLoadMore` | `boolean`, `() => void` | `false`, - | Together render Carregar mais under the table. |
-| `loadingMore` | `boolean` | `false` | Disables Carregar mais while the next page is read. |
-| `loadMoreError` | `boolean` | `false` | Renders `labels.loadMoreError` with `role="alert"`. |
+| `page`, `onPageChange` | `number`, `(page) => void` | `1` | The current page, from 1. The block does not slice `entries`. |
+| `pageCount` | `number` | - | Renders `CollectionPagination` under the table while there are entries. |
+| `pageSize`, `total` | `number`, `number` | - | Together render the `first–last de total` summary through `labels.pageRange`. |
 | `originColors` | `Partial<Record<Inbox1Origin, string>>` | - | A CSS color per origin for the entry icon, passed to the `IconFrame` `color`; without it the icon sits on the muted frame. |
 | `pending`, `error`, `onRetry` | `boolean`, `boolean`, `() => void` | - | The loading contract of the data blocks. The category switcher stays while pending. |
 | `labels` | `Inbox1LabelsOverride` | pt-BR texts | Overrides the texts, `viewCountName(label, count)` included (`Tarefas, 3 não lidas` by default); `actions`, `categories`, `columns`, `kinds`, `origins`, `readFilters`, `readStates`, `receivedFilters` and `sorts` merge key by key. |

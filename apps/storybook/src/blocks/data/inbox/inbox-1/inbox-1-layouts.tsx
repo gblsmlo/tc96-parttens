@@ -14,6 +14,7 @@ import {
   type Inbox1FixtureEntry,
   memberCategories,
   originColors,
+  pageSize,
   readInbox,
   unreadCounts,
   withReadState,
@@ -23,9 +24,9 @@ import type { Inbox1Controls } from './inbox-1-controls.ts'
 export interface ComposedInbox1Props extends Inbox1Controls {
   onCategoryChange?: Inbox1Props['onCategoryChange']
   onKindFilterChange?: Inbox1Props['onKindFilterChange']
-  onLoadMore?: Inbox1Props['onLoadMore']
   onMarkRead?: Inbox1Props['onMarkRead']
   onOpen?: Inbox1Props['onOpen']
+  onPageChange?: Inbox1Props['onPageChange']
   onReadChange?: Inbox1Props['onReadChange']
   onReadFilterChange?: Inbox1Props['onReadFilterChange']
   onReceivedFilterChange?: Inbox1Props['onReceivedFilterChange']
@@ -40,14 +41,13 @@ export const ComposedInbox1 = ({
   colors,
   counts,
   empty,
-  loadMoreError,
   markError,
   member,
   onCategoryChange,
   onKindFilterChange,
-  onLoadMore,
   onMarkRead,
   onOpen,
+  onPageChange,
   onReadChange,
   onReadFilterChange,
   onReceivedFilterChange,
@@ -68,12 +68,12 @@ export const ComposedInbox1 = ({
     useState<Inbox1ReceivedFilter | null>(null)
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [marks, setMarks] = useState<ReadonlyMap<string, boolean>>(new Map())
-  const [pages, setPages] = useState(1)
+  const [page, setPage] = useState(1)
   const labels = useMemo(() => ({ title }), [title])
 
   useEffect(() => {
     setCategory(initialCategory)
-    setPages(1)
+    setPage(1)
   }, [initialCategory])
 
   const source = useMemo(() => {
@@ -82,27 +82,20 @@ export const ComposedInbox1 = ({
   }, [marks, member])
 
   const records = useMemo(() => {
-    if (empty) return { hasMore: false, items: noEntries }
-    const query = {
+    if (empty) return { items: noEntries, total: 0 }
+    return readInbox(source, {
       category,
+      cursor: (page - 1) * pageSize,
       kind: kindFilter,
       read: readFilter,
       received: receivedFilter,
       sort,
-    }
-    const items: Inbox1FixtureEntry[] = []
-    let cursor: number | null = 0
-    for (let page = 0; page < pages && cursor !== null; page += 1) {
-      const next = readInbox(source, { ...query, cursor })
-      items.push(...next.items)
-      cursor = next.nextCursor
-    }
-    return { hasMore: cursor !== null, items }
+    })
   }, [
     category,
     empty,
     kindFilter,
-    pages,
+    page,
     readFilter,
     receivedFilter,
     sort,
@@ -115,7 +108,7 @@ export const ComposedInbox1 = ({
         new Map([...current, ...ids.map((id) => [id, read] as const)]),
     )
   const restart = () => {
-    setPages(1)
+    setPage(1)
     setSelectedIds([])
   }
 
@@ -125,10 +118,8 @@ export const ComposedInbox1 = ({
       category={category}
       counts={counts ? unreadCounts(source) : undefined}
       entries={records.items}
-      hasMore={records.hasMore || loadMoreError}
       kindFilter={kindFilter}
       labels={labels}
-      loadMoreError={loadMoreError}
       markError={markError}
       onCategoryChange={(next) => {
         setCategory(next)
@@ -139,10 +130,6 @@ export const ComposedInbox1 = ({
         setKindFilter(next)
         restart()
         onKindFilterChange?.(next)
-      }}
-      onLoadMore={() => {
-        setPages((current) => current + 1)
-        onLoadMore?.()
       }}
       onMarkRead={(ids) => {
         mark(ids, true)
@@ -183,11 +170,20 @@ export const ComposedInbox1 = ({
         restart()
         onSortChange?.(next)
       }}
+      onPageChange={(next) => {
+        setPage(next)
+        setSelectedIds([])
+        onPageChange?.(next)
+      }}
       originColors={colors ? originColors : undefined}
+      page={page}
+      pageCount={Math.ceil(records.total / pageSize)}
+      pageSize={pageSize}
       readFilter={readFilter}
       receivedFilter={receivedFilter}
       selectedIds={selectedIds}
       sort={sort}
+      total={records.total}
     />
   )
 }

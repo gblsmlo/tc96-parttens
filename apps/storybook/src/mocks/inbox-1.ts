@@ -14,7 +14,7 @@ import { apiUrl } from './api.ts'
 const entriesPath = '/data/inbox/entries'
 const marksPath = '/data/inbox/marks'
 
-const emptyPage: Inbox1Page = { items: [], nextCursor: null }
+const emptyPage: Inbox1Page = { items: [], nextCursor: null, total: 0 }
 
 const failure = () =>
   HttpResponse.json({ message: 'Falha ao carregar' }, { status: 500 })
@@ -59,14 +59,6 @@ export const inbox1Handlers = {
     http.post(apiUrl(marksPath), () =>
       HttpResponse.json({ message: 'Falha ao marcar' }, { status: 503 }),
     ),
-  ],
-  moreFailed: [
-    http.get(apiUrl(entriesPath), ({ request }) =>
-      new URL(request.url).searchParams.has('cursor')
-        ? failure()
-        : HttpResponse.json(pageOf(request)),
-    ),
-    marked,
   ],
   pending: [
     http.get(apiUrl(entriesPath), async () => {
