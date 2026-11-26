@@ -1,11 +1,11 @@
 ---
 name: npm-release
-description: Release @tc96/cli to npm end to end in this repository. Picks the next version from the commits since the last tag (feat bumps the minor, fix the patch), prepares the chore/release-X.Y.Z branch and PR, runs the release gate, creates the GitHub release that triggers the Publish workflow, then waits for the run and confirms the version on npm. Use when asked to release, publish, cut or ship a new version of the package, bump its version, or check whether a publish finished. Do not use for publishing another package, for npm login or token setup, or to change the release workflows themselves.
+description: Release @tc96/cli to npm end to end in this repository. Picks the next version from the commits since the last tag (feat bumps the minor, fix the patch), prepares the chore/release-X.Y.Z branch and PR, runs the release gate, creates the GitHub release that triggers the Publish workflow, waits for the run to stage the version, asks the owner to approve it on npm, then confirms the version on npm. Use when asked to release, publish, cut or ship a new version of the package, bump its version, or check whether a publish finished. Do not use for publishing another package, for npm login or token setup, or to change the release workflows themselves.
 ---
 
 # npm release of @tc96/cli
 
-The package is never published from a laptop. `bun run release` creates the GitHub release `vX.Y.Z`, and `.github/workflows/publish.yml` publishes `dist/cli` to npm with provenance when that release is published. No `npm login` is needed.
+The package is never published from a laptop. `bun run release` creates the GitHub release `vX.Y.Z`, and `.github/workflows/publish.yml` stages `dist/cli` on npm with provenance when that release is published. The version becomes public only after the owner approves it on npm with 2FA. No `npm login` is needed in CI.
 
 ## Facts this flow depends on
 
@@ -13,16 +13,16 @@ The package is never published from a laptop. `bun run release` creates the GitH
 | --- | --- |
 | The version, the only line a release changes | `packages/registry/src/build-registry.ts`, `version: 'X.Y.Z'` inside the `@tc96/cli` package.json it writes |
 | Local release gate | `bun run release:check` (full `check`, consumer registry and SSR tests, view benchmarks, `pack:check`) |
-| CI release gate | `.github/workflows/release-check.yml` runs `release:check` without the Storybook steps, and `.github/workflows/storybook-release.yml` runs the story tests in five shards plus `storybook:build` and `docs:build`, both on PRs whose branch starts with `chore/release-`; the `skip-storybook` label skips the Storybook workflow |
+| CI release gate | `.github/workflows/tooling.yml` (job `static` on every PR, job `release` with the consumer tests, benchmarks and `pack:check`), `.github/workflows/unit.yml` (one job per `test:*` suite) and `.github/workflows/storybook.yml` (play tests in five shards, `storybook:build`, `docs:build` and the `storybook` gate job), the release jobs on PRs whose branch starts with `chore/release-`; the `skip-storybook` label skips only the play shards |
 | Release command | `scripts/release.ts`: requires `main`, a clean tree, `main` equal to `origin/main`, no `vX.Y.Z` tag on origin and no `X.Y.Z` on npm; `--dry-run` prints the `gh release create` command without running it |
-| Publish | `.github/workflows/publish.yml`: on `release: published`, skips prereleases, checks the tag commit is on `main`, runs typecheck, test, build, checks the tag equals `dist/cli/package.json` version, `pack:check`, `npm publish --provenance --tag latest` |
+| Publish | `.github/workflows/publish.yml`: on `release: published`, skips prereleases, checks the tag commit is on `main`, runs typecheck, test, build, checks the tag equals `dist/cli/package.json` version, `pack:check`, checks npm is 11.15.0 or later, `npm stage publish --access public --provenance --tag latest` from `dist/cli`; the version stays staged until the owner approves it |
 
 Verify these against the files before step 1; if one moved, follow the file and say so.
 
 ## Rules
 
 - Each step that changes something shared waits for the owner's go-ahead: pushing the release branch, merging the PR, and above all `bun run release`, which creates a public tag and starts an npm publish that cannot be undone.
-- Never run `npm publish`, `npm unpublish` or `npm deprecate` yourself.
+- Never run `npm publish`, `npm stage approve`, `npm stage reject`, `npm unpublish` or `npm deprecate` yourself.
 - Commit messages and PR bodies follow the repository rules: no attribution trailer, PR body from `.github/pull_request_template.md`.
 
 ## Step 1: Pick the version
@@ -46,7 +46,7 @@ Change only the `version` line in `packages/registry/src/build-registry.ts`, the
 chore(release): Prepare @tc96/cli X.Y.Z
 ```
 
-The `chore/release-` prefix matters: it is what makes the `Release check` workflow run on the PR.
+The `chore/release-` prefix matters: it is what makes the `release` job of `Tooling` and the `Storybook` workflow run on the PR.
 
 ## Step 3: Test
 
@@ -75,7 +75,8 @@ Show the printed `gh release create vX.Y.Z --target main --generate-notes --late
    ```
 
    `headBranch` is the tag `vX.Y.Z`. If no run shows up within a minute, check that the release is published and not a prerelease: `gh release view vX.Y.Z`.
-2. Confirm npm serves the version; the registry can lag a minute behind the workflow:
+2. Tell the owner `X.Y.Z` is staged and wait for them to confirm they approved it. They approve it with 2FA, either with `npm stage list @tc96/cli` and `npm stage approve <stage-id>`, or on npmjs.com in the package's Staged Packages tab.
+3. Only after the approval, confirm npm serves the version; the registry can lag a minute behind:
 
    ```bash
    npm view @tc96/cli@X.Y.Z version
@@ -83,12 +84,13 @@ Show the printed `gh release create vX.Y.Z --target main --generate-notes --late
    ```
 
    `latest` must be `X.Y.Z`.
-3. Report: version, release URL, publish run URL and conclusion, and the `npm view` output.
+4. Report: version, release URL, publish run URL and conclusion, the approval, and the `npm view` output.
 
 ## When the publish fails
 
 - Read the failing step with `gh run view <databaseId> --log-failed` and quote it.
 - A transient failure (network, npm 5xx) is retried with `gh run rerun <databaseId> --failed` after the owner agrees.
+- A wrong staged version is rejected by the owner (`npm stage reject <stage-id>`), never by you.
 - A failure in the code or in the tag check means the tag points at a commit that cannot publish. Do not move or delete the tag on your own: propose either deleting the release and tag `vX.Y.Z` (only if npm does not have `X.Y.Z`) or fixing on `main` and releasing the next patch, and let the owner choose.
 
 ## Output
@@ -98,6 +100,7 @@ Release: @tc96/cli X.Y.Z (minor|patch, from <last tag>)
 Gate: release:check <passed|failed at step>, PR #N checks <state>
 Release: <release URL>
 Publish run: <run URL> <conclusion>
+Approval: <approved by the owner|pending>
 npm: <npm view output>
 Open items: <one line each, or none>
 ```

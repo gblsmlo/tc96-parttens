@@ -54,4 +54,13 @@ jobs:
 
       - run: bun run pack:check
 
-      - run: npm publish ./dist/cli --access public --provenance --tag latest
+      # npm stage publish needs npm 11.15.0 or later.
+      - name: Check the npm version supports staged publishing
+        run: |
+          if ! node -e "const [a,b]=process.argv[1].split('.').map(Number);process.exit(a>11||(a===11&&b>=15)?0:1)" "$(npm --version)"; then
+            echo "npm $(npm --version) cannot stage; 11.15.0 or later is required" >&2
+            exit 1
+          fi
+
+      - run: npm stage publish --access public --provenance --tag latest
+        working-directory: dist/cli

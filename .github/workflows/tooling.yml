@@ -1,18 +1,50 @@
-name: Release check
+name: Tooling
 
 on:
-  workflow_dispatch:
   pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: release-check-${{ github.ref }}
+  group: tooling-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  release-check:
+  static:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.2
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: bun-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('bun.lock') }}
+          restore-keys: bun-${{ runner.os }}-${{ runner.arch }}-
+
+      - run: bun install --frozen-lockfile
+
+      - run: bun run check:coss
+      - run: bun run boundaries:check
+      - run: bun run overrides:check
+      - run: bun run typecheck
+      - run: bun run lint:ci
+      - run: bun run storybook:typecheck
+      - run: bun run storybook:lint
+      - run: bun run build
+      - run: bun run verify:public-api
+
+  release:
     if: github.event_name == 'workflow_dispatch' || startsWith(github.head_ref, 'chore/release-')
     runs-on: ubuntu-24.04
     timeout-minutes: 45
@@ -35,17 +67,7 @@ jobs:
 
       - run: bun install --frozen-lockfile
 
-      # Story tests, storybook:build and docs:build run sharded in storybook-release.yml.
-      - run: bun run check:coss
-      - run: bun run boundaries:check
-      - run: bun run overrides:check
-      - run: bun run typecheck
-      - run: bun run lint:ci
-      - run: bun run storybook:typecheck
-      - run: bun run storybook:lint
-      - run: bun run test
       - run: bun run build
-      - run: bun run verify:public-api
       - run: bun run test:consumer:registry
       - run: bun run test:consumer:ssr
       - run: bun run bench:views
