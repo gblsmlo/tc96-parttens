@@ -43,14 +43,15 @@ export function resolveScope(
   name: string,
 ): Scope {
   const declared = scopes[name]
-  const source = `packages/ui/src/patterns/${name}`
-  const stories = `apps/storybook/src/patterns/${name}`
+  const folder = name.startsWith('blocks/') ? name : `patterns/${name}`
+  const source = `packages/ui/src/${folder}`
+  const stories = `apps/storybook/src/${folder}`
   if (!declared && !existsSync(path.join(root, source)))
     throw new Error(`Unknown scope: ${name} (no ${source})`)
   const hasStories = existsSync(path.join(root, stories))
   return {
     bun: [source],
-    stories: hasStories ? [`src/patterns/${name}/`] : [],
+    stories: hasStories ? [`src/${folder}/`] : [],
     biome: hasStories ? [source, stories] : [source],
     dependents: [],
     ...declared,
@@ -83,11 +84,17 @@ export function storyDirs(
   name: string,
   deps: boolean,
 ): string[] {
-  const scope = resolveScope(scopes, name)
-  const dirs = [...scope.stories]
-  if (deps)
-    for (const dep of scope.dependents)
-      dirs.push(...storyDirs(scopes, dep, false))
+  const dirs: string[] = []
+  const queue = [name]
+  const seen = new Set<string>()
+  while (queue.length > 0) {
+    const current = queue.shift() as string
+    if (seen.has(current)) continue
+    seen.add(current)
+    const scope = resolveScope(scopes, current)
+    dirs.push(...scope.stories)
+    if (deps) queue.push(...scope.dependents)
+  }
   return [...new Set(dirs)]
 }
 

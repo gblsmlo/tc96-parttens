@@ -37,6 +37,19 @@ describe('scopes.json', () => {
       'src/patterns/kanban/',
     )
   })
+
+  it('follows dependents of dependents with --deps', () => {
+    expect(storyDirs(scopes, 'editable', true)).toEqual([
+      'src/patterns/editable/',
+      'src/patterns/properties/',
+      'src/patterns/checklist/',
+    ])
+  })
+
+  it('stops on a dependency cycle', () => {
+    const cycle = { a: { dependents: ['b'] }, b: { dependents: ['a'] } }
+    expect(storyDirs(cycle, 'a', true)).toEqual([])
+  })
 })
 
 describe('derived scopes', () => {
@@ -50,6 +63,15 @@ describe('derived scopes', () => {
       ],
       dependents: [],
     })
+  })
+
+  it('derives a block and a pattern sub-folder', () => {
+    expect(resolveScope(scopes, 'blocks/data/crm/crm-3').stories).toEqual([
+      'src/blocks/data/crm/crm-3/',
+    ])
+    expect(resolveScope(scopes, 'properties/display/date').bun).toEqual([
+      'packages/ui/src/patterns/properties/display/date',
+    ])
   })
 
   it('rejects a folder that is not a pattern', () => {

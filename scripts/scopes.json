@@ -13,5 +13,18 @@
       "source": "packages/ui/src/patterns/collection/composition/collection-frame.tsx",
       "lib": "packages/ui/src/patterns/collection/shared/lib/group-runs.ts"
     }
+  },
+  "editable": {
+    "dependents": ["properties"]
+  },
+  "properties": {
+    "dependents": ["checklist"]
+  },
+  "properties/display/date": {
+    "watch": {
+      "story": "apps/storybook/src/patterns/properties/display/date/behavior.stories.tsx",
+      "source": "packages/ui/src/patterns/properties/display/date/date-property.tsx",
+      "lib": "packages/ui/src/patterns/properties/display/date/date-value.ts"
+    }
   }
 }
