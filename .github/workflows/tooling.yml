@@ -34,7 +34,7 @@ jobs:
 
       - run: bun install --frozen-lockfile
 
-      - run: bun run check:coss
+      - run: bun run check:ui-registry
       - run: bun run boundaries:check
       - run: bun run overrides:check
       - run: bun run typecheck

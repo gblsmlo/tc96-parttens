@@ -15,7 +15,7 @@ The parts come from COSS on top of Base UI `Menu` and are owned by this repo (AD
 
 - Layer: `packages/ui`, the bottom of `templates` → `parttens` → `ui` → `utils`. `menu.tsx` imports only Base UI, `@phosphor-icons/react` and `cn` from `@tc96/utils`.
 - Resolution: `packages/ui/package.json` exports `./menu` as `./src/menu/index.ts`, ahead of the `./*` → `./src/*.tsx` pattern that serves the single-file components; `tsconfig.base.json` maps `@tc96/ui/*` to `packages/ui/src/*`, which reaches `menu/index.ts` as a folder index.
-- Manifest: the `menu` item of `packages/ui/ui.manifest.json` lists the five files of this folder. `check:coss` fails on a file here that the manifest does not list.
+- Manifest: the `menu` item of `packages/ui/ui.manifest.json` lists the five files of this folder. `check:ui-registry` fails on a file here that the manifest does not list.
 - Scripts: `scripts/check-boundaries.ts` and `packages/registry/src/build-registry.ts` read a manifest path ending in `/index` as the folder module, so `@tc96/ui/menu` still resolves to the `menu` item.
 - Consumer: the registry item `ui/menu.json` ships the five files to `<ui alias>/menu/`, so the consumer imports `<ui alias>/menu` and also receives the agent docs. A consumer that already has a single `menu.tsx` keeps it, and that file wins over the folder in module resolution.
 - Theme: two rules of the consumer's stylesheet belong to the menu, the focus outline and the shortcut color (`apps/example/packages/ui/src/styles.css`); see `ACCESSIBILITY.md`.
@@ -49,7 +49,7 @@ The parts come from COSS on top of Base UI `Menu` and are owned by this repo (AD
 
 ```bash
 bun run typecheck && bun run storybook:typecheck
-bun run check:coss && bun run boundaries:check && bun run overrides:check
+bun run check:ui-registry && bun run boundaries:check && bun run overrides:check
 bun test scripts/ui-tokens.test.ts   # TOKENS.md against the class strings
 cd apps/storybook && bunx vitest run --project=storybook --project=storybook-dark src/ui/menu
 ```

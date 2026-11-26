@@ -15,7 +15,7 @@ The parts come from COSS and are owned by this repo (ADR 0008): every change to 
 
 - Layer: `packages/ui`, the bottom of `templates` → `parttens` → `ui` → `utils`. `alert.tsx` imports only `class-variance-authority` and `cn` from `@tc96/utils`.
 - Resolution: `packages/ui/package.json` exports `./alert` as `./src/alert/index.ts`, ahead of the `./*` → `./src/*.tsx` pattern; `tsconfig.base.json` maps `@tc96/ui/*` to `packages/ui/src/*`, which reaches `alert/index.ts` as a folder index.
-- Manifest: the `alert` item of `packages/ui/ui.manifest.json` lists the five files of this folder and the status color tokens (`cssVars`). `check:coss` fails on a file here that the manifest does not list.
+- Manifest: the `alert` item of `packages/ui/ui.manifest.json` lists the five files of this folder and the status color tokens (`cssVars`). `check:ui-registry` fails on a file here that the manifest does not list.
 - Scripts: `scripts/check-boundaries.ts` and `packages/registry/src/build-registry.ts` read a manifest path ending in `/index` as the folder module, so `@tc96/ui/alert` resolves to the `alert` item.
 - Consumer: the registry item `ui/alert.json` ships the five files to `<ui alias>/alert/`. A consumer that already has a single `alert.tsx` keeps it, and that file wins over the folder in module resolution.
 - Theme: one rule of the consumer's stylesheet belongs to the alert, `[data-slot="alert"]` redefining `--success` and `--warning` as their `-foreground` (`apps/example/packages/ui/src/styles.css`), shared with `[data-slot="toast-icon"]`; see `ACCESSIBILITY.md`.
@@ -45,7 +45,7 @@ The parts come from COSS and are owned by this repo (ADR 0008): every change to 
 
 ```bash
 bun run typecheck && bun run storybook:typecheck
-bun run check:coss && bun run boundaries:check && bun run overrides:check
+bun run check:ui-registry && bun run boundaries:check && bun run overrides:check
 bun test scripts/ui-tokens.test.ts   # TOKENS.md against the class strings
 cd apps/storybook && bunx vitest run --project=storybook --project=storybook-dark src/ui/alert
 ```

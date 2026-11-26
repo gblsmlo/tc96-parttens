@@ -70,7 +70,7 @@ Files are kebab-case and named after what they export (`checklist-row.tsx` expor
 ## Rules that are enforced by scripts
 
 - **Layering:** imports only go down: `blocks` → `patterns` → `ui` (`components/`, `hooks/`, `lib/`) → `utils` (`helpers` is React-free). A pattern never imports a block, and a block imports only its own folder, its group's `shared/` and its category's `shared/` (`blocks/data/shared/`), never another block. Checked by `bun run boundaries:check`. Whether new code is a `ui` component, a pattern or a block, and which block category it takes, is decided with `docs/architecture/layer-decision-map.md` ([ADR 0009](.specs/adr/0009-blocks-layer.md)).
-- **`packages/ui/src/components` is repo-owned source** (ADR 0008, 2026-11-01). Its files start as COSS copies and may be edited, for example to drop unused variants and sizes. `bun run check:coss` only checks that every file is listed in `packages/ui/ui.manifest.json` and every listed item exists. `bun run sync:coss <item>` adds new COSS items, records them in the manifest and refuses to overwrite a file. Themes and tokens belong to the consumer, not to `packages/ui`. A COSS component, menu items included, is changed in `packages/ui`; a pattern never recreates or wraps one to change how it looks (decided 2026-11-19).
+- **`packages/ui/src/components` is repo-owned source** (ADR 0008, 2026-11-01). Its files start as COSS copies and may be edited, for example to drop unused variants and sizes. `bun run check:ui-registry` only checks that every file is listed in `packages/ui/ui.manifest.json` and every listed item exists. `bun run sync:coss <item>` adds new COSS items, records them in the manifest and refuses to overwrite a file. Themes and tokens belong to the consumer, not to `packages/ui`. A COSS component, menu items included, is changed in `packages/ui`; a pattern never recreates or wraps one to change how it looks (decided 2026-11-19).
 - **Overriding COSS styles needs a registered exception.** Any `className` that overrides a COSS component's border, radius, etc. must be listed with a reason in `scripts/override-exceptions.json`, or `bun run overrides:check` fails. Update the entry whenever the class changes.
 - **Public API baseline:** adding or removing exports changes `docs/architecture/public-api-exports.json`. Regenerate with `bun scripts/verify-public-api.ts --record` and mention it in the summary, since the diff may include unrelated pending exports.
 - Pattern `shared/` code is internal; export through the pattern's `index.ts` only when it is meant to be public.
@@ -86,7 +86,7 @@ bun run typecheck            # tsc --noEmit
 bun run storybook:typecheck
 bun run lint:ci              # biome on scripts and registry
 bun run storybook:lint
-bun run check:coss && bun run boundaries:check && bun run overrides:check
+bun run check:ui-registry && bun run boundaries:check && bun run overrides:check
 bun run verify:public-api
 bun run test                 # helpers, boundaries, patterns, blocks, registry
 bun run storybook:test       # vitest browser + axe (a11y violations fail)

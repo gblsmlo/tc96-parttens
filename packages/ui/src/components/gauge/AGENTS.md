@@ -45,7 +45,7 @@ COSS has `Meter` and `Progress` but no segmented bar, stacked bar or ring; each 
 
 ```bash
 bun run typecheck && bun run storybook:typecheck
-bun run check:coss && bun run boundaries:check && bun run overrides:check
+bun run check:ui-registry && bun run boundaries:check && bun run overrides:check
 bun test scripts/ui-tokens.test.ts
 cd apps/storybook && bunx vitest run --project=storybook src/ui/gauge
 ```

@@ -39,7 +39,7 @@ Import direction: `composition/` → `lib/`, `core.ts`. No import into another p
 ```bash
 bunx biome check packages/ui/src/patterns/list apps/storybook/src/patterns/list
 bun run typecheck && bun run storybook:typecheck
-bun run check:coss && bun run boundaries:check && bun run overrides:check && bun run verify:public-api
+bun run check:ui-registry && bun run boundaries:check && bun run overrides:check && bun run verify:public-api
 cd apps/storybook && bunx vitest run src/patterns/list
 ```
 
