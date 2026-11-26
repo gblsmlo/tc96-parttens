@@ -16,6 +16,7 @@
     "typecheck": "tsc --noEmit",
     "test:helpers": "bun test --isolate packages/ui/src/helpers",
     "test:patterns": "bun scripts/test-patterns.ts",
+    "test:scope": "bun scripts/test-scope.ts",
     "test:registry": "bun test --isolate packages/registry/src",
     "test:blocks": "bun test --isolate packages/ui/src/blocks",
     "test": "bun run test:helpers && bun run test:boundaries && bun run test:patterns && bun run test:blocks && bun run test:registry",

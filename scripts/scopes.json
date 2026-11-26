@@ -1,0 +1,17 @@
+{
+  "collection": {
+    "dependents": [
+      "calendar",
+      "data-grid",
+      "data-table",
+      "gallery",
+      "kanban",
+      "list-view"
+    ],
+    "watch": {
+      "story": "apps/storybook/src/patterns/collection/behavior.stories.tsx",
+      "source": "packages/ui/src/patterns/collection/composition/collection-frame.tsx",
+      "lib": "packages/ui/src/patterns/collection/shared/lib/group-runs.ts"
+    }
+  }
+}

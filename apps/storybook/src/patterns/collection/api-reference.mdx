@@ -7,7 +7,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 One collection of records on one screen, in the layout the user picks: the tasks of a launch as a table, a board or a calendar, the contacts of a sales team as a table or a list. The consumer declares the collection, `CollectionProvider` keeps the active layout and grouping, `CollectionLayoutOutlet` mounts that layout, and `CollectionFrame` places the toolbar, the layout and the footer. When a screen only ever shows one layout, mount that layout alone and skip the provider and the outlet; when it shows one record, use `RecordPreview`, `RecordDialog` or `RecordGroup`.
 
-The other pages of `Patterns/Collection`: [Playground](?path=/story/patterns-collection-playground--playground) to try the layout, the frame mode, loading, the empty state and the toolbar parts, [Variants](?path=/story/patterns-collection-variants--default) for the loading and empty states, with the layout as a control, [Behavior](?path=/story/patterns-collection-behavior--fill-scrolls-the-body) for the tests and [Usages](?path=/story/patterns-collection-usages--tasks) for real screens (tasks, a pipeline, contacts, documents, campaigns, a calendar). The toolbar, the search field, the action and the footer are optional parts, toggled in the Playground: the root has no `Layouts` page, since each layout is a node of its own.
+The other pages of `Patterns/Collection`: [Playground](?path=/story/patterns-collection-playground--playground) to try the layout, the frame height, loading, the empty state and the toolbar parts, [Variants](?path=/story/patterns-collection-variants--default) for the loading and empty states, with the layout as a control, [Behavior](?path=/story/patterns-collection-behavior--fill-scrolls-the-body) for the tests and [Usages](?path=/story/patterns-collection-usages--tasks) for real screens (tasks, a pipeline, contacts, documents, campaigns, a calendar). The toolbar, the search field, the action and the footer are optional parts, toggled in the Playground: the root has no `Layouts` page, since each layout is a node of its own.
 
 Each layout has its own node at the root of `Patterns`, with its props, item parts and tests: [Calendar](?path=/docs/patterns-calendar-api-reference--api-reference), [Data Grid](?path=/docs/patterns-datagrid-api-reference--api-reference), [Data Table](?path=/docs/patterns-datatable-api-reference--api-reference), [Gallery](?path=/docs/patterns-gallery-api-reference--api-reference), [Kanban](?path=/docs/patterns-kanban-api-reference--api-reference) and [List](?path=/docs/patterns-listview-api-reference--api-reference). The toolbar, the view switcher and the bar over a selection have theirs: [Patterns/CollectionToolbar](?path=/docs/patterns-collectiontoolbar-api-reference--api-reference), which holds the view switcher too, and [Patterns/ActionBar](?path=/docs/patterns-actionbar--doc). The pagination of the collection is a part of this page, `CollectionPagination`, built on the parts of [UI/Pagination](?path=/docs/ui-pagination-api-reference--api-reference).
 
@@ -51,7 +51,7 @@ import { RadioButtonIcon } from '@phosphor-icons/react'
   collection={collection}
   defaultPreferences={{ groupBy: null, layout: 'list' }}
 >
-  <CollectionFrame>
+  <CollectionFrame height="fill">
     <CollectionFrameHeader>
       <CollectionToolbar
         left={<CollectionSearchField onCommit={setSearch} />}
@@ -91,7 +91,7 @@ import { RadioButtonIcon } from '@phosphor-icons/react'
 </CollectionProvider>
 ```
 
-`collection`, `setSearch`, `typeOptions`, `type`, `setType`, `clearFilters`, `create`, `renderRow`, `page`, `setPage`, `pageCount`, `pageSize`, `total` and `selectionActions` are the consumer's data, state and elements. `CollectionToolbar` is documented in `Patterns/CollectionToolbar`; `CollectionSearchField`, `ViewSettingsMenu` (documented in [Patterns/ViewSettingsMenu](?path=/docs/patterns-viewsettingsmenu-api-reference--api-reference)), `Action` and `PresetsMenu` render toolbar buttons and inputs, so they only mount inside it. `PresetsMenu` takes the place of the view switcher on a screen whose views are a short list, so the anatomy does not show it.
+`height="fill"` makes the frame take the free height of its parent and scroll the body. `"content"` grows with the records and keeps the footer in view. `collection`, `setSearch`, `typeOptions`, `type`, `setType`, `clearFilters`, `create`, `renderRow`, `page`, `setPage`, `pageCount`, `pageSize`, `total` and `selectionActions` are the consumer's data, state and elements. `CollectionToolbar` is documented in `Patterns/CollectionToolbar`; `CollectionSearchField`, `ViewSettingsMenu` (documented in [Patterns/ViewSettingsMenu](?path=/docs/patterns-viewsettingsmenu-api-reference--api-reference)), `Action` and `PresetsMenu` render toolbar buttons and inputs, so they only mount inside it. `PresetsMenu` takes the place of the view switcher on a screen whose views are a short list, so the anatomy does not show it.
 
 The pattern is controlled. It never fetches, filters, searches, sorts or persists: the consumer passes the records already filtered, keeps the search, the filters and the saved views, and saves every edit. The pattern keeps only the active layout and grouping when they are uncontrolled, the move in progress while the consumer settles it, the collapse state of List and Data Grid groups and the table state of `useDataGrid` and `useDataTable`.
 
@@ -141,16 +141,16 @@ The column that holds the screen: a header for the toolbar, a body for the layou
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
-| `mode` | `"fill"` or `"flow"` | `"fill"` | Controls the height. `"fill"` takes the free height of a flex column and scrolls the body; `"flow"` grows with its content and keeps the footer in view. |
+| `height` | `"fill"` or `"content"` | `"fill"` | Sets how tall the frame is. `"fill"` takes the free height of a flex column and scrolls the body; `"content"` grows with its content and keeps the footer in view. |
 
 Also takes every prop of a `div`.
 
 | Attribute | Values | Description |
 | --- | --- | --- |
 | `data-slot` | `"collection-frame"` | Selects the frame |
-| `data-mode` | `"fill"` or `"flow"` | Styles the frame by mode |
+| `data-height` | `"fill"` or `"content"` | Follows `height` |
 
-`"fill"` holds only inside a flex column of bounded height (a page of `h-dvh`, a panel); anywhere else the frame grows like `"flow"`. Data Table, Data Grid and List scroll themselves inside a `"fill"` body, with the table and grid header and footer and the List group titles sticky, so only the rows move. The body and the footer read the mode of the nearest frame, so a frame nested in another keeps its own.
+`"fill"` holds only inside a flex column of bounded height (a page of `h-dvh`, a panel); anywhere else the frame grows like `"content"`. Data Table, Data Grid and List scroll themselves inside a `"fill"` body, with the table and grid header and footer and the List group titles sticky, so only the rows move. The body and the footer read the height of the nearest frame, so a frame nested in another keeps its own.
 
 ## CollectionFrameHeader
 
@@ -251,7 +251,7 @@ A toolbar menu of saved presets with a count, for a screen whose views are a sho
 
 ## CollectionFrameBody
 
-The area of the layout. Renders a `section`, so an `aria-label` makes it a `region` landmark; name it after the collection. In `"fill"` it takes the remaining height and scrolls (`overflow: auto`) content placed beside the layout; in `"flow"` it does not scroll.
+The area of the layout. Renders a `section`, so an `aria-label` makes it a `region` landmark; name it after the collection. In `"fill"` it takes the remaining height and scrolls (`overflow: auto`) content placed beside the layout; in `"content"` it does not scroll.
 
 Also takes every prop of a `section`.
 
@@ -293,7 +293,7 @@ Other edits (a status changed in a row, a date in a cell) are the consumer's ren
 
 ## CollectionFrameFooter
 
-The area below the layout, for `CollectionPagination`. Renders a positioned `div` that never shrinks. In `"flow"` it is `sticky` at the bottom of the scrolling page, above the records (`z-index: 10`), on the `background` color.
+The area below the layout, for `CollectionPagination`. Renders a positioned `div` that never shrinks. In `"content"` it is `sticky` at the bottom of the scrolling page, above the records (`z-index: 10`), on the `background` color.
 
 Also takes every prop of a `div`.
 
@@ -343,7 +343,7 @@ Also takes every prop of a `div`.
 | `CollectionKanbanViewProps` | `type` | The `kanban` block of the outlet. |
 | `CollectionKanbanColumnState` | `type` | What `getColumnState` returns: `{ color? }`. |
 | `CollectionListViewProps` | `type` | The `list` block of the outlet. |
-| `CollectionFrameMode` | `type` | `"fill"` or `"flow"`. |
+| `CollectionFrameHeight` | `type` | `"fill"` or `"content"`. |
 | `CollectionFrameProps` | `type` | The props of `CollectionFrame`. |
 | `CollectionFrameHeaderProps` | `type` | The props of `CollectionFrameHeader`. |
 | `CollectionFrameBodyProps` | `type` | The props of `CollectionFrameBody`. |

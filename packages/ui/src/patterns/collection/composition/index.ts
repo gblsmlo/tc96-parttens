@@ -2,7 +2,7 @@ export type {
   CollectionFrameBodyProps,
   CollectionFrameFooterProps,
   CollectionFrameHeaderProps,
-  CollectionFrameMode,
+  CollectionFrameHeight,
   CollectionFrameOverlayProps,
   CollectionFrameProps,
 } from './collection-frame'

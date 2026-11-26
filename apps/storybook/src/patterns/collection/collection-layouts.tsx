@@ -30,7 +30,7 @@ import {
   CollectionFrameBody,
   CollectionFrameFooter,
   CollectionFrameHeader,
-  type CollectionFrameMode,
+  type CollectionFrameHeight,
   type CollectionLayout,
   CollectionLayoutOutlet,
   CollectionPagination,
@@ -190,9 +190,9 @@ export interface CollectionScreenProps {
   emptyMessage: string
   filterClear: boolean
   filterLoading: boolean
+  height: CollectionFrameHeight
   initialTasks: readonly Task[]
   loading: boolean
-  mode: CollectionFrameMode
   pagination: boolean
   search: boolean
   toolbar: boolean
@@ -204,9 +204,9 @@ export function CollectionScreen({
   emptyMessage,
   filterClear,
   filterLoading,
+  height,
   initialTasks,
   loading,
-  mode,
   pagination,
   search: withSearch,
   toolbar,
@@ -364,7 +364,7 @@ export function CollectionScreen({
   return (
     <main
       className={
-        mode === 'fill'
+        height === 'fill'
           ? 'mx-auto flex h-dvh w-full max-w-7xl flex-col gap-4 p-6'
           : 'mx-auto flex w-full max-w-7xl flex-col gap-4 p-6'
       }
@@ -377,7 +377,7 @@ export function CollectionScreen({
         }}
         preferences={preferences}
       >
-        <CollectionFrame mode={mode}>
+        <CollectionFrame height={height}>
           {toolbar ? (
             <CollectionFrameHeader>
               <CollectionToolbar
@@ -726,9 +726,9 @@ export const ComposedCollection = ({
   emptyMessage,
   filterClear,
   filterLoading,
+  height,
   layout,
   loading,
-  mode,
   pagination,
   search,
   toolbar,
@@ -739,10 +739,10 @@ export const ComposedCollection = ({
     emptyMessage={emptyMessage}
     filterClear={filterClear}
     filterLoading={filterLoading}
+    height={height}
     initialTasks={empty ? [] : sampleTasks}
     key={[layout, empty, pagination].join()}
     loading={loading}
-    mode={mode}
     pagination={pagination}
     search={search}
     toolbar={toolbar}
