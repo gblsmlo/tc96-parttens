@@ -13,10 +13,10 @@ import {
   SidebarMenuItem,
   SidebarProvider,
 } from '@tc96/ui/sidebar'
-import { cn } from '@tc96/utils'
 import type { ReactElement } from 'react'
 import { resolveShellLabels } from '../shared/labels'
 import { ShellBackButton } from '../shared/shell-back-button'
+import { ShellContent } from '../shared/shell-content'
 import { ShellHeader } from '../shared/shell-header'
 import { ShellNav } from '../shared/shell-nav'
 import { ShellSearch, ShellSearchShortcut } from '../shared/shell-search'
@@ -42,6 +42,7 @@ export function AppShell2({
   onWorkspaceChange,
   open,
   padded = true,
+  scrollArea = true,
   renderLink = renderAnchor,
   settings,
   theme,
@@ -54,6 +55,7 @@ export function AppShell2({
 
   return (
     <SidebarProvider
+      className="h-svh"
       defaultOpen={defaultOpen}
       onOpenChange={onOpenChange}
       open={open}
@@ -119,16 +121,16 @@ export function AppShell2({
           </SidebarFooter>
         )}
       </Sidebar>
-      <SidebarInset className="min-w-0">
+      <SidebarInset className="min-h-0 min-w-0">
         <ShellHeader
           actions={actions}
           breadcrumbs={breadcrumbs}
           labels={labels}
           renderLink={renderLink}
         />
-        <div className={cn('flex flex-1 flex-col', padded && 'gap-4 p-4')}>
+        <ShellContent padded={padded} scrollArea={scrollArea}>
           {children}
-        </div>
+        </ShellContent>
       </SidebarInset>
     </SidebarProvider>
   )
