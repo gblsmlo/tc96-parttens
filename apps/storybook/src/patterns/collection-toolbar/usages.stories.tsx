@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { expect, within } from 'storybook/test'
+import { expect, screen, userEvent, within } from 'storybook/test'
 import { ToolbarCanvas } from './toolbar-canvas.tsx'
 import { toolbarControlArgs } from './toolbar-controls.ts'
 import {
@@ -8,6 +8,7 @@ import {
   SearchFieldToolbar,
   SpreadsheetSettingsToolbar,
 } from './toolbar-layouts.tsx'
+import { ViewMenusToolbar } from './view-menus-toolbar.tsx'
 
 const meta = {
   decorators: [ToolbarCanvas],
@@ -129,6 +130,42 @@ export const SpreadsheetModes: Story = {
   play: async ({ canvasElement }) => {
     await expect(
       toolbarIn(canvasElement).getByRole('button', { name: 'Exibição' }),
+    ).toBeVisible()
+  },
+}
+
+export const TaskViewMenus: Story = {
+  parameters: describe(
+    `A task list that shows each view menu on its own, on the [Heading And View Menus](?path=/story/patterns-collectiontoolbar-layouts--heading-and-view-menus) layout: the title in \`left\`; in \`right\` the search first, then the filter with one submenu per property (status, priority, assignee, each option with its icon) and its count, the list, board and timeline switch, the sort and the grouping menus, and the action last.`,
+  ),
+  render: () => <ViewMenusToolbar />,
+  play: async ({ canvasElement }) => {
+    const toolbar = toolbarIn(canvasElement, 'Controles das tarefas')
+    await expect(
+      toolbar.getByRole('searchbox', { name: 'Buscar tarefas' }),
+    ).toBeVisible()
+    await expect(
+      toolbar.getByRole('button', { name: 'Lista' }),
+    ).toHaveAttribute('aria-pressed', 'true')
+    await userEvent.click(toolbar.getByRole('button', { name: 'Ordenar' }))
+    await userEvent.click(
+      await screen.findByRole('menuitemradio', { name: 'Prioridade' }),
+    )
+    await userEvent.click(toolbar.getByRole('button', { name: 'Filtrar' }))
+    const filters = within(await screen.findByRole('menu'))
+    await userEvent.click(filters.getByRole('menuitem', { name: /Status/ }))
+    await userEvent.click(
+      await screen.findByRole('menuitemradio', { name: 'Backlog' }),
+    )
+    await userEvent.click(toolbar.getByRole('button', { name: 'Filtrar' }))
+    await expect(
+      within(await screen.findByRole('menu')).getByRole('menuitem', {
+        name: /Status.*Backlog/,
+      }),
+    ).toBeVisible()
+    await userEvent.keyboard('{Escape}')
+    await expect(
+      toolbar.getByRole('button', { name: 'Nova tarefa' }),
     ).toBeVisible()
   },
 }

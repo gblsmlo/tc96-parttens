@@ -1,4 +1,6 @@
-'use client'
+import { cn } from '@tc96/utils'
+
+;('use client')
 
 import { CubeIcon } from '@phosphor-icons/react'
 import { ActionBar } from '@tc96/ui/patterns/action-bar/components/action-bar'
@@ -246,11 +248,6 @@ export function Tasks2({
     'priority',
     onGroupByChange,
   )
-  const [collapsedGroupIds, setCollapsedGroupIds] = useControllable<string[]>(
-    collapsedGroupIdsProp,
-    noIds,
-    onCollapsedGroupIdsChange,
-  )
   const [statusFilter, setStatusFilter] = useControllable<Tasks2Status | null>(
     statusFilterProp,
     null,
@@ -376,7 +373,7 @@ export function Tasks2({
 
   return (
     <DataCollectionFrame
-      className={className}
+      className={cn('flex h-full min-h-0 flex-col', className)}
       data-block="tasks-2"
       title={labels.title}
       toolbar={
@@ -411,59 +408,80 @@ export function Tasks2({
         />
       }
     >
-      {loadState ?? (
-        <DataCollection<Tasks2Task>
-          collapsedGroupIds={collapsedGroupIds}
-          collection={collection}
-          emptyMessage={filtered ? labels.noResult : labels.empty}
-          getGroupToggleLabel={labels.groupToggle}
-          groupBy={activeGroupBy}
-          kanban={kanban}
-          label={labels.title}
-          listHeader={
-            <Tasks2ListHeader
-              labels={labels}
-              onSort={onSortChange ? sortByColumn : undefined}
-              sort={sort}
-              sortDirection={sortDirection}
-            />
-          }
-          mode={mode}
-          onCollapsedGroupIdsChange={(groupIds) =>
-            setCollapsedGroupIds([...groupIds])
-          }
-          onGroupByChange={(next) => setGroupBy(pickGroupBy(next))}
-          onOpen={openTask ? (task) => openTask(task.id) : undefined}
-          renderKanbanRecord={renderTasks2KanbanCard(context)}
-          renderListRecord={renderTasks2ListRow(context)}
-          table={table}
-        />
-      )}
-      {!loadState && mode === 'list' && selectable ? (
-        <div className="pointer-events-none sticky bottom-3 flex justify-center">
-          <ActionBar
-            actions={createTasks2SelectionActions({
-              labels,
-              onBulkAssigneesChange,
-              onBulkDelete,
-              onBulkPriorityChange,
-              onBulkProjectChange,
-              onBulkStatusChange,
-              onDone: () => setSelectedIds(noIds),
-              people,
-              projects,
-              selectedRows,
-            })}
-            className="pointer-events-auto"
-            clearSelectionLabel={labels.clearSelection}
-            formatSelection={labels.selectedCount}
-            label={labels.selectionActions}
-            onClearSelection={() => setSelectedIds(noIds)}
-            selectedCount={selectedRows.length}
-            selectedRows={selectedRows}
+      <div className="min-h-0 flex-1 overflow-auto" data-slot="tasks-2-body">
+        {loadState ?? (
+          <DataCollection<Tasks2Task>
+            collapseEmptyGroups
+            collapsedGroupIds={collapsedGroupIdsProp}
+            collection={collection}
+            emptyMessage={filtered ? labels.noResult : labels.empty}
+            getGroupToggleLabel={labels.groupToggle}
+            groupBy={activeGroupBy}
+            kanban={kanban}
+            label={labels.title}
+            listHeader={
+              <Tasks2ListHeader
+                labels={labels}
+                selection={
+                  selectable && tasks.length > 0
+                    ? {
+                        checked: tasks.every((task) =>
+                          selectedSet.has(task.id),
+                        ),
+                        indeterminate:
+                          selectedSet.size > 0 &&
+                          !tasks.every((task) => selectedSet.has(task.id)),
+                        onCheckedChange: (checked) =>
+                          setSelectedIds(
+                            checked ? tasks.map((task) => task.id) : noIds,
+                          ),
+                      }
+                    : undefined
+                }
+                onSort={onSortChange ? sortByColumn : undefined}
+                sort={sort}
+                sortDirection={sortDirection}
+              />
+            }
+            mode={mode}
+            onCollapsedGroupIdsChange={
+              onCollapsedGroupIdsChange
+                ? (groupIds) => onCollapsedGroupIdsChange([...groupIds])
+                : undefined
+            }
+            onGroupByChange={(next) => setGroupBy(pickGroupBy(next))}
+            onOpen={openTask ? (task) => openTask(task.id) : undefined}
+            renderKanbanRecord={renderTasks2KanbanCard(context)}
+            renderListRecord={renderTasks2ListRow(context)}
+            table={table}
           />
-        </div>
-      ) : null}
+        )}
+        {!loadState && mode === 'list' && selectable ? (
+          <div className="pointer-events-none sticky bottom-3 flex justify-center">
+            <ActionBar
+              actions={createTasks2SelectionActions({
+                labels,
+                onBulkAssigneesChange,
+                onBulkDelete,
+                onBulkPriorityChange,
+                onBulkProjectChange,
+                onBulkStatusChange,
+                onDone: () => setSelectedIds(noIds),
+                people,
+                projects,
+                selectedRows,
+              })}
+              className="pointer-events-auto"
+              clearSelectionLabel={labels.clearSelection}
+              formatSelection={labels.selectedCount}
+              label={labels.selectionActions}
+              onClearSelection={() => setSelectedIds(noIds)}
+              selectedCount={selectedRows.length}
+              selectedRows={selectedRows}
+            />
+          </div>
+        ) : null}
+      </div>
     </DataCollectionFrame>
   )
 }

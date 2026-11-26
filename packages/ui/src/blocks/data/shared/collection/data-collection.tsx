@@ -26,6 +26,7 @@ export type DataCollectionDefinition<TRecord extends RowData> =
 
 export interface DataCollectionProps<TRecord extends RowData> {
   calendar?: CollectionCalendarViewProps<TRecord>
+  collapseEmptyGroups?: boolean
   collapsedGroupIds?: readonly string[]
   collection: DataCollectionDefinition<TRecord>
   emptyGroupMessage?: string
@@ -52,6 +53,7 @@ export interface DataCollectionProps<TRecord extends RowData> {
 
 export function DataCollection<TRecord extends RowData>({
   calendar,
+  collapseEmptyGroups,
   collapsedGroupIds,
   collection,
   emptyGroupMessage,
@@ -173,6 +175,7 @@ export function DataCollection<TRecord extends RowData>({
           }}
           kanban={kanban}
           list={{
+            collapseEmptyGroups,
             collapsedGroupIds,
             emptyGroupLabel: emptyGroupMessage ?? emptyMessage,
             emptyMessage,

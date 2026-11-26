@@ -100,6 +100,7 @@ export interface Tasks2Labels
   search: string
   selectedCount: (count: number) => string
   selectionActions: string
+  selectAll: string
   selectTask: (title: string) => string
   sort: string
   sortColumn: (column: string, direction: Tasks2SortDirection | null) => string

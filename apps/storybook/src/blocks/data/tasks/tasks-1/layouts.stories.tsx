@@ -14,7 +14,7 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   render: () => (
-    <div className="p-6">
+    <div className="h-svh p-6">
       <ComposedTasks1 {...tasks1ControlArgs} />
     </div>
   ),
@@ -22,7 +22,7 @@ export const Default: Story = {
 
 export const GroupedByStatus: Story = {
   render: () => (
-    <div className="p-6">
+    <div className="h-svh p-6">
       <ComposedTasks1 {...tasks1ControlArgs} groupBy="status" />
     </div>
   ),
@@ -30,7 +30,7 @@ export const GroupedByStatus: Story = {
 
 export const GroupedByPriority: Story = {
   render: () => (
-    <div className="p-6">
+    <div className="h-svh p-6">
       <ComposedTasks1 {...tasks1ControlArgs} groupBy="priority" />
     </div>
   ),
@@ -38,7 +38,7 @@ export const GroupedByPriority: Story = {
 
 export const InWorkspacePage: Story = {
   render: () => (
-    <main className="mx-auto grid w-full max-w-7xl gap-6 p-6">
+    <main className="mx-auto grid h-svh w-full max-w-7xl grid-rows-[auto_minmax(0,1fr)] gap-6 p-6">
       <header className="grid gap-1">
         <h1 className="font-semibold text-2xl">Minhas tarefas</h1>
         <p className="text-muted-foreground text-sm">

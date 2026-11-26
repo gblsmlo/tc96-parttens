@@ -3,6 +3,7 @@ import { ToolbarCanvas } from './toolbar-canvas.tsx'
 import {
   CenterAndRightSlots,
   DefaultSlots,
+  HeadingAndViewMenusSlots,
   LeftCenterRightSlots,
   RightSideSlots,
 } from './toolbar-layouts.tsx'
@@ -43,4 +44,11 @@ export const RightSide: Story = {
     '`right` alone, at the end of the bar. For a bar that only carries the settings or the actions of the view.',
   ),
   render: () => <RightSideSlots />,
+}
+
+export const HeadingAndViewMenus: Story = {
+  parameters: describe(
+    'The heading in `left` and one control per view menu in `right`: the search first, then the filter with its count, the view switcher, the sort and the grouping, and the primary action last. For a collection screen that shows each view menu on its own instead of one view settings menu.',
+  ),
+  render: () => <HeadingAndViewMenusSlots />,
 }

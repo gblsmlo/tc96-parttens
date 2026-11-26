@@ -221,3 +221,20 @@ export const CenterAndRightSlots = ({ mode }: SlotsProps) => (
 export const RightSideSlots = ({ mode }: SlotsProps) => (
   <CollectionToolbar mode={mode} right={<Slot name="right" />} />
 )
+
+const viewMenuSlots = [
+  'search',
+  'filter',
+  'view switcher',
+  'sort',
+  'group',
+  'action',
+] as const
+
+export const HeadingAndViewMenusSlots = ({ mode }: SlotsProps) => (
+  <CollectionToolbar
+    left={<Slot name="heading" />}
+    mode={mode}
+    right={viewMenuSlots.map((name) => <Slot key={name} name={name} />)}
+  />
+)

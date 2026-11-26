@@ -14,7 +14,7 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   render: () => (
-    <div className="p-6">
+    <div className="h-svh p-6">
       <ComposedTasks2 {...tasks2ControlArgs} />
     </div>
   ),
@@ -22,9 +22,9 @@ export const Default: Story = {
 
 export const InWorkspacePage: Story = {
   render: () => (
-    <main className="mx-auto grid w-full max-w-7xl gap-6 p-6">
+    <main className="mx-auto grid h-svh w-full max-w-7xl grid-rows-[auto_minmax(0,1fr)] gap-6 p-6">
       <header className="grid gap-1">
-        <h1 className="font-semibold text-2xl">Minha área</h1>
+        <h1 className="font-semibold text-2xl">Tarefas</h1>
         <p className="text-muted-foreground text-sm">
           As tarefas de todos os projetos, das mais urgentes às que podem
           esperar.

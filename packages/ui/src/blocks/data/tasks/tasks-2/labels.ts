@@ -66,6 +66,7 @@ export const defaultTasks2Labels: Tasks2Labels = {
   selectedCount: (count) =>
     `${count} ${count === 1 ? 'tarefa selecionada' : 'tarefas selecionadas'}`,
   selectionActions: 'Ações das tarefas selecionadas',
+  selectAll: 'Selecionar todas as tarefas',
   selectTask: (title) => `Selecionar ${title}`,
   sort: 'Ordenar',
   sortBy: 'Ordenar por',
