@@ -127,12 +127,11 @@ export const renderTasks3ListRow =
             <ListRowSelect
               aria-label={labels.selectTask(task.title)}
               checked={selected}
+              className="me-0"
               onCheckedChange={(checked) =>
                 onSelectedChange(task.id, checked === true)
               }
-            >
-              <Tasks3PriorityMark context={context} item={task} />
-            </ListRowSelect>
+            />
           ) : (
             <Tasks3PriorityMark context={context} item={task} />
           )}

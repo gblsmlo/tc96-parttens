@@ -1,0 +1,37 @@
+import type { Meta, StoryObj } from '@storybook/react-vite'
+import { expect, screen, userEvent, within } from 'storybook/test'
+import {
+  type Tasks4Controls,
+  tasks4ControlArgs,
+  tasks4ControlArgTypes,
+} from './tasks-4-controls.ts'
+import { ComposedTasks4 } from './tasks-4-layouts.tsx'
+
+const meta = {
+  args: tasks4ControlArgs,
+  argTypes: tasks4ControlArgTypes,
+  parameters: { layout: 'padded' },
+  render: (args) => <ComposedTasks4 {...args} />,
+  tags: ['!autodocs'],
+  title: 'Blocks/Data/Tasks/Tasks4',
+} satisfies Meta<Tasks4Controls>
+
+export default meta
+
+type Story = StoryObj<Tasks4Controls>
+
+export const Tasks4: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const [trigger] = await canvas.findAllByRole('button', {
+      name: /Alterar status/,
+    })
+    await userEvent.click(trigger)
+    await userEvent.click(
+      await screen.findByRole('menuitemradio', { name: 'Concluída' }),
+    )
+    await expect(
+      (await canvas.findAllByRole('button', { name: /Alterar status/ }))[0],
+    ).toHaveAccessibleName('Status: Concluída. Alterar status')
+  },
+}

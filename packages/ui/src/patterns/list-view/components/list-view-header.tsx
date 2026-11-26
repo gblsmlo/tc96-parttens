@@ -21,7 +21,7 @@ export function ListViewHeader({
   return (
     <div
       className={cn(
-        'flex h-9 min-w-0 items-center gap-3 px-4 font-medium text-muted-foreground text-sm',
+        'flex h-[calc(--spacing(10)-1px)] min-w-0 items-center gap-3 px-4 font-medium text-muted-foreground text-sm',
         className,
       )}
       data-slot="list-view-header-row"

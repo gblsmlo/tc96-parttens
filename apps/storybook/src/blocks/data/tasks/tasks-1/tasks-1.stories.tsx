@@ -12,11 +12,11 @@ const meta = {
   parameters: { layout: 'padded' },
   render: (args) => <ComposedTasks1 {...args} />,
   tags: ['!autodocs'],
-  title: 'Blocks/Data/Tasks/Tasks1/Playground',
+  title: 'Blocks/Data/Tasks/Tasks1',
 } satisfies Meta<Tasks1Controls>
 
 export default meta
 
 type Story = StoryObj<Tasks1Controls>
 
-export const Playground: Story = {}
+export const Tasks1: Story = {}
