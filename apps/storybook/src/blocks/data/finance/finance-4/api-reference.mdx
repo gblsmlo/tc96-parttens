@@ -1,0 +1,53 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Finance4
+
+The financial entries of a law firm in one collection, with the toolbar of `Tasks4`. Each entry has a description, a kind (fee, expense, expense reimbursement, client money in or out), a client, a case, a responsible lawyer, a due date, an amount and a situation (open, overdue, renegotiated, settled, canceled). It renders as Lista, Tabela or Quadro (Kanban by situation). Install it with `npx @tc96/cli add finance-4`.
+
+The toolbar `left` slot holds the view switcher (`labels.viewList`): three fixed views, Todos, A receber and A pagar (`labels.views`, with an optional count each), then the saved views, with create, update, rename, duplicate and delete when their callbacks are passed. The page has no `h2`; the section keeps its name from `labels.title`. The `right` slot holds, in this order: the filter menu (Situação, Tipo, Responsável), the layout menu, the sort menu (Vencimento, Valor, Atualização, Cliente), the group menu (Situação, Tipo, Cliente, Processo; only Situação in the Kanban) and the primary `Action` (`labels.create`).
+
+The amount always carries its sign: an incoming kind (fee, reimbursement, client money in) shows `+`, an outgoing one `−`, so the direction does not depend on the green of incoming amounts. In the list the leading arrow names the direction through `labels.amountDirections`, and every row shows its kind. A fee with a `feeType` shows `labels.feeTypes` (contratual, êxito, sucumbência) instead of the kind.
+
+The block is controlled and renders what it gets. View, mode, sort, grouping, collapsed groups, selection and the three filters are a value and a callback; without the value the block keeps it locally. The block does **not** filter by view, filter or sort `entries`; in Tabela it only orders the rows by the active grouping, so each group is one run. Each control renders only with its callback: each filter submenu with its own callback (Responsável also needs `lawyers`), the sort menu with `onSortChange` and the `Action` with `onCreate`. Picking a fixed view calls `onViewChange`, and `onSavedViewSelect(null)` when a saved view was active; the block never applies a saved view.
+
+Selection exists in Lista and Tabela when a bulk callback is passed, and opens the `ActionBar` pattern: Marcar como quitado sends only the ids whose `canSettle` is true and is disabled without one, Trocar responsável lists `lawyers`, Excluir has no confirmation.
+
+Every text is a key of `labels`, with English defaults; the stories pass pt-BR. Texts that carry a number or a name (`activeFilters`, `selectedCount`, `openEntry`, `selectEntry`, `sortColumn`, `viewCountName`, `groupToggle`) are functions, so the consumer decides the word order.
+
+## Import
+
+```tsx
+import { Finance4 } from '@tc96/ui/blocks/data/finance/finance-4'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+## Finance4
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `entries` | `Finance4Entry[]` | required | The entries, already filtered by view and filters and sorted. `amount` is in cents, positive; the kind gives the sign. |
+| `clients`, `cases`, `lawyers` | `Finance4Option[]`, `Finance4Case[]`, `Finance4Person[]` | `[]` | The catalogs the record ids point to; a case carries its `number`. |
+| `view`, `onViewChange`, `counts` | `'all' \| 'receivable' \| 'payable'`, `Partial<Record<Finance4View, number>>` | `'all'` | The fixed views of the switcher. |
+| `mode`, `onModeChange` | `'list' \| 'table' \| 'kanban'` | `'list'` | The controllable layout, changed from the layout menu. |
+| `groupBy`, `onGroupByChange` | `'situation' \| 'kind' \| 'client' \| 'case' \| null` | `'situation'` | The controllable grouping; the Kanban always groups by situation. |
+| `collapsedGroupIds`, `onCollapsedGroupIdsChange` | `string[]` | - | Collapsed groups as `<grouping>:<option id>`. |
+| `sort`, `sortDirection`, `onSortChange` | `Finance4Sort`, `'asc' \| 'desc'` | `'due'`, the sort's default | The sort menu and the sortable list header (Cliente, Vencimento, Valor), rendered with `onSortChange`. |
+| `situationFilter`, `kindFilter`, `lawyerFilter` and their callbacks | `Finance4Situation \| null`, `Finance4EntryKind \| null`, `string \| null` | `null` | The filter submenus. |
+| `filtered` | `boolean` | `false` | Picks `labels.noResult` instead of `labels.empty`. |
+| `selectedIds`, `onSelectedIdsChange` | `string[]` | `[]` | The selected entries. |
+| `onBulkSettle`, `onBulkResponsibleChange`, `onBulkDelete` | `(entryIds, lawyerId?) => void` | - | Any of them enables selection and the `ActionBar`. |
+| `onOpen` | `(entryId) => void` | - | Makes a row and a card open the entry. |
+| `onCreate` | `() => void` | - | Renders the primary `Action`, last in the toolbar. |
+| `locale`, `currency` | `string` | `'pt-BR'`, `'BRL'` | Format the dates and amounts. |
+| `savedViews`, `savedViewId`, `savedViewModified` | `Finance4SavedView[]`, `string \| null`, `boolean` | - | The saved views after the fixed views. |
+| `onSavedViewSelect` | `(savedViewId: string \| null) => void` | - | A saved view, or `null` when a fixed view is picked. |
+| `onSavedViewCreate`, `onSavedViewUpdate`, `onSavedViewRename`, `onSavedViewDuplicate`, `onSavedViewDelete` | callbacks | - | Each menu action renders with its callback; the dialogs are the consumer's. |
+| `savedViewsLoading`, `savedViewsPending` | `boolean` | - | Skeleton for the saved views, and disabled actions while one is saved. |
+| `pending`, `error`, `onRetry` | `boolean`, `boolean`, `() => void` | - | The loading contract of the data blocks; the toolbar keeps only the view switcher meanwhile. |
+| `labels` | `Finance4LabelsOverride` | English texts | Overrides the texts. |
