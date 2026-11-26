@@ -1,0 +1,32 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# RecordDialog7
+
+A quick-capture dialog for a project on the Record Dialog inline-properties layout: a borderless title and description, and Status, Prioridade, Responsável, Repositórios and the dates as chips pinned to the bottom. The `...` chip adds the start and target dates. Open as page sits in `actions` when `onOpenAsPage` is passed, Create more in `footerStart`, and Mod+Enter submits. Install it with `npx @tc96/cli add record-dialog-7`.
+
+The block keeps only its draft: the catalogs and the save are the consumer's. A failed save keeps the dialog open and shows its message in `errorMessage`.
+
+The other pages of `Blocks/Application/Record Dialog/Projects/RecordDialog7`: [Playground](?path=/story/blocks-application-record-dialog-projects-recorddialog7-playground--playground) to try the controls and [States](?path=/story/blocks-application-record-dialog-projects-recorddialog7-states--default) for the open dialog.
+
+## Import
+
+```tsx
+import { RecordDialog7 } from '@tc96/ui/blocks/application/record-dialog/record-dialog-7'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+## RecordDialog7
+
+The props are typed by `RecordDialog7Props`, exported from the same path with `RecordDialog7Labels`, `RecordDialog7Values` and the option builders. Every text comes from `labels` (pt-BR defaults), every catalog from a prop, and `className` is merged into the dialog popup.
+
+## Accessibility and theme
+
+- The dialog is named by its title.
+- Focus, Escape and Mod+Enter come from the Record Dialog pattern; errors render with `role="alert"`.
+- The block carries no raw color, radius or shadow: it composes Record Dialog and the property displays.

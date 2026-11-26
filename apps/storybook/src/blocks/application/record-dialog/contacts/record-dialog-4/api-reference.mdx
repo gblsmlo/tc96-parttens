@@ -1,0 +1,79 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# RecordDialog4
+
+A create dialog for a contact on the Record Dialog inline-properties layout: the name as a borderless title, a short description, and every other field as a property chip. Telefone, E-mail, Tipo (CPF or CNPJ) and Documento are always shown. The ... chip opens a menu whose switches show or hide Etapa, Tags, Empresa and Cargo. Empresa and Cargo are comboboxes with search, the existing values and a footer that creates the typed name and selects it. Install it with `npx @tc96/cli add record-dialog-4`.
+
+The block keeps only the draft and the create-more switch: the existing companies and roles and the save are the consumer's. Etapa starts at Sem etapa and has no Lead.
+
+The other pages of `Blocks/Application/Record Dialog/Contacts/RecordDialog4`: [Playground](?path=/story/blocks-application-record-dialog-contacts-recorddialog4-playground--playground) to try the controls and [States](?path=/story/blocks-application-record-dialog-contacts-recorddialog4-states--default) for the open dialog.
+
+## Import
+
+```tsx
+import { RecordDialog4 } from '@tc96/ui/blocks/application/record-dialog/record-dialog-4'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<RecordDialog4
+  companies={companies}
+  onCreate={saveContact}
+  onOpenChange={setOpen}
+  open={open}
+  roles={roles}
+/>
+```
+
+## RecordDialog4
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `open` | `boolean` | - | Whether the dialog is open. |
+| `onOpenChange` | `(open: boolean) => void` | - | Called when the dialog asks to open or close. |
+| `onCreate` | `(values: RecordDialog4Values) => void \| Promise<void>` | - | Called with the values on save. A thrown error keeps the dialog open with its message. |
+| `companies` | `readonly string[]` | - | The existing companies offered by Empresa. |
+| `roles` | `readonly string[]` | - | The existing roles offered by Cargo. |
+| `stageOptions` | `readonly PropertyOption[]` | from labels | Overrides the Etapa options. |
+| `documentTypeOptions` | `readonly PropertyOption[]` | from labels | Overrides the Tipo options. |
+| `tagOptions` | `readonly PropertyOption<RecordDialog4Tag>[]` | `defaultRecordDialog4TagOptions` | The Tags options. |
+| `labels` | `Partial<RecordDialog4Labels>` | pt-BR texts | Overrides the texts of the block. |
+| `className` | `string` | - | Merged into the dialog popup. |
+
+## RecordDialog4Values
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `name` | `string` | Trimmed name. |
+| `description` | `string` | Trimmed description from the headline. |
+| `phones` / `emails` | `string[]` | Entered numbers and addresses. |
+| `documentType` | `"cpf" \| "cnpj" \| undefined` | Tipo. |
+| `document` | `string \| undefined` | Documento. |
+| `stage` | `"none" \| "qualified" \| "customer" \| "inactive"` | Starts at `none`. |
+| `tags` | `RecordDialog4Tag[]` | Selected tags. |
+| `company` / `role` | `string` | Empty when not chosen. |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `RecordDialog4` | `component` | The create dialog. |
+| `RecordDialog4Props` | `type` | The props of the block. |
+| `RecordDialog4Labels` | `type` | The keys of `labels`. |
+| `RecordDialog4Values` | `type` | The payload of `onCreate`. |
+| `RecordDialog4Stage`, `RecordDialog4DocumentType`, `RecordDialog4Tag` | `type` | The value unions. |
+| `RecordDialog4CreatableLabels` | `type` | The texts of the Empresa and Cargo comboboxes. |
+| `createRecordDialog4StageOptions`, `createRecordDialog4DocumentTypeOptions` | `function` | Build the default options from the labels. |
+| `defaultRecordDialog4TagOptions` | `const` | The default tags. |
+
+## Accessibility and theme
+
+- The dialog is named by `labels.titleText`.
+- Focus, Escape and Mod+Enter come from the Record Dialog pattern; errors render with `role="alert"`.
+- The block carries no raw color, radius or shadow: it composes Record Dialog, the property displays and the COSS combobox.

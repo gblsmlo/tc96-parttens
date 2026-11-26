@@ -4,10 +4,12 @@ import { Field, FieldLabel } from '@tc96/ui/field'
 import { Input } from '@tc96/ui/input'
 import { Textarea } from '@tc96/ui/textarea'
 import type { RecordDialogHeadlineProps } from '../../core'
+import { recordDialogDescriptionVariants } from '../../lib/variants'
 
 export function RecordDialogHeadline({
   description,
   descriptionLabel,
+  descriptionMinHeight,
   descriptionName = 'description',
   descriptionPlaceholder,
   onDescriptionChange,
@@ -34,7 +36,9 @@ export function RecordDialogHeadline({
         <Field name={descriptionName}>
           <FieldLabel className="sr-only">{descriptionLabel}</FieldLabel>
           <Textarea
-            className="grid w-full [&_textarea]:min-h-0 [&_textarea]:resize-none [&_textarea]:px-0 [&_textarea]:pt-0.5 [&_textarea]:placeholder:text-muted-foreground/60 [&_textarea]:focus:placeholder:text-muted-foreground"
+            className={recordDialogDescriptionVariants({
+              minHeight: descriptionMinHeight,
+            })}
             onChange={
               onDescriptionChange
                 ? (event) => onDescriptionChange(event.target.value)

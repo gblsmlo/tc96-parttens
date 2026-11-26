@@ -7,9 +7,9 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 A dialog for creating a record: a new project, a calendar event, a contact, a note. `RecordDialog` holds the consumer's fields in a form and settles itself from what the save handler returns. Fields, validation, the save and the error text stay with the consumer. A confirmation before an action that is hard to undo, such as deleting, is an [AlertDialog](?path=/docs/ui-alertdialog-api-reference--api-reference).
 
-The other pages of `Patterns/Records/RecordDialog`: [Playground](?path=/story/patterns-records-recorddialog-playground--playground) to try the texts, the size and the optional parts of `RecordDialog`, [Layouts](?path=/story/patterns-records-recorddialog-layouts--default) for the formations it takes (Default, Inline Properties, Row Properties, Property Bar Over Body and Description Over Body), [Behavior](?path=/story/patterns-records-recorddialog-behavior--prevents-native-submit-and-closes-on-true) for what each formation guarantees, and [Usages](?path=/story/patterns-records-recorddialog-usages--contacts) for real records on each formation.
+The other pages of `Patterns/Records/RecordDialog`: [Playground](?path=/story/patterns-records-recorddialog-playground--playground) to try the texts, the size and the optional parts of `RecordDialog`, [Layouts](?path=/story/patterns-records-recorddialog-layouts--default) for the formations it takes (Default, Inline Properties, Row Properties, Property Bar Over Body and Description Over Body), [Behavior](?path=/story/patterns-records-recorddialog-behavior--prevents-native-submit-and-closes-on-true) for what each formation guarantees. Real records on each formation live as blocks under `Blocks/Application/Record Dialog`.
 
-Used in: the Contacts screen of `Patterns/Collection` opens the same create dialog as [Contacts](?path=/story/patterns-records-recorddialog-usages--contacts), from Novo contato, in [Patterns/Collection/Usages, Contacts](?path=/story/patterns-collection-usages--contacts) and [Templates/Contacts](?path=/story/templates-contacts--default). The Calendar usage mounts [Blocks/Application/Record Dialog/Agenda/Agenda1](?path=/story/blocks-application-record-dialog-agenda-agenda1-playground--playground) from Nova atividade, in [Patterns/Collection/Usages, Calendar](?path=/story/patterns-collection-usages--calendar). [Patterns/Records/Group/Usages, Notes](?path=/story/patterns-records-group-usages--notes) opens the note editor of [Note](?path=/story/patterns-records-recorddialog-usages--note) from +, and [Pipeline Stages](?path=/story/patterns-surfaces-settings-usages--pipeline-stages) of `Patterns/Surfaces/Settings` creates a stage in a `RecordDialog`.
+Used in: the Contacts screen of `Patterns/Collection` opens the same create dialog as [Blocks/Application/Record Dialog/Contacts/RecordDialog4](?path=/story/blocks-application-record-dialog-contacts-recorddialog4-playground--playground), from Novo contato, in [Patterns/Collection/Usages, Contacts](?path=/story/patterns-collection-usages--contacts) and [Templates/Contacts](?path=/story/templates-contacts--default). The Calendar usage mounts [Blocks/Application/Record Dialog/Agenda/RecordDialog1](?path=/story/blocks-application-record-dialog-agenda-recorddialog1-playground--playground) from Nova atividade, in [Patterns/Collection/Usages, Calendar](?path=/story/patterns-collection-usages--calendar). [Patterns/Records/Group/Usages, Notes](?path=/story/patterns-records-group-usages--notes) opens the note editor of [Blocks/Application/Record Dialog/Notes/RecordDialog5](?path=/story/blocks-application-record-dialog-notes-recorddialog5-playground--playground) from +, and [Pipeline Stages](?path=/story/patterns-surfaces-settings-usages--pipeline-stages) of `Patterns/Surfaces/Settings` creates a stage in a `RecordDialog`.
 
 ## Import
 
@@ -199,12 +199,27 @@ The switch that keeps the dialog open for the next record. Renders a `div` with 
 | --- | --- | --- |
 | `data-slot` | `"record-dialog-create-more"` | Selects the wrapper |
 
+## RecordDialogInlineShell, RecordDialogRowShell and RecordDialogBarShell
+
+The body structures of the Inline Properties, Row Properties and Property Bar Over Body layouts. Pass them as the `children` of `RecordDialog` with `stretchBody` so the properties sit at the bottom of the popup, instead of writing the classes in the consumer.
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `headline` | `ReactNode` | - | Rendered first, usually a `RecordDialogHeadline`. Without it the inline and row shells add top padding. |
+| `children` | `ReactNode` | - | The chips (inline), the `RecordGroupRow` list (row) or the body under the bar (bar), which grows to fill the popup. |
+| `bar` | `ReactNode` | - | Bar shell only: the chips under the headline. |
+
+| Attribute | Values | Description |
+| --- | --- | --- |
+| `data-slot` | `"record-dialog-inline-shell"`, `"record-dialog-row-shell"`, `"record-dialog-bar-shell"` | Selects the shell |
+
 ## Exports
 
 | Export | Kind | Description |
 | --- | --- | --- |
 | `useRecordDraft` | `hook` | Keeps a draft as state plus a `latest` ref that `update` writes at once, so a Mod+Enter submit in the same event as a blur commit reads the committed value. `useRecordDraft<T>(initial: T \| (() => T)) => RecordDraft<T>` |
 | `RecordDraft` | `type` | What `useRecordDraft` returns: `draft`, `latest`, `update(patch)` and `reset()`, which puts back the first draft. |
+| `RecordDialogInlineShell`, `RecordDialogRowShell`, `RecordDialogBarShell` | `component` | The body structures of the three property layouts. |
 | `RecordDialogProps` | `type` | The props of `RecordDialog`. |
 | `RecordDialogSettlement` | `type` | `boolean` or `Promise<boolean>`, what `onSubmit` returns. |
 | `RecordDialogSize` | `type` | `"small"`, `"default"` or `"large"`. |

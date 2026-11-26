@@ -35,6 +35,7 @@ export interface RecordDialogProps {
 export interface RecordDialogHeadlineProps {
   description?: string
   descriptionLabel?: string
+  descriptionMinHeight?: boolean
   descriptionName?: string
   descriptionPlaceholder?: string
   onDescriptionChange?: (description: string) => void

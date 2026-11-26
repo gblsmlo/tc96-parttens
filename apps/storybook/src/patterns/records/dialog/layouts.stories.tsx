@@ -31,7 +31,11 @@ export const InlineProperties: Story = {
     },
   },
   render: () => (
-    <ComposedRecordDialog {...recordDialogControlArgs} stretchBody>
+    <ComposedRecordDialog
+      {...recordDialogControlArgs}
+      descriptionMinHeight
+      stretchBody
+    >
       <InlinePropertiesFormation />
     </ComposedRecordDialog>
   ),
@@ -42,12 +46,16 @@ export const RowProperties: Story = {
     docs: {
       description: {
         story:
-          'The headline, then one row per property, with the label on the start and the value on the end. For records whose properties need their name in view.',
+          'The headline, then one row per property, pinned to the bottom of the popup, with the label on the start and the value on the end. For records whose properties need their name in view.',
       },
     },
   },
   render: () => (
-    <ComposedRecordDialog {...recordDialogControlArgs}>
+    <ComposedRecordDialog
+      {...recordDialogControlArgs}
+      descriptionMinHeight
+      stretchBody
+    >
       <RowPropertiesFormation />
     </ComposedRecordDialog>
   ),

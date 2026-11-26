@@ -1,0 +1,110 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# RecordDialog1
+
+A create dialog for a calendar event on the Record Dialog row-properties layout, prefilled with the slot the calendar picked. Type is Reunião, Videochamada or Ligação, and the rows that follow it are the ones of that type. Reach for it when Nova atividade opens from a calendar or an empty time-grid slot. Install it with `npx @tc96/cli add record-dialog-1`.
+
+The block keeps only the draft and the create-more switch: the slot, the people catalog and the save are the consumer's. An end before the start, or a failed save, shows in `errorMessage`. Create more keeps the dialog open after saving and puts the fields back to the slot.
+
+The other pages of `Blocks/Application/Record Dialog/Agenda/RecordDialog1`: [Playground](?path=/story/blocks-application-record-dialog-agenda-recorddialog1-playground--playground) to try the controls and [States](?path=/story/blocks-application-record-dialog-agenda-recorddialog1-states--default) for the open dialog.
+
+## Import
+
+```tsx
+import { RecordDialog1 } from '@tc96/ui/blocks/application/record-dialog/record-dialog-1'
+```
+
+The same path exports the types listed under Exports, plus `recordDialog1SlotFromCalendar` and `defaultRecordDialog1Slot`.
+
+## Anatomy
+
+An open dialog on the default slot.
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<RecordDialog1
+  onCreate={saveEvent}
+  onOpenChange={setOpen}
+  open={open}
+  people={people}
+  slot={slot}
+/>
+```
+
+## RecordDialog1
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `open` | `boolean` | - | Whether the dialog is open. |
+| `onOpenChange` | `(open: boolean) => void` | - | Called when the dialog asks to open or close. |
+| `onCreate` | `(values: RecordDialog1Values) => void \| Promise<void>` | - | Called with the validated values on save. A thrown error keeps the dialog open with its message. |
+| `people` | `readonly RecordDialog1Person[]` | - | The guest options of the People property. |
+| `slot` | `RecordDialog1Slot` | `defaultRecordDialog1Slot` | The day and `HH:mm` window read on mount and after a successful create-more save. Remount (or a new `key`) to apply a new slot. |
+| `locale` | `string` | `"pt-BR"` | Locale of the schedule property. |
+| `timeZone` | `string` | `"America/Sao_Paulo"` | Zone used to turn the day and times into ISO instants. |
+| `typeOptions` | `readonly PropertyOption[]` | from labels | Overrides the Type select options. |
+| `calendarOptions` | `readonly PropertyOption[]` | from labels | Overrides the Calendar select options. |
+| `availabilityOptions` | `readonly PropertyOption[]` | from labels | Overrides the Availability select options. |
+| `labels` | `Partial<RecordDialog1Labels>` | pt-BR texts | Overrides the texts of the block. |
+| `className` | `string` | - | Merged into the dialog popup. |
+
+## RecordDialog1Slot
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `date` | `string` | ISO instant at noon UTC for the picked day. |
+| `start` | `string` | Start time as `HH:mm`. |
+| `end` | `string` | End time as `HH:mm`. |
+
+## RecordDialog1Values
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `title` | `string` | Trimmed title. |
+| `description` | `string` | Trimmed description from the headline. |
+| `start` / `end` | `string` | ISO instants of the window in `timeZone`. |
+| `allDay` | `boolean` | Whether the schedule is all day. |
+| `frequency` | `string \| null` | Recurrence value, or `null`. |
+| `until` | `string \| null` | Recurrence end date serialized by the schedule property. |
+| `reminderMinutes` | `readonly number[]` | Reminder offsets in minutes. |
+| `guests` | `readonly string[]` | Selected person ids, empty for a call. |
+| `type` | `"meeting" \| "video" \| "call"` | Reunião, Videochamada or Ligação. The title follows it, and the context fields follow it: location, link, or phone. |
+| `location` | `string` | Trimmed place, sent for a meeting. |
+| `link` | `string` | Trimmed link, sent for a video call. |
+| `phones` | `readonly string[]` | Numbers, sent for a call. |
+| `calendar` | `"appointments" \| "sales" \| "personal"` | Target calendar. |
+| `availability` | `"busy" \| "free"` | Busy or free. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `titleMeeting` / `titleVideo` / `titleCall` | `string` | `"Nova reunião"` / `"Nova videochamada"` / `"Nova ligação"` |
+| `titleAncestor` | `string` | `"Calendário"` |
+| `submit` / `submitting` / `cancel` / `createMore` | `string` | `"Salvar"` / `"Salvando"` / `"Cancelar"` / `"Criar outro"` |
+| `date` / `guests` / `location` / `type` / `calendar` / `availability` | `string` | Row labels |
+| `endBeforeStart` / `missingTime` / `saveFailed` | `string` | Error messages |
+| `schedule` / `peoplePicker` / `text` | partial property labels | pt-BR property copy |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `RecordDialog1` | `component` | The create dialog. |
+| `RecordDialog1Props` | `type` | The props of the block. |
+| `RecordDialog1Labels` | `type` | The keys of `labels`. |
+| `RecordDialog1Values` | `type` | The payload of `onCreate`. |
+| `RecordDialog1Slot` | `type` | The prefilled window. |
+| `RecordDialog1Person` | `type` | One guest option. |
+| `recordDialog1SlotFromCalendar` | `function` | Builds a slot from a calendar day and minute range. |
+| `defaultRecordDialog1Slot` | `const` | The default slot. |
+
+## Accessibility and theme
+
+- The dialog is named by the title that follows Type (`labels.titleEvent` or `labels.titleAppointment`).
+- Focus, Escape and Mod+Enter come from the Record Dialog pattern; errors render with `role="alert"`.
+- The block carries no raw color, radius or shadow: it composes Record Dialog, Record Group Row and the property displays.

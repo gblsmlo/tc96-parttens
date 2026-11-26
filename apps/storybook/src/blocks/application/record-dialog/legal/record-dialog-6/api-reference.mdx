@@ -1,0 +1,32 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# RecordDialog6
+
+A create dialog for a lawsuit filled in by hand, on the Record Dialog description-over-body layout: Processo, Partes, Escritório and Configurações in an accordion, each with an icon, a title, a description and a status derived from its rows. Each section holds a `RecordGroup` with `collapsible={false}`. Reach for it when the lawsuit is not imported from a court source. Install it with `npx @tc96/cli add record-dialog-6`.
+
+The block keeps only its draft: the catalogs and the save are the consumer's. A failed save keeps the dialog open and shows its message in `errorMessage`.
+
+The other pages of `Blocks/Application/Record Dialog/Legal/RecordDialog6`: [Playground](?path=/story/blocks-application-record-dialog-legal-recorddialog6-playground--playground) to try the controls and [States](?path=/story/blocks-application-record-dialog-legal-recorddialog6-states--default) for the open dialog.
+
+## Import
+
+```tsx
+import { RecordDialog6 } from '@tc96/ui/blocks/application/record-dialog/record-dialog-6'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+## RecordDialog6
+
+The props are typed by `RecordDialog6Props`, exported from the same path with `RecordDialog6Labels`, `RecordDialog6Values` and the option builders. Every text comes from `labels` (pt-BR defaults), every catalog from a prop, and `className` is merged into the dialog popup.
+
+## Accessibility and theme
+
+- The dialog is named by its title.
+- Focus, Escape and Mod+Enter come from the Record Dialog pattern; errors render with `role="alert"`.
+- The block carries no raw color, radius or shadow: it composes Record Dialog and the property displays.
