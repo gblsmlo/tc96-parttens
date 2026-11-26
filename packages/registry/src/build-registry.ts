@@ -287,7 +287,7 @@ await writeFile(
   `${JSON.stringify(
     {
       name: '@tc96/cli',
-      version: '0.30.0',
+      version: '0.31.0',
       description:
         'Installs the tc96 ui, patterns and blocks as source into a tc96 monorepo.',
       keywords: ['tc96', 'coss', 'react', 'patterns', 'registry', 'cli'],
