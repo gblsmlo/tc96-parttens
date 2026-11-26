@@ -37,7 +37,7 @@ Import direction: `composition/` → `store/`, `lib/`, `core.ts`. No import into
 
 ```bash
 bun run typecheck && bun run storybook:typecheck
-bun run check:coss && bun run boundaries:check && bun run overrides:check && bun run verify:public-api
+bun run check:ui-registry && bun run boundaries:check && bun run overrides:check && bun run verify:public-api
 cd apps/storybook && bunx vitest run --project=storybook src/patterns/status-list
 ```
 

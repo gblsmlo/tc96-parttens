@@ -59,7 +59,7 @@ Drop:
 ```bash
 bun test --isolate packages/ui/src/patterns/flow/canvas/core.test.ts packages/ui/src/patterns/flow/canvas/lib
 bun run typecheck && bun run storybook:typecheck
-bun run check:coss && bun run boundaries:check && bun run overrides:check
+bun run check:ui-registry && bun run boundaries:check && bun run overrides:check
 cd apps/storybook && bunx vitest run --project=storybook src/patterns/flow/canvas
 bun run build:registry
 ```

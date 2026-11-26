@@ -42,7 +42,7 @@ COSS has no icon frame. `IconFrame` started in the removed `packages/elements` l
 
 ```bash
 bun run typecheck && bun run storybook:typecheck
-bun run check:coss && bun run boundaries:check && bun run overrides:check
+bun run check:ui-registry && bun run boundaries:check && bun run overrides:check
 bun test scripts/ui-tokens.test.ts
 cd apps/storybook && bunx vitest run --project=storybook src/ui/icon-frame
 ```

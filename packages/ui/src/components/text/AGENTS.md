@@ -15,7 +15,7 @@ COSS has no text element. `Text` started in the removed `packages/elements` laye
 
 - Layer: `packages/ui`, the bottom of `templates` → `parttens` → `ui` → `utils`. `text.tsx` imports only Base UI (`useRender`, `mergeProps`), `class-variance-authority` and `cn` from `@tc96/utils`.
 - Resolution: `packages/ui/package.json` exports `./text` as `./src/text/index.ts`, ahead of the `./*` pattern; `tsconfig.base.json` maps `@tc96/ui/*` to `packages/ui/src/*`, which reaches `text/index.ts` as a folder index.
-- Manifest: the `text` item of `packages/ui/ui.manifest.json` lists the five files of this folder with `origin: "own"`; `sync:coss` never touches it. `check:coss` fails on a file here that the manifest does not list.
+- Manifest: the `text` item of `packages/ui/ui.manifest.json` lists the five files of this folder with `origin: "own"`; `sync:coss` never touches it. `check:ui-registry` fails on a file here that the manifest does not list.
 - Consumer: the registry item `ui/text.json` ships the five files to `<ui alias>/text/`, installed through the `@ui/text` registry dependency of every pattern that imports `@tc96/ui/text`.
 
 ## Dependents
@@ -41,7 +41,7 @@ COSS has no text element. `Text` started in the removed `packages/elements` laye
 
 ```bash
 bun run typecheck && bun run storybook:typecheck
-bun run check:coss && bun run boundaries:check && bun run overrides:check
+bun run check:ui-registry && bun run boundaries:check && bun run overrides:check
 bun test scripts/ui-tokens.test.ts
 cd apps/storybook && bunx vitest run --project=storybook src/ui/text
 ```

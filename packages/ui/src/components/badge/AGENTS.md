@@ -15,7 +15,7 @@ The component comes from COSS, built on the Base UI `useRender` hook, and is own
 
 - Layer: `packages/ui`, the bottom of `templates` → `parttens` → `ui` → `utils`. `badge.tsx` imports only Base UI (`useRender`, `mergeProps`), `class-variance-authority` and `cn` from `@tc96/utils`.
 - Resolution: `packages/ui/package.json` exports `./badge` as `./src/badge/index.ts`, ahead of the `./*` → `./src/*.tsx` pattern; `tsconfig.base.json` maps `@tc96/ui/*` to `packages/ui/src/*`, which reaches `badge/index.ts` as a folder index.
-- Manifest: the `badge` item of `packages/ui/ui.manifest.json` lists the five files of this folder and the status color tokens (`cssVars`). `check:coss` fails on a file here that the manifest does not list.
+- Manifest: the `badge` item of `packages/ui/ui.manifest.json` lists the five files of this folder and the status color tokens (`cssVars`). `check:ui-registry` fails on a file here that the manifest does not list.
 - Scripts: `scripts/check-boundaries.ts` and `packages/registry/src/build-registry.ts` read a manifest path ending in `/index` as the folder module, so `@tc96/ui/badge` resolves to the `badge` item.
 - Consumer: the registry item `ui/badge.json` ships the five files to `<ui alias>/badge/`. A consumer that already has a single `badge.tsx` keeps it, and that file wins over the folder in module resolution.
 - Theme: no rule of the consumer's stylesheet targets the badge; the status pairs come from the manifest tokens.
@@ -46,7 +46,7 @@ The component comes from COSS, built on the Base UI `useRender` hook, and is own
 
 ```bash
 bun run typecheck && bun run storybook:typecheck
-bun run check:coss && bun run boundaries:check && bun run overrides:check
+bun run check:ui-registry && bun run boundaries:check && bun run overrides:check
 bun test scripts/ui-tokens.test.ts   # TOKENS.md against the class strings
 cd apps/storybook && bunx vitest run --project=storybook --project=storybook-dark src/ui/badge
 ```
