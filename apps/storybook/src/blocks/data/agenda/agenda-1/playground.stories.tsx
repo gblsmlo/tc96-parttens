@@ -9,6 +9,13 @@ import { ComposedAgenda1 } from './agenda-1-layouts.tsx'
 const meta = {
   args: agenda1ControlArgs,
   argTypes: agenda1ControlArgTypes,
+  decorators: [
+    (Story) => (
+      <div className="h-[calc(100dvh-2rem)]">
+        <Story />
+      </div>
+    ),
+  ],
   parameters: { layout: 'padded' },
   render: (args) => <ComposedAgenda1 {...args} />,
   tags: ['!autodocs'],

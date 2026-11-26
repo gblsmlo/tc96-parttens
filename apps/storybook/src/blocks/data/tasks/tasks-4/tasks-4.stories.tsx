@@ -10,6 +10,13 @@ import { ComposedTasks4 } from './tasks-4-layouts.tsx'
 const meta = {
   args: tasks4ControlArgs,
   argTypes: tasks4ControlArgTypes,
+  decorators: [
+    (Story) => (
+      <div className="h-[calc(100dvh-2rem)]">
+        <Story />
+      </div>
+    ),
+  ],
   parameters: { layout: 'padded' },
   render: (args) => <ComposedTasks4 {...args} />,
   tags: ['!autodocs'],
