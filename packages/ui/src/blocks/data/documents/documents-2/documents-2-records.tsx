@@ -104,7 +104,7 @@ export const renderDocuments2ListRow =
   (context: Documents2FieldContext) => (item: Documents2Record) => {
     const { labels, onOpen, onSelectedChange, selectedIds } = context
     const selected = selectedIds.has(item.id)
-    const icon = <Documents2TypeIcon context={context} item={item} />
+    const icon = <Documents2TypeIcon context={context} item={item} size="sm" />
     return (
       <ListRow
         data-slot="documents-2-row"
