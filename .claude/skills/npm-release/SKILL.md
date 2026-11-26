@@ -1,11 +1,11 @@
 ---
 name: npm-release
-description: Release @tc96/cli to npm end to end in this repository. Picks the next version from the commits since the last tag (feat bumps the minor, fix the patch), prepares the chore/release-X.Y.Z branch and PR, runs the release gate, creates the GitHub release that triggers the Publish workflow, waits for the run to stage the version, asks the owner to approve it on npm, then confirms the version on npm. Use when asked to release, publish, cut or ship a new version of the package, bump its version, or check whether a publish finished. Do not use for publishing another package, for npm login or token setup, or to change the release workflows themselves.
+description: Release @tc96/cli to npm end to end in this repository. Picks the next version from the commits since the last tag (feat bumps the minor, fix the patch), prepares the chore/release-X.Y.Z branch and PR, runs the release gate, and after the owner merges the PR follows the Publish workflow, which publishes to npm and creates the GitHub release on its own, then confirms the version on npm. Use when asked to release, publish, cut or ship a new version of the package, bump its version, or check whether a publish finished. Do not use for publishing another package, for npm login or token setup, or to change the release workflows themselves.
 ---
 
 # npm release of @tc96/cli
 
-The package is never published from a laptop. `bun run release` creates the GitHub release `vX.Y.Z`, and `.github/workflows/publish.yml` stages `dist/cli` on npm with provenance when that release is published. The version becomes public only after the owner approves it on npm with 2FA. No `npm login` is needed in CI.
+The package is never published from a laptop. Merging a PR that changes the version in `packages/registry/src/build-registry.ts` into `main` runs `.github/workflows/publish.yml`, which publishes `dist/cli` to npm with provenance through the trusted publisher and then creates the GitHub release `vX.Y.Z`. The owner's only step is merging the release PR. No `npm login` is needed in CI.
 
 ## Facts this flow depends on
 
@@ -14,16 +14,15 @@ The package is never published from a laptop. `bun run release` creates the GitH
 | The version, the only line a release changes | `packages/registry/src/build-registry.ts`, `version: 'X.Y.Z'` inside the `@tc96/cli` package.json it writes |
 | Local release gate | `bun run release:check` (full `check`, consumer registry and SSR tests, view benchmarks, `pack:check`) |
 | CI release gate | `.github/workflows/tooling.yml` (job `static` on every PR, job `release` with the consumer tests, benchmarks and `pack:check`), `.github/workflows/unit.yml` (one job per `test:*` suite) and `.github/workflows/storybook.yml` (play tests in five shards, `storybook:build`, `docs:build` and the `storybook` gate job), the release jobs on PRs whose branch starts with `chore/release-`; the `skip-storybook` label skips only the play shards |
-| Release command | `scripts/release.ts`: requires `main`, a clean tree, `main` equal to `origin/main`, no `vX.Y.Z` tag on origin and no `X.Y.Z` on npm; `--dry-run` prints the `gh release create` command without running it |
-| Publish | `.github/workflows/publish.yml`: on `release: published`, skips prereleases, checks the tag commit is on `main`, runs typecheck, test, build, checks the tag equals `dist/cli/package.json` version, `pack:check`, checks npm is 11.15.0 or later, `npm stage publish --access public --provenance --tag latest` from `dist/cli`; the version stays staged until the owner approves it |
+| Publish | `.github/workflows/publish.yml`: on a push to `main` that touches `build-registry.ts`, or `workflow_dispatch`; builds, reads the version from `dist/cli/package.json`, stops when the tag `vX.Y.Z` exists, skips the publish when npm already has the version, otherwise runs typecheck, test, `pack:check`, `npm publish --access public --provenance --tag latest` from `dist/cli`, and `gh release create vX.Y.Z --target <merge commit> --generate-notes --latest` |
 
 Verify these against the files before step 1; if one moved, follow the file and say so.
 
 ## Rules
 
-- Each step that changes something shared waits for the owner's go-ahead: pushing the release branch, merging the PR, and above all `bun run release`, which creates a public tag and starts an npm publish that cannot be undone.
-- Never run `npm publish`, `npm stage approve`, `npm stage reject`, `npm unpublish` or `npm deprecate` yourself.
-- Commit messages and PR bodies follow the repository rules: no attribution trailer, PR body from `.github/pull_request_template.md`.
+- Each step that changes something shared waits for the owner's go-ahead: pushing the release branch and, above all, merging the PR, which publishes to npm and cannot be undone.
+- Never run `npm publish`, `npm unpublish` or `npm deprecate` yourself.
+- Commit messages and PR bodies follow the repository rules: no attribution trailer.
 
 ## Step 1: Pick the version
 
@@ -54,44 +53,36 @@ The `chore/release-` prefix matters: it is what makes the `release` job of `Tool
 2. If a step fails, quote the failing lines. A failure caused by the release itself (version, pack) is fixed on this branch. A failure that already exists on `main` is not fixed here: link or file its issue and let the owner decide whether to release anyway, because `publish.yml` runs only typecheck, test, build and `pack:check`.
 3. After the owner's go-ahead, push and open the PR (title `chore(release): Prepare @tc96/cli X.Y.Z`, `Closes: none`), then wait for the checks with `gh pr checks <number> --watch`.
 
-## Step 4: Release
+## Step 4: Wait and confirm
 
 After the owner merges the PR:
 
-```bash
-git switch main && git pull --ff-only
-bun run release -- --dry-run
-```
-
-Show the printed `gh release create vX.Y.Z --target main --generate-notes --latest --title vX.Y.Z` and ask for the go-ahead. Only then run `bun run release`.
-
-## Step 5: Wait and confirm
-
-1. Find the run the release started and follow it:
+1. Find the run the merge started and follow it:
 
    ```bash
-   gh run list --workflow publish.yml --limit 1 --json databaseId,status,conclusion,headBranch
+   gh run list --workflow publish.yml --branch main --limit 1 --json databaseId,status,conclusion,headSha
    gh run watch <databaseId> --exit-status
    ```
 
-   `headBranch` is the tag `vX.Y.Z`. If no run shows up within a minute, check that the release is published and not a prerelease: `gh release view vX.Y.Z`.
-2. Tell the owner `X.Y.Z` is staged and wait for them to confirm they approved it. They approve it with 2FA, either with `npm stage list @tc96/cli` and `npm stage approve <stage-id>`, or on npmjs.com in the package's Staged Packages tab.
-3. Only after the approval, confirm npm serves the version; the registry can lag a minute behind:
+   `headSha` is the merge commit. If no run shows up within a minute, check that the merge touched `build-registry.ts`; otherwise start it with `gh workflow run publish.yml --ref main` after the owner agrees.
+2. Confirm npm serves the version and the release exists; the registry can lag a minute behind:
 
    ```bash
    npm view @tc96/cli@X.Y.Z version
    npm view @tc96/cli dist-tags
+   gh release view vX.Y.Z --json url
    ```
 
    `latest` must be `X.Y.Z`.
-4. Report: version, release URL, publish run URL and conclusion, the approval, and the `npm view` output.
+3. Report: version, release URL, publish run URL and conclusion, and the `npm view` output.
 
 ## When the publish fails
 
 - Read the failing step with `gh run view <databaseId> --log-failed` and quote it.
 - A transient failure (network, npm 5xx) is retried with `gh run rerun <databaseId> --failed` after the owner agrees.
-- A wrong staged version is rejected by the owner (`npm stage reject <stage-id>`), never by you.
-- A failure in the code or in the tag check means the tag points at a commit that cannot publish. Do not move or delete the tag on your own: propose either deleting the release and tag `vX.Y.Z` (only if npm does not have `X.Y.Z`) or fixing on `main` and releasing the next patch, and let the owner choose.
+- `E404` on the npm `PUT` means the trusted publisher on npmjs.com does not match `gblsmlo/tc96-ui` and `publish.yml`.
+- A failure after `npm publish` succeeded (the release step) is fixed by rerunning the job: when npm already has the version and the tag is missing, the workflow skips the publish and only creates the release.
+- A failure in the code means `main` cannot publish: fix on `main` and release the next patch.
 
 ## Output
 
@@ -100,7 +91,6 @@ Release: @tc96/cli X.Y.Z (minor|patch, from <last tag>)
 Gate: release:check <passed|failed at step>, PR #N checks <state>
 Release: <release URL>
 Publish run: <run URL> <conclusion>
-Approval: <approved by the owner|pending>
 npm: <npm view output>
 Open items: <one line each, or none>
 ```
