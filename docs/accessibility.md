@@ -6,7 +6,7 @@ Fonte única das regras, boas práticas e uso de acessibilidade e usabilidade do
 
 | Camada | Onde | Responsabilidade |
 | --- | --- | --- |
-| 1. Tema | `apps/example/packages/ui/src/styles.css` e `themes/` | Tokens do consumidor. Contraste nunca muda valor de token; a correção global é uma regra por `data-slot`. |
+| 1. Tema | `packages/themes/src/presets/` e `apps/example/packages/ui/src/styles.css` | Tokens do consumidor. Contraste nunca muda valor de token; a correção global é uma regra por `data-slot`. |
 | 2. UI e patterns | `packages/ui/src/components`, `packages/ui/src/patterns`, `packages/ui/src/blocks` | Markup, ARIA, foco e o par cor/superfície certo. Uma violação real se corrige aqui, onde o elemento encontra a superfície. |
 | 3. Story | `apps/storybook/src/**/*.stories.tsx` | Renderiza cada estado e testa o comportamento no `play`. Não contorna o axe: uma exceção na story precisa de motivo em [Exceções](#exceções). |
 | 4. Config do Storybook | `apps/storybook/.storybook/preview.ts` | O `@storybook/addon-a11y` com `test: 'error'` roda o axe depois de cada story; as regras e exclusões que valem para todas as stories ficam aqui. |
@@ -89,9 +89,9 @@ Medir e registrar contraste:
 
 ### Temas do exemplo
 
-Contraste dos presets, medido em 2026-10-21 nas cores computadas de cada preset no Storybook (convertidas para sRGB num canvas, com o alfa composto sobre a superfície; texto 4,5:1, anel e trilho do `Switch` 3:1). Pares: `foreground` sobre `background`; `muted-foreground` sobre `background`, `card` e `muted`; `card-foreground`, `popover-foreground`, `primary-foreground` e `secondary-foreground` sobre a própria superfície; `accent-foreground` sobre o `accent` em `popover`; `destructive-foreground` sobre `background` e `card`; texto branco sobre `destructive`; `info-`, `success-` e `warning-foreground` sobre `background`; os três pares de texto do sidebar; `ring` sobre `background`; `sidebar-ring` sobre `sidebar`; `switch-track` sobre `card`. As razões do `Default` batem com as já registradas neste documento, com um achado: `sidebar-ring` sobre `sidebar` no claro mede 2,48:1, abaixo de 3:1. Pela regra de contraste de 2026-10-17, o token do `Default` não muda; fica como nota para o consumidor.
+Contraste dos presets, medido em 2026-10-21 nas cores computadas de cada preset no Storybook (convertidas para sRGB num canvas, com o alfa composto sobre a superfície; texto 4,5:1, anel e trilho do `Switch` 3:1). Pares: `foreground` sobre `background`; `muted-foreground` sobre `background`, `card` e `muted`; `card-foreground`, `popover-foreground`, `primary-foreground` e `secondary-foreground` sobre a própria superfície; `accent-foreground` sobre o `accent` em `popover`; `destructive-foreground` sobre `background` e `card`; texto branco sobre `destructive`; `info-`, `success-` e `warning-foreground` sobre `background`; os três pares de texto do sidebar; `ring` sobre `background`; `sidebar-ring` sobre `sidebar`; `switch-track` sobre `card`. As razões do `Twincan` batem com as já registradas neste documento, com um achado: `sidebar-ring` sobre `sidebar` no claro mede 2,48:1, abaixo de 3:1. Pela regra de contraste de 2026-10-17, o token do `Twincan` não muda; fica como nota para o consumidor.
 
-Os presets do tweakcn entram como publicados, e o par abaixo do limite é do preset: nota para o consumidor que adotar um deles. Os mais comuns, contando presets com falha em pelo menos um modo: texto branco sobre `destructive` em 35 dos 42 (o `destructive` do tweakcn é quase sempre `oklch(0.6368 0.2078 25.33)`, 3,76:1), `muted-foreground` sobre `muted` em 27, `primary-foreground` sobre `primary` em 24 (25 no sidebar) e `sidebar-ring` em 21. Só T3 Chat passa em tudo, nos dois modos.
+Os presets de origem tweakcn entraram como publicados, e o par abaixo do limite é do preset: nota para o consumidor que adotar um deles. Os mais comuns, contando presets com falha em pelo menos um modo: texto branco sobre `destructive` em 35 dos 42 (o `destructive` do tweakcn é quase sempre `oklch(0.6368 0.2078 25.33)`, 3,76:1), `muted-foreground` sobre `muted` em 27, `primary-foreground` sobre `primary` em 24 (25 no sidebar) e `sidebar-ring` em 21. Só T3 Chat passa em tudo, nos dois modos.
 
 | Preset | Claro | Escuro |
 | --- | --- | --- |
@@ -244,7 +244,7 @@ O placeholder de um `TagsProperty` somente leitura e vazio, em `muted-foreground
 
 ### `PropertySurface` `plain` interativa
 
-O gatilho `plain` (um `button` ou `a`) pinta a caixa `secondary` no hover, no foco por teclado e com o popup aberto, com o texto em `secondary-foreground` (issue #424). Medido em 2026-11-21 em `Patterns/Properties/Layouts/Plain Column`, tema `Default`, com o `secondary` (4% de preto no claro, 4% de branco no escuro) composto sobre o `background`: 13,30:1 no claro e 14,49:1 no escuro. O axe passa nos dois temas sem exceção, inclusive com o foco no gatilho (`Patterns/Properties/Behavior/Surface Plain Keyboard Focus Shows Secondary`). A caixa em si mede 1,09:1 (claro) e 1,11:1 (escuro) contra o fundo, como o `Badge` `secondary`; o indicador de foco continua sendo o anel `ring` de 2px.
+O gatilho `plain` (um `button` ou `a`) pinta a caixa `secondary` no hover, no foco por teclado e com o popup aberto, com o texto em `secondary-foreground` (issue #424). Medido em 2026-11-21 em `Patterns/Properties/Layouts/Plain Column`, tema `Twincan`, com o `secondary` (4% de preto no claro, 4% de branco no escuro) composto sobre o `background`: 13,30:1 no claro e 14,49:1 no escuro. O axe passa nos dois temas sem exceção, inclusive com o foco no gatilho (`Patterns/Properties/Behavior/Surface Plain Keyboard Focus Shows Secondary`). A caixa em si mede 1,09:1 (claro) e 1,11:1 (escuro) contra o fundo, como o `Badge` `secondary`; o indicador de foco continua sendo o anel `ring` de 2px.
 
 ### `widgets`
 
@@ -276,7 +276,7 @@ As decisões e as medidas do menu ficam em `packages/ui/src/menu/ACCESSIBILITY.m
 
 ### `property-meta`
 
-O tom `purple` (`--purple-foreground`) foi criado em 2026-11-25 (com o nome `complete`, renomeado no mesmo dia para descrever a cor) e pinta o status em andamento: `violet-700` no claro e `violet-400` no escuro, no mesmo desenho de `info` e `success` (500 no token base, 700 e 400 no foreground). Calculado sobre o `--popover` do `Default`, o ícone fica em 7,29:1 no claro e 5,84:1 no escuro; o `violet-500` puro ficaria em 4,40:1 e 3,78:1. O status concluído usa `CheckCircle` no peso regular no tom `teal` (`--teal-foreground`): `teal-600` no claro (3,66:1) e `teal-500` no escuro (6,87:1); o `teal-500` no claro ficaria em 2,42:1, abaixo do mínimo de 3:1 para ícones. e em revisão usa `warning-foreground` (5,05:1 e 9,70:1). As prioridades usam o peso `fill` do `CellSignal*`, com cor por nível: alta em `warning-foreground` (5,05:1 no claro e 9,70:1 no escuro), média em `info-foreground` (6,82:1 e 6,32:1) e baixa em `muted-foreground` (5,69:1 e 5,10:1); o peso regular desenha só as barras ativas, e em baixa isso são dois traços pequenos que não se viam; o `fill` desenha o triângulo inteiro com contorno e a parte ativa sólida. Valores calculados a partir dos tokens, não medidos no navegador.
+O tom `purple` (`--purple-foreground`) foi criado em 2026-11-25 (com o nome `complete`, renomeado no mesmo dia para descrever a cor) e pinta o status em andamento: `violet-700` no claro e `violet-400` no escuro, no mesmo desenho de `info` e `success` (500 no token base, 700 e 400 no foreground). Calculado sobre o `--popover` do `Twincan`, o ícone fica em 7,29:1 no claro e 5,84:1 no escuro; o `violet-500` puro ficaria em 4,40:1 e 3,78:1. O status concluído usa `CheckCircle` no peso regular no tom `teal` (`--teal-foreground`): `teal-600` no claro (3,66:1) e `teal-500` no escuro (6,87:1); o `teal-500` no claro ficaria em 2,42:1, abaixo do mínimo de 3:1 para ícones. e em revisão usa `warning-foreground` (5,05:1 e 9,70:1). As prioridades usam o peso `fill` do `CellSignal*`, com cor por nível: alta em `warning-foreground` (5,05:1 no claro e 9,70:1 no escuro), média em `info-foreground` (6,82:1 e 6,32:1) e baixa em `muted-foreground` (5,69:1 e 5,10:1); o peso regular desenha só as barras ativas, e em baixa isso são dois traços pequenos que não se viam; o `fill` desenha o triângulo inteiro com contorno e a parte ativa sólida. Valores calculados a partir dos tokens, não medidos no navegador.
 
 ### `ContextMenu`
 
@@ -298,7 +298,7 @@ Contraste no plano de trás: título 13,30:1 (claro) e 18,11:1 (escuro), descri�
 
 Iniciais: As iniciais medem 12,19:1 no claro e 13,69:1 no escuro sobre o fallback.
 
-`AvatarGroupCount`: o `+N` em `text-muted-foreground` sobre o `bg-border` do fallback, com 12px, mede 4,58:1 no claro e 4,54:1 no escuro (medido em 2026-11-20 em `UI/Avatar/Layouts/Group With Count`, tema `Default`, sobre a página). Passa de 4,5:1 por pouco: sobre outra superfície, medir de novo. O axe das stories de `UI/Avatar` passa nos dois temas.
+`AvatarGroupCount`: o `+N` em `text-muted-foreground` sobre o `bg-border` do fallback, com 12px, mede 4,58:1 no claro e 4,54:1 no escuro (medido em 2026-11-20 em `UI/Avatar/Layouts/Group With Count`, tema `Twincan`, sobre a página). Passa de 4,5:1 por pouco: sobre outra superfície, medir de novo. O axe das stories de `UI/Avatar` passa nos dois temas.
 
 ### Gallery
 
@@ -308,7 +308,7 @@ Story de documentos: Medido sobre `bg-card`, `foreground` fica em 15,20:1 no cla
 
 Contraste (medido em 2026-10-21, `AppShell1/Default`): item ativo 13,3:1 (claro) e 16,03:1 (escuro); item comum, rótulo de grupo e contador 4,58:1 e 18,11:1; página atual do breadcrumb 14,52:1 e 16,03:1; link do breadcrumb 5,48:1 e 5,34:1. As iniciais do avatar no menu da conta herdavam o `sidebar-foreground` sobre o `bg-border` do fallback e mediam 3,83:1 no claro; o `AvatarFallback` recebe `text-foreground`, o par que ele tem no resto do app, e passa a 12,15:1 e 16,22:1. Desde 2026-11-22 o `AvatarFallback` vem de `@tc96/ui/avatar`, e a exceção está em `scripts/override-exceptions.json` (o mesmo vale para `person-option-content.tsx`). O quadro do logo do workspace usa `bg-sidebar-primary text-sidebar-primary-foreground`, o par do sidebar, porque o `bg-muted` do `IconFrame` sumia sobre o `bg-sidebar` no escuro.
 
-Nível de settings: contraste medido em 2026-11-02 (`AppShell1/Settings`, tema `Default`): texto e ícone de "Voltar ao app" sobre `sidebar` 4,58:1 (claro) e 18,11:1 (escuro), o mesmo par do item comum.
+Nível de settings: contraste medido em 2026-11-02 (`AppShell1/Settings`, tema `Twincan`): texto e ícone de "Voltar ao app" sobre `sidebar` 4,58:1 (claro) e 18,11:1 (escuro), o mesmo par do item comum.
 
 Badge no subitem: O badge do COSS troca de cor pelo `peer-*/menu-button`, que não alcança um filho do botão, e ficava em `sidebar-foreground` sobre o `sidebar-accent` do subitem ativo: 4,22:1 no claro (16,04:1 no escuro). Com `text-current`, registrado em `scripts/override-exceptions.json`, o badge herda a cor do botão, como o de primeiro nível: 13,33:1 (claro) e 16,04:1 (escuro) no ativo, e 4,6:1 e 18,11:1 no subitem comum (medido em `AppShell1/SubItemBadge`, tema `Default`).
 
@@ -381,11 +381,11 @@ Contraste medido no Storybook (`Patterns/Flow/Step Library/Stories`, `Default` c
 | Indicador do progresso contra a trilha (`bg-primary` contra `bg-input`) | 4,02 | 12,09 | 3:1 |
 | Trilha do progresso contra o cartão | 1,26 | 1,26 | 3:1 (não atende) |
 
-A trilha fica abaixo de 3:1 contra o cartão porque o token `input` é a superfície do campo, não a borda de um controle; o progresso é lido pelo indicador contra a trilha, que atende nos dois temas. Não há token alterado: a nota fica para o consumidor, que pode escurecer `--input` no seu tema se quiser a trilha mais marcada (regra de sobrescrita por `data-slot="progress-track"`, se a auditoria do consumidor pedir). As medidas foram tomadas com o tema `Default` do exemplo, esperando a transição de cor (500 ms do indicador) antes de ler.
+A trilha fica abaixo de 3:1 contra o cartão porque o token `input` é a superfície do campo, não a borda de um controle; o progresso é lido pelo indicador contra a trilha, que atende nos dois temas. Não há token alterado: a nota fica para o consumidor, que pode escurecer `--input` no seu tema se quiser a trilha mais marcada (regra de sobrescrita por `data-slot="progress-track"`, se a auditoria do consumidor pedir). As medidas foram tomadas com o tema `Twincan` do exemplo, esperando a transição de cor (500 ms do indicador) antes de ler.
 
 ### Chat Assistant
 
-Auditoria de contraste (2026-10-23, medida no Storybook com o tema `Default`; texto precisa de 4,5:1, gráficos de 3:1; nenhum valor de token foi mudado):
+Auditoria de contraste (2026-10-23, medida no Storybook com o tema `Twincan`; texto precisa de 4,5:1, gráficos de 3:1; nenhum valor de token foi mudado):
 
 | Par | Claro | Escuro |
 | --- | --- | --- |
@@ -403,7 +403,7 @@ O placeholder é o único par que falhava: o texto de orientação do compositor
 
 ### Texto em `muted-foreground/72` (SegmentedControl, Tabs, Calendar, SelectButton, CommandShortcut)
 
-Contraste do texto inativo (2026-11-21, calculado a partir dos tokens do tema `Default` e conferido pelo axe nas stories; texto de 14 px precisa de 4,5:1; nenhum valor de token foi mudado):
+Contraste do texto inativo (2026-11-21, calculado a partir dos tokens do tema `Twincan` e conferido pelo axe nas stories; texto de 14 px precisa de 4,5:1; nenhum valor de token foi mudado):
 
 | Par | Claro | Escuro |
 | --- | --- | --- |
@@ -423,7 +423,7 @@ O ajuste entrou nos próprios componentes de `packages/ui`: a opacidade da cor p
 
 ### Editores de fluxo
 
-Contraste (medido em 2026-10-23 no Storybook, tema `Default`, pelo texto de cada nó de `flow-page` contra o fundo efetivo composto; texto 4,5:1, gráfico 3:1; nenhum token mudou):
+Contraste (medido em 2026-10-23 no Storybook, tema `Twincan`, pelo texto de cada nó de `flow-page` contra o fundo efetivo composto; texto 4,5:1, gráfico 3:1; nenhum token mudou):
 
 | Par | Claro | Escuro |
 | --- | --- | --- |

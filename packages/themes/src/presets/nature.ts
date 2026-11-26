@@ -1,0 +1,135 @@
+import type { ThemePreset } from '../schema/theme'
+
+export const nature = {
+  name: 'nature',
+  title: 'Nature',
+  source: 'tweakcn',
+  fonts: ['Montserrat', 'Merriweather', 'Source Code Pro'],
+  typography: {
+    'font-sans':
+      'Montserrat, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+    'font-serif':
+      'Merriweather, ui-serif, Georgia, Cambria, "Times New Roman", Times, serif',
+    'font-mono':
+      '"Source Code Pro", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace',
+  },
+  other: {
+    radius: '0.5rem',
+  },
+  light: {
+    primary: {
+      primary: 'oklch(0.5234 0.1347 144.1672)',
+      'primary-foreground': 'oklch(1 0 0)',
+    },
+    secondary: {
+      secondary: 'oklch(0.9571 0.021 147.636)',
+      'secondary-foreground': 'oklch(0.4254 0.1159 144.3078)',
+    },
+    accent: {
+      accent: 'oklch(0.8952 0.0504 146.0366)',
+      'accent-foreground': 'oklch(0.4254 0.1159 144.3078)',
+    },
+    base: {
+      background: 'oklch(0.9711 0.0074 80.7211)',
+      foreground: 'oklch(0.3 0.0358 30.2042)',
+    },
+    card: {
+      card: 'oklch(0.9711 0.0074 80.7211)',
+      'card-foreground': 'oklch(0.3 0.0358 30.2042)',
+    },
+    popover: {
+      popover: 'oklch(0.9711 0.0074 80.7211)',
+      'popover-foreground': 'oklch(0.3 0.0358 30.2042)',
+    },
+    muted: {
+      muted: 'oklch(0.937 0.0142 74.4218)',
+      'muted-foreground': 'oklch(0.4495 0.0486 39.211)',
+    },
+    destructive: {
+      destructive: 'oklch(0.5386 0.1937 26.7249)',
+    },
+    'border-input': {
+      border: 'oklch(0.8805 0.0208 74.6428)',
+      input: 'oklch(0.8805 0.0208 74.6428)',
+      ring: 'oklch(0.5234 0.1347 144.1672)',
+    },
+    chart: {
+      'chart-1': 'oklch(0.6731 0.1624 144.2083)',
+      'chart-2': 'oklch(0.5752 0.1446 144.1813)',
+      'chart-3': 'oklch(0.5234 0.1347 144.1672)',
+      'chart-4': 'oklch(0.4254 0.1159 144.3078)',
+      'chart-5': 'oklch(0.2157 0.0453 145.7256)',
+    },
+    sidebar: {
+      sidebar: 'oklch(0.937 0.0142 74.4218)',
+      'sidebar-foreground': 'oklch(0.3 0.0358 30.2042)',
+      'sidebar-primary': 'oklch(0.5234 0.1347 144.1672)',
+      'sidebar-primary-foreground': 'oklch(1 0 0)',
+      'sidebar-accent': 'oklch(0.8952 0.0504 146.0366)',
+      'sidebar-accent-foreground': 'oklch(0.4254 0.1159 144.3078)',
+      'sidebar-border': 'oklch(0.8805 0.0208 74.6428)',
+      'sidebar-ring': 'oklch(0.5234 0.1347 144.1672)',
+    },
+    status: {
+      code: 'var(--card)',
+    },
+  },
+  dark: {
+    primary: {
+      primary: 'oklch(0.6731 0.1624 144.2083)',
+      'primary-foreground': 'oklch(0.2157 0.0453 145.7256)',
+    },
+    secondary: {
+      secondary: 'oklch(0.3942 0.0265 142.9926)',
+      'secondary-foreground': 'oklch(0.897 0.0166 142.5518)',
+    },
+    accent: {
+      accent: 'oklch(0.5752 0.1446 144.1813)',
+      'accent-foreground': 'oklch(0.9423 0.0097 72.6595)',
+    },
+    base: {
+      background: 'oklch(0.2683 0.0279 150.7681)',
+      foreground: 'oklch(0.9423 0.0097 72.6595)',
+    },
+    card: {
+      card: 'oklch(0.3327 0.0271 146.9867)',
+      'card-foreground': 'oklch(0.9423 0.0097 72.6595)',
+    },
+    popover: {
+      popover: 'oklch(0.3327 0.0271 146.9867)',
+      'popover-foreground': 'oklch(0.9423 0.0097 72.6595)',
+    },
+    muted: {
+      muted: 'oklch(0.2926 0.0212 147.7496)',
+      'muted-foreground': 'oklch(0.8579 0.0174 76.0955)',
+    },
+    destructive: {
+      destructive: 'oklch(0.5386 0.1937 26.7249)',
+    },
+    'border-input': {
+      border: 'oklch(0.3942 0.0265 142.9926)',
+      input: 'oklch(0.3942 0.0265 142.9926)',
+      ring: 'oklch(0.6731 0.1624 144.2083)',
+    },
+    chart: {
+      'chart-1': 'oklch(0.766 0.1179 145.295)',
+      'chart-2': 'oklch(0.7185 0.1417 144.8887)',
+      'chart-3': 'oklch(0.6731 0.1624 144.2083)',
+      'chart-4': 'oklch(0.6291 0.1543 144.2031)',
+      'chart-5': 'oklch(0.5752 0.1446 144.1813)',
+    },
+    sidebar: {
+      sidebar: 'oklch(0.2683 0.0279 150.7681)',
+      'sidebar-foreground': 'oklch(0.9423 0.0097 72.6595)',
+      'sidebar-primary': 'oklch(0.6731 0.1624 144.2083)',
+      'sidebar-primary-foreground': 'oklch(0.2157 0.0453 145.7256)',
+      'sidebar-accent': 'oklch(0.5752 0.1446 144.1813)',
+      'sidebar-accent-foreground': 'oklch(0.9423 0.0097 72.6595)',
+      'sidebar-border': 'oklch(0.3942 0.0265 142.9926)',
+      'sidebar-ring': 'oklch(0.6731 0.1624 144.2083)',
+    },
+    status: {
+      code: 'var(--card)',
+    },
+  },
+} satisfies ThemePreset

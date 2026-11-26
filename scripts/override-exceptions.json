@@ -176,8 +176,8 @@
   {
     "file": "packages/ui/src/blocks/application/rich-text-editor/rich-text-editor-5/rich-text-editor-5.tsx",
     "component": "Button",
-    "className": "shadow-lg/10",
-    "reason": "O botão do assistente recolhido flutua sobre o texto do plano no canto inferior, como o cartão que ele reabre; sem a mesma sombra do cartão (`shadow-lg/10`) ele se confunde com o texto por baixo."
+    "className": "shadow-(shadow:--popover-shadow)",
+    "reason": "O botão do assistente recolhido flutua sobre o texto do plano no canto inferior, como o cartão que ele reabre; sem a mesma sombra do cartão (o token `--popover-shadow` do tema) ele se confunde com o texto por baixo."
   },
   {
     "file": "packages/ui/src/patterns/flow/canvas/components/flow-step-node.tsx",

@@ -50,7 +50,7 @@ export function SelectionBubble({
   const left = Math.min(Math.max(box.left, 150), window.innerWidth - 150)
   return (
     <fieldset
-      className="-translate-x-1/2 -translate-y-full fixed z-30 flex flex-wrap items-center gap-1 rounded-lg border bg-popover p-1 text-popover-foreground shadow-lg"
+      className="-translate-x-1/2 -translate-y-full fixed z-30 flex flex-wrap items-center gap-1 rounded-lg border bg-popover p-1 text-popover-foreground shadow-(shadow:--popover-shadow)"
       data-slot="selection-bubble"
       onMouseDown={(event) => event.preventDefault()}
       style={{ left, top: Math.max(box.top - 8, 48) }}

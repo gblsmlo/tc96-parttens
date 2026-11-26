@@ -70,7 +70,7 @@ function DataGridRowView<TData extends RowData>({
         ROW_DENSITY[density],
         virtualStyle && 'absolute start-0 top-0',
         rowReorder &&
-          'data-dnd-dragging:bg-background data-dnd-dragging:shadow-md',
+          'data-dnd-dragging:bg-background data-dnd-dragging:shadow-(shadow:--popover-shadow)',
       )}
       data-slot="data-grid-row"
       data-state={selected ? 'selected' : undefined}

@@ -64,7 +64,7 @@ function CashFlowTooltip({
   if (!active || !point) return null
 
   return (
-    <div className="grid gap-1 rounded-lg border bg-popover px-2.5 py-1.5 text-popover-foreground text-xs shadow-md/5">
+    <div className="grid gap-1 rounded-lg border bg-popover px-2.5 py-1.5 text-popover-foreground text-xs shadow-(shadow:--chart-shadow)">
       <span className="text-muted-foreground">{point.label}</span>
       <span className="flex items-center gap-1.5 tabular-nums">
         <span

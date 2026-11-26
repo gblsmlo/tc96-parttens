@@ -331,7 +331,7 @@ export const KeepsTransparentBorderAndCardShadow: Story = {
     for (const token of [
       'border',
       'border-transparent',
-      'shadow-xs/5',
+      'shadow-(shadow:--card-shadow)',
       'not-dark:bg-clip-padding',
       'bg-card',
       'min-w-0',

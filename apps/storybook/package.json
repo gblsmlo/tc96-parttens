@@ -15,6 +15,7 @@
     "@dnd-kit/dom": "0.5.0",
     "@tanstack/react-form": "1.33.5",
     "@tanstack/react-query": "5.108.4",
+    "@tc96/themes": "workspace:*",
     "@tc96/ui": "workspace:*",
     "@thesvg/icons": "3.4.1",
     "@phosphor-icons/react": "2.1.10",

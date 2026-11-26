@@ -1,0 +1,8 @@
+{
+  "name": "@tc96/themes",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  }
+}

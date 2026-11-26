@@ -1,11 +1,8 @@
+import { type ThemeOption, themeOptions } from '@tc96/themes'
 import type {
   SettingsPreference3Option,
   SettingsPreference3ThemeGroup,
 } from '@tc96/ui/blocks/application/settings/preference/settings-preference-3'
-import {
-  type ThemePreset,
-  themePresets,
-} from '../../../../../../example/packages/ui/src/themes/presets.ts'
 
 export interface SettingsPreference3Data {
   colorTheme: string
@@ -15,14 +12,14 @@ export interface SettingsPreference3Data {
 }
 
 const presetOptions = (
-  source: ThemePreset['source'],
+  source: ThemeOption['source'],
 ): SettingsPreference3Option[] =>
-  themePresets
+  themeOptions
     .filter((preset) => preset.source === source)
     .map(({ title, value }) => ({ label: title, value }))
 
 export const settingsPreference3Data: SettingsPreference3Data = {
-  colorTheme: 'default',
+  colorTheme: 'twincan',
   mode: 'system',
   modeOptions: [
     { label: 'Sistema', value: 'system' },
@@ -31,7 +28,6 @@ export const settingsPreference3Data: SettingsPreference3Data = {
   ],
   themeGroups: [
     { id: 'tc96', options: presetOptions('tc96') },
-    { id: 'coss', label: 'Cores base', options: presetOptions('coss') },
     { id: 'tweakcn', label: 'tweakcn', options: presetOptions('tweakcn') },
   ],
 }

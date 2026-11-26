@@ -49,7 +49,7 @@ function TaskProgressTooltip({
   if (!active || !point) return null
 
   return (
-    <div className="grid gap-0.5 rounded-lg border bg-popover px-2.5 py-1.5 text-popover-foreground text-xs shadow-md/5">
+    <div className="grid gap-0.5 rounded-lg border bg-popover px-2.5 py-1.5 text-popover-foreground text-xs shadow-(shadow:--chart-shadow)">
       <span className="text-muted-foreground">{point.label}</span>
       <span className="font-medium tabular-nums">
         {formatAmount(point.value, format ?? { style: 'decimal' })}

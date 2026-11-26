@@ -168,7 +168,7 @@ function ViewSettingsModeTabs<TMode extends string>({
       {modes.map(({ icon: Icon, label, value: modeValue }) => (
         <MenuPrimitive.RadioItem
           className={cn(
-            'flex min-w-0 flex-auto cursor-default select-none items-center justify-center rounded-md text-muted-foreground outline-none data-checked:bg-background not-data-checked:data-highlighted:bg-accent data-highlighted:text-foreground data-checked:text-foreground data-checked:shadow-sm/5 dark:data-checked:bg-input [&_svg:not([class*=size-])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0',
+            'flex min-w-0 flex-auto cursor-default select-none items-center justify-center rounded-md text-muted-foreground outline-none data-checked:bg-background not-data-checked:data-highlighted:bg-accent data-highlighted:text-foreground data-checked:text-foreground data-checked:shadow-(shadow:--input-shadow) dark:data-checked:bg-input [&_svg:not([class*=size-])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0',
             layout === 'stacked'
               ? 'flex-col gap-1.5 px-2 py-2 text-xs'
               : 'min-h-7 gap-1.5 px-1.5 text-sm',

@@ -337,7 +337,7 @@ export function RichTextEditor5({
       {assistantOpen ? (
         <aside
           aria-label={labels.dock}
-          className="absolute end-4 bottom-4 z-20 flex h-[min(36rem,calc(100%-5rem))] w-[min(24rem,calc(100%-2rem))] flex-col overflow-hidden rounded-2xl border bg-popover text-popover-foreground shadow-lg/10"
+          className="absolute end-4 bottom-4 z-20 flex h-[min(36rem,calc(100%-5rem))] w-[min(24rem,calc(100%-2rem))] flex-col overflow-hidden rounded-2xl border bg-popover text-popover-foreground shadow-(shadow:--popover-shadow)"
           data-slot="assistant-dock"
         >
           <AssistantChat
@@ -368,7 +368,7 @@ export function RichTextEditor5({
         </aside>
       ) : (
         <Button
-          className="absolute end-4 bottom-4 z-20 shadow-lg/10"
+          className="absolute end-4 bottom-4 z-20 shadow-(shadow:--popover-shadow)"
           data-slot="assistant-launcher"
           onClick={() => setAssistantOpen(true)}
           size="sm"

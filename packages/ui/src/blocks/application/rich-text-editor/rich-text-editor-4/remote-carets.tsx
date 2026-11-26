@@ -295,7 +295,7 @@ export function RemoteCarets({
               style={boxStyle({ ...layout.caret, width: 2 })}
             >
               <span
-                className="absolute start-0 bottom-full flex -translate-y-px items-center gap-1 whitespace-nowrap rounded-sm rounded-bl-none border bg-popover px-1.5 py-0.5 text-popover-foreground text-xs shadow-sm"
+                className="absolute start-0 bottom-full flex -translate-y-px items-center gap-1 whitespace-nowrap rounded-sm rounded-bl-none border bg-popover px-1.5 py-0.5 text-popover-foreground text-xs shadow-(shadow:--popover-shadow)"
                 data-slot="remote-caret-label"
               >
                 <span className={cn('size-1.5 rounded-full', palette.dot)} />
