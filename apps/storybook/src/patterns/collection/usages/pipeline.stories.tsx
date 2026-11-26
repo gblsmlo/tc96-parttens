@@ -37,7 +37,7 @@ import {
   PersonProperty,
   projectCollection,
   SelectProperty,
-  ViewSettingsMenu,
+  ViewSettings,
   ViewSettingsSection,
 } from '@tc96/ui/patterns'
 import { useCallback, useMemo, useState } from 'react'
@@ -274,7 +274,7 @@ const meta = {
               aria-label="Controles do pipeline de vendas"
               right={
                 <>
-                  <ViewSettingsMenu
+                  <ViewSettings
                     activeFilterCount={activeFilterCount}
                     onClearFilters={clearFilters}
                   >
@@ -305,7 +305,7 @@ const meta = {
                         </MenuSubPopup>
                       </MenuSub>
                     </ViewSettingsSection>
-                  </ViewSettingsMenu>
+                  </ViewSettings>
                   <Action label="Novo negócio" onClick={() => undefined} />
                 </>
               }

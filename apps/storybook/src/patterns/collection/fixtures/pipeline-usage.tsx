@@ -38,7 +38,7 @@ import {
   PersonProperty,
   projectCollection,
   SelectProperty,
-  ViewSettingsMenu,
+  ViewSettings,
   ViewSettingsSection,
 } from '@tc96/ui/patterns'
 import { useCallback, useMemo, useState } from 'react'
@@ -275,7 +275,7 @@ export function PipelineUsage({
             aria-label="Controles do pipeline de vendas"
             right={
               <>
-                <ViewSettingsMenu
+                <ViewSettings
                   activeFilterCount={activeFilterCount}
                   onClearFilters={clearFilters}
                 >
@@ -306,7 +306,7 @@ export function PipelineUsage({
                       </MenuSubPopup>
                     </MenuSub>
                   </ViewSettingsSection>
-                </ViewSettingsMenu>
+                </ViewSettings>
                 <Action label="Novo negócio" onClick={() => undefined} />
               </>
             }

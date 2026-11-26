@@ -4,7 +4,7 @@ import { BankIcon, CalendarDotsIcon } from '@phosphor-icons/react'
 import { Alert, AlertAction, AlertTitle } from '@tc96/ui/alert'
 import { Button } from '@tc96/ui/button'
 import { FilterRadioSubmenu } from '@tc96/ui/patterns/collection/shared/components/collection-filter-submenu'
-import { ViewSettingsSection } from '@tc96/ui/patterns/view-settings-menu/components/view-settings-menu'
+import { ViewSettingsSection } from '@tc96/ui/patterns/view-settings/components'
 import { useMemo } from 'react'
 import { useControllable } from '../../shared/collection/use-controllable'
 import {

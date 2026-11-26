@@ -38,7 +38,7 @@ import {
   type RecordGroupVariant,
   SelectProperty,
   TextProperty,
-  ViewSettingsMenu,
+  ViewSettings,
   ViewSettingsSection,
 } from '@tc96/ui/patterns'
 import { ToolbarButton } from '@tc96/ui/toolbar'
@@ -370,7 +370,7 @@ export function LeadQualificationScreen({
           <CollectionToolbar
             aria-label="Ajustes das conversas"
             right={
-              <ViewSettingsMenu
+              <ViewSettings
                 activeFilterCount={platform ? 1 : 0}
                 onClearFilters={() => setPlatform('')}
               >
@@ -383,7 +383,7 @@ export function LeadQualificationScreen({
                     value={platform}
                   />
                 </ViewSettingsSection>
-              </ViewSettingsMenu>
+              </ViewSettings>
             }
           />
         }

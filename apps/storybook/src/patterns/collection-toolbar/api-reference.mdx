@@ -11,7 +11,7 @@ The other pages of `Patterns/CollectionToolbar`: [Playground](?path=/story/patte
 
 Used in: the collection frame places the toolbar above every layout, with the view switcher on the screens that have saved views. See the toolbar of [Tasks](?path=/story/patterns-collection-usages--tasks), [Pipeline](?path=/story/patterns-collection-usages--pipeline) and [Contacts](?path=/story/patterns-collection-usages--contacts), and the toolbar over a layout in [Data Grid](?path=/docs/patterns-datagrid-api-reference--api-reference) and [Data Table](?path=/docs/patterns-datatable-api-reference--api-reference).
 
-The controls a screen puts in the slots have their own pages: [ViewSwitcher](?path=/docs/patterns-viewswitcher-api-reference--api-reference) for the saved views and [ViewSettingsMenu](?path=/docs/patterns-viewsettingsmenu-api-reference--api-reference) for the display settings; `CollectionSearchField`, `Action`, `PresetsMenu` and `FilterRadioSubmenu` belong to [Patterns/Collection](?path=/docs/patterns-collection-api-reference--api-reference). They render toolbar buttons and inputs, so they only mount inside a `CollectionToolbar`.
+The controls a screen puts in the slots have their own pages: [ViewSwitcher](?path=/docs/patterns-viewswitcher-api-reference--api-reference) for the saved views and [ViewSettings](?path=/docs/patterns-viewsettings-api-reference--api-reference) for the display settings; `CollectionSearchField`, `Action`, `PresetsMenu` and `FilterRadioSubmenu` belong to [Patterns/Collection](?path=/docs/patterns-collection-api-reference--api-reference). They render toolbar buttons and inputs, so they only mount inside a `CollectionToolbar`.
 
 ## Import
 
@@ -96,7 +96,7 @@ The slots are never DOM attributes: `left`, `center` and `right` are read by the
 
 Without `center` the right group takes `ms-auto` and sits at the end. With it, the left and right groups share the remaining width equally (`flex-1 basis-0`) and an `aria-hidden` spacer stands in for a side that has no slot, so the center group sits at the middle of the toolbar whatever the width of the sides.
 
-The toolbar is one Tab stop, and the arrow keys move focus between its items: the trigger of `ViewSwitcherMenu`, `Action`, the triggers of `ViewSettingsMenu` and `PresetsMenu`, the field of `CollectionSearchField` and any `ToolbarButton` in a slot. A plain `button` is not an item and stays a tab stop of its own.
+The toolbar is one Tab stop, and the arrow keys move focus between its items: the trigger of `ViewSwitcherMenu`, `Action`, the triggers of `ViewSettings` and `PresetsMenu`, the field of `CollectionSearchField` and any `ToolbarButton` in a slot. A plain `button` is not an item and stays a tab stop of its own.
 
 ## CollectionToolbarGroup
 

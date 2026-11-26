@@ -27,7 +27,9 @@ export interface ViewSettingsMode<TMode extends string = string> {
   value: TMode
 }
 
-export interface ViewSettingsMenuProps<TMode extends string = string> {
+export type ViewSettingsModeLayout = 'inline' | 'stacked'
+
+export interface ViewSettingsProps<TMode extends string = string> {
   /** Some no rótulo do gatilho quando zero, na mesma gramática do `FilterMenu`. */
   activeFilterCount?: number
   children: ReactNode
@@ -36,6 +38,7 @@ export interface ViewSettingsMenuProps<TMode extends string = string> {
   formatTriggerLabel?: (label: string, activeFilterCount: number) => string
   label?: string
   mode?: TMode
+  modeLayout?: ViewSettingsModeLayout
   /** Na ordem da coleção; com menos de dois modos, as tabs não aparecem. */
   modes?: readonly ViewSettingsMode<TMode>[]
   onClearFilters?: () => void
@@ -69,7 +72,7 @@ const popupWidth = (modeCount: number) => {
  * O pacote não decide quais modos ou seções existem — só a moldura, as tabs de
  * modo, a contagem no rótulo e o rodapé. A coleção fornece as opções.
  */
-export function ViewSettingsMenu<TMode extends string = string>({
+export function ViewSettings<TMode extends string = string>({
   activeFilterCount = 0,
   children,
   className,
@@ -77,6 +80,7 @@ export function ViewSettingsMenu<TMode extends string = string>({
   formatTriggerLabel = defaultTriggerLabel,
   label = 'Exibição',
   mode,
+  modeLayout,
   modes = [],
   onClearFilters,
   onModeChange,
@@ -86,7 +90,7 @@ export function ViewSettingsMenu<TMode extends string = string>({
   resetLabel = 'Redefinir',
   savePreferenceDisabled = false,
   savePreferenceLabel = 'Salvar preferência',
-}: Readonly<ViewSettingsMenuProps<TMode>>): ReactElement {
+}: Readonly<ViewSettingsProps<TMode>>): ReactElement {
   const normalizedActiveCount = Math.max(0, activeFilterCount)
   const triggerLabel = normalizedActiveCount
     ? formatTriggerLabel(label, normalizedActiveCount)
@@ -102,6 +106,7 @@ export function ViewSettingsMenu<TMode extends string = string>({
       <MenuPopup align="end" className={popupWidth(modes.length)}>
         {hasModeTabs ? (
           <ViewSettingsModeTabs
+            layout={modeLayout ?? (modes.length < 4 ? 'inline' : 'stacked')}
             modes={modes}
             onModeChange={onModeChange}
             value={mode}
@@ -146,16 +151,16 @@ export function ViewSettingsMenu<TMode extends string = string>({
 }
 
 function ViewSettingsModeTabs<TMode extends string>({
+  layout,
   modes,
   onModeChange,
   value,
 }: Readonly<{
+  layout: ViewSettingsModeLayout
   modes: readonly ViewSettingsMode<TMode>[]
   onModeChange?: (mode: TMode) => void
   value?: TMode
 }>): ReactElement {
-  const layout = modes.length < 4 ? 'inline' : 'stacked'
-
   return (
     <MenuRadioGroup
       className={cn(
@@ -189,7 +194,7 @@ function ViewSettingsModeTabs<TMode extends string>({
   )
 }
 
-/** Divisão nomeada dentro do `ViewSettingsMenu`. */
+/** Divisão nomeada dentro do `ViewSettings`. */
 export function ViewSettingsSection({
   children,
   label,

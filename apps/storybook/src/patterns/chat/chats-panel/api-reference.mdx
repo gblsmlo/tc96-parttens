@@ -50,7 +50,7 @@ The frame of the list. Renders a `section` named by its `h2` (`title`), with `ac
 | --- | --- | --- | --- |
 | `title` | `ReactNode` | required | Sets the `h2` that names the panel and the `ChatsPanelList` inside it. |
 | `variant` | `"plain"`, `"card"` or `"inset"` | `"plain"` | Controls the frame: none, one muted card around the header and the list, or the header outside and only the list in the card. |
-| `actions` | `ReactNode` | - | Sets the controls at the end of the header, such as a `ViewSettingsMenu`; nothing renders without it. |
+| `actions` | `ReactNode` | - | Sets the controls at the end of the header, such as a `ViewSettings`; nothing renders without it. |
 | `children` | `ReactNode` | - | Sets the content of the scroll area: a `ChatsPanelList`, a `ChatsPanelSkeleton` or an empty state. |
 | `className` | `string` | - | Adds classes to the `section`, such as its height. |
 
@@ -67,7 +67,7 @@ Inside it, `data-slot` also marks the header (`"chats-panel-header"`), the actio
 | --- | --- | --- |
 | `--avatar-size` | `--spacing(10)`, 40px | Sets the size of the `Avatar` of each row and of the skeleton's avatar; override it through `className`. |
 
-The header has 16px before the title and 8px after the actions, so the title lines up with the avatars. A `ViewSettingsMenu` in `actions` needs a `CollectionToolbar` around it.
+The header has 16px before the title and 8px after the actions, so the title lines up with the avatars. A `ViewSettings` in `actions` needs a `CollectionToolbar` around it.
 
 ## ChatsPanelList
 

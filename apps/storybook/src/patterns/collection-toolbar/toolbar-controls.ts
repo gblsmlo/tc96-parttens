@@ -62,7 +62,7 @@ export const toolbarControlArgTypes: Partial<ArgTypes<ToolbarControls>> = {
   right: {
     control: 'select',
     description:
-      'What fills `right`: `ViewSettingsMenu` and `Action` ("Nova tarefa"), one of them, or nothing.',
+      'What fills `right`: `ViewSettings` and `Action` ("Nova tarefa"), one of them, or nothing.',
     options: rightContents,
   },
   title: {

@@ -11,9 +11,9 @@ import { DataGridSortSubmenu } from '@tc96/ui/patterns/data-grid/components/data
 import { DataTableColumnsSubmenu } from '@tc96/ui/patterns/data-table/data-table-columns-submenu'
 import type { DataTableTable } from '@tc96/ui/patterns/data-table/data-table-features'
 import {
-  ViewSettingsMenu,
+  ViewSettings,
   ViewSettingsSection,
-} from '@tc96/ui/patterns/view-settings-menu/components/view-settings-menu'
+} from '@tc96/ui/patterns/view-settings/components'
 import type { ReactNode } from 'react'
 import {
   TableToolbar,
@@ -66,7 +66,7 @@ export function Support2Toolbar({
             placeholder={labels.search}
             table={table}
           />
-          <ViewSettingsMenu
+          <ViewSettings
             activeFilterCount={activeFilterCount}
             formatTriggerLabel={labels.filterCount}
             clearLabel={labels.clearFilters}
@@ -122,7 +122,7 @@ export function Support2Toolbar({
                 value={status ?? ''}
               />
             </ViewSettingsSection>
-          </ViewSettingsMenu>
+          </ViewSettings>
           {onExport ? (
             <TableToolbarButton onClick={onExport}>
               <DownloadSimpleIcon aria-hidden="true" />

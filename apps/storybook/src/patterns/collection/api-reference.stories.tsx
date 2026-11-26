@@ -13,7 +13,7 @@ import {
   CollectionSearchField,
   CollectionToolbar,
   FilterRadioSubmenu,
-  ViewSettingsMenu,
+  ViewSettings,
   ViewSettingsSection,
 } from '@tc96/ui/patterns'
 import { expect, within } from 'storybook/test'
@@ -49,7 +49,7 @@ const meta = {
             <CollectionToolbar
               right={
                 <>
-                  <ViewSettingsMenu onClearFilters={ignore}>
+                  <ViewSettings onClearFilters={ignore}>
                     <ViewSettingsSection label="ViewSettingsSection">
                       <FilterRadioSubmenu
                         icon={RadioButtonIcon}
@@ -58,7 +58,7 @@ const meta = {
                         options={[]}
                       />
                     </ViewSettingsSection>
-                  </ViewSettingsMenu>
+                  </ViewSettings>
                   <Action label="Action" onClick={ignore} />
                 </>
               }

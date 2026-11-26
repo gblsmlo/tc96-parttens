@@ -3,7 +3,7 @@ import * as parttens from '../../index'
 
 test('publishes one collection-owned toolbar API', () => {
   expect(typeof parttens.CollectionToolbar).toBe('function')
-  expect(typeof parttens.ViewSettingsMenu).toBe('function')
+  expect(typeof parttens.ViewSettings).toBe('function')
   expect(typeof parttens.ViewSettingsSection).toBe('function')
   expect(typeof parttens.PresetsMenu).toBe('function')
   expect(Reflect.has(parttens, 'SavedViewsMenu')).toBe(false)

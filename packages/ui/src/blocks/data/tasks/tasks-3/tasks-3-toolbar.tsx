@@ -31,11 +31,13 @@ import {
   CollectionToolbarHeading,
   CollectionToolbarTitle,
 } from '@tc96/ui/patterns/toolbar/components/collection-toolbar-heading'
-import { ViewSettingsSection } from '@tc96/ui/patterns/view-settings-menu/components/view-settings-menu'
 import {
+  ViewSettingsMenuButton,
   type ViewSettingsOption,
+  ViewSettingsRadioMenu,
+  ViewSettingsSection,
   ViewSettingsSubmenu,
-} from '@tc96/ui/patterns/view-settings-menu/components/view-settings-submenu'
+} from '@tc96/ui/patterns/view-settings/components'
 import {
   PropertyMetaIcon,
   priorityMeta,
@@ -118,79 +120,6 @@ const iconOption = <TValue extends string>(
   value,
 })
 
-interface Tasks3MenuProps {
-  children: ReactNode
-  icon: PhosphorIcon
-  label: string
-  trailing?: ReactNode
-}
-
-function Tasks3Menu({
-  children,
-  icon: Icon,
-  label,
-  trailing,
-}: Readonly<Tasks3MenuProps>) {
-  return (
-    <Menu>
-      <MenuTrigger
-        render={
-          <ToolbarButton
-            render={
-              <Button
-                aria-label={label}
-                size={trailing ? 'default' : 'icon'}
-                type="button"
-                variant="ghost"
-              />
-            }
-          />
-        }
-      >
-        <Icon aria-hidden="true" />
-        {trailing}
-      </MenuTrigger>
-      <MenuPopup align="end">{children}</MenuPopup>
-    </Menu>
-  )
-}
-
-interface Tasks3RadioMenuProps<TValue extends string> {
-  icon: PhosphorIcon
-  label: string
-  onValueChange: (value: TValue) => void
-  options: readonly ViewSettingsOption<TValue>[]
-  section: string
-  value: TValue
-}
-
-function Tasks3RadioMenu<TValue extends string>({
-  icon,
-  label,
-  onValueChange,
-  options,
-  section,
-  value,
-}: Readonly<Tasks3RadioMenuProps<TValue>>) {
-  return (
-    <Tasks3Menu icon={icon} label={label}>
-      <ViewSettingsSection label={section}>
-        <MenuRadioGroup
-          onValueChange={(next: TValue) => onValueChange(next)}
-          value={value}
-        >
-          {options.map((option) => (
-            <MenuRadioItem closeOnClick key={option.value} value={option.value}>
-              {option.icon}
-              {option.label}
-            </MenuRadioItem>
-          ))}
-        </MenuRadioGroup>
-      </ViewSettingsSection>
-    </Tasks3Menu>
-  )
-}
-
 export function Tasks3Toolbar({
   assigneeFilter,
   groupBy,
@@ -241,7 +170,7 @@ export function Tasks3Toolbar({
         loading ? undefined : (
           <>
             {hasFilters ? (
-              <Tasks3Menu
+              <ViewSettingsMenuButton
                 icon={FunnelSimpleIcon}
                 label={
                   activeFilterCount > 0
@@ -317,9 +246,9 @@ export function Tasks3Toolbar({
                 >
                   {labels.clearFilters}
                 </MenuItem>
-              </Tasks3Menu>
+              </ViewSettingsMenuButton>
             ) : null}
-            <Tasks3RadioMenu<Tasks3Mode>
+            <ViewSettingsRadioMenu<Tasks3Mode>
               icon={dataCollectionModeIcons[mode]}
               label={labels.layout}
               onValueChange={onModeChange}
@@ -334,7 +263,7 @@ export function Tasks3Toolbar({
               value={mode}
             />
             {onSortChange ? (
-              <Tasks3RadioMenu<Tasks3Sort>
+              <ViewSettingsRadioMenu<Tasks3Sort>
                 icon={SortAscendingIcon}
                 label={labels.sort}
                 onValueChange={onSortChange}
@@ -345,7 +274,7 @@ export function Tasks3Toolbar({
                 value={sort}
               />
             ) : null}
-            <Tasks3RadioMenu<Tasks3GroupOption>
+            <ViewSettingsRadioMenu<Tasks3GroupOption>
               icon={StackIcon}
               label={labels.group}
               onValueChange={(value) =>

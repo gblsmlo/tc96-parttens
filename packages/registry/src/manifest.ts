@@ -215,6 +215,11 @@ export const blockNames = [
   'record-dialog-5',
   'record-dialog-6',
   'record-dialog-7',
+  'view-settings-1',
+  'view-settings-2',
+  'view-settings-3',
+  'view-settings-4',
+  'view-settings-5',
 ] as const
 export type BlockName = (typeof blockNames)[number]
 /** Folder under packages/ui/src/blocks; the consumer receives it without the category. */
@@ -397,6 +402,11 @@ export const blockSources: Record<BlockName, string> = {
   'record-dialog-5': 'application/record-dialog/record-dialog-5',
   'record-dialog-6': 'application/record-dialog/record-dialog-6',
   'record-dialog-7': 'application/record-dialog/record-dialog-7',
+  'view-settings-1': 'application/view-settings/view-settings-1',
+  'view-settings-2': 'application/view-settings/view-settings-2',
+  'view-settings-3': 'application/view-settings/view-settings-3',
+  'view-settings-4': 'application/view-settings/view-settings-4',
+  'view-settings-5': 'application/view-settings/view-settings-5',
 }
 export type ItemName = PatternName | BlockName
 /** Areas under packages/ui/src/patterns that ship with an item no file of it imports. */
@@ -404,7 +414,7 @@ export const itemAreas: Partial<Record<ItemName, string[]>> = {
   collection: [
     'collection-pagination',
     'toolbar',
-    'view-settings-menu',
+    'view-settings',
     'view-switcher',
   ],
 }

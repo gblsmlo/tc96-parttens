@@ -9,7 +9,7 @@ import {
   type DataTableRowSkeletonAnatomy,
   type DataTableTable,
   useDataTable,
-  ViewSettingsMenu,
+  ViewSettings,
   ViewSettingsSection,
 } from '@tc96/ui/patterns'
 import { type ReactElement, useCallback, useMemo } from 'react'
@@ -105,11 +105,11 @@ const ColumnsToolbar = <TData extends object>({
 }: Readonly<{ table: DataTableTable<TData> }>) => (
   <CollectionToolbar
     right={
-      <ViewSettingsMenu onClearFilters={() => undefined}>
+      <ViewSettings onClearFilters={() => undefined}>
         <ViewSettingsSection label="Exibição">
           <DataTableColumnsSubmenu table={table} />
         </ViewSettingsSection>
-      </ViewSettingsMenu>
+      </ViewSettings>
     }
   />
 )

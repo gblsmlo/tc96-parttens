@@ -46,7 +46,7 @@ import {
   useCollectionPreferences,
   useDataGrid,
   useDataTable,
-  ViewSettingsMenu,
+  ViewSettings,
   type ViewSettingsMode,
   ViewSettingsSection,
 } from '@tc96/ui/patterns'
@@ -388,7 +388,7 @@ function TasksWorkspace({
                   placeholder="Buscar tarefas…"
                   value={search}
                 />
-                <ViewSettingsMenu
+                <ViewSettings
                   activeFilterCount={activeFilterCount}
                   mode={layout}
                   modes={layoutModes}
@@ -552,7 +552,7 @@ function TasksWorkspace({
                       </MenuSubPopup>
                     </MenuSub>
                   </ViewSettingsSection>
-                </ViewSettingsMenu>
+                </ViewSettings>
                 <Action label="Nova tarefa" onClick={() => undefined} />
               </>
             }

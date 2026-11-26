@@ -1249,13 +1249,23 @@
     "UseDataGridReturn",
     "UseDataTableOptions",
     "UseDataTableReturn",
+    "ViewSettings",
     "ViewSettingsField",
     "ViewSettingsFieldSection",
     "ViewSettingsFieldSectionProps",
-    "ViewSettingsMenu",
-    "ViewSettingsMenuProps",
+    "ViewSettingsFilter",
+    "ViewSettingsFilterOption",
+    "ViewSettingsFilterSection",
+    "ViewSettingsFilterSectionProps",
+    "ViewSettingsFilterValues",
+    "ViewSettingsMenuButton",
+    "ViewSettingsMenuButtonProps",
     "ViewSettingsMode",
+    "ViewSettingsModeLayout",
     "ViewSettingsOption",
+    "ViewSettingsProps",
+    "ViewSettingsRadioMenu",
+    "ViewSettingsRadioMenuProps",
     "ViewSettingsSection",
     "ViewSettingsSectionProps",
     "ViewSettingsShowAllFields",
@@ -3414,5 +3424,48 @@
     "RecordDialog7Values",
     "createRecordDialog7PriorityOptions",
     "createRecordDialog7StatusOptions"
+  ],
+  "block:view-settings-1": [
+    "ViewSettings1",
+    "ViewSettings1Labels",
+    "ViewSettings1Props",
+    "ViewSettingsDensity",
+    "ViewSettingsFilter",
+    "ViewSettingsFilterOption",
+    "ViewSettingsFilterValues"
+  ],
+  "block:view-settings-2": [
+    "ViewSettings2",
+    "ViewSettings2Labels",
+    "ViewSettings2Props",
+    "ViewSettingsDensity",
+    "ViewSettingsFilter",
+    "ViewSettingsFilterOption",
+    "ViewSettingsFilterValues"
+  ],
+  "block:view-settings-3": [
+    "ViewSettings3",
+    "ViewSettings3Labels",
+    "ViewSettings3Props",
+    "ViewSettingsDensity",
+    "ViewSettingsFilter",
+    "ViewSettingsFilterOption",
+    "ViewSettingsFilterValues"
+  ],
+  "block:view-settings-4": [
+    "ViewSettings4",
+    "ViewSettings4Labels",
+    "ViewSettings4Props",
+    "ViewSettingsDensity",
+    "ViewSettingsFilter",
+    "ViewSettingsFilterOption",
+    "ViewSettingsFilterValues"
+  ],
+  "block:view-settings-5": [
+    "ViewSettings5",
+    "ViewSettings5Filter",
+    "ViewSettings5FilterValues",
+    "ViewSettings5Labels",
+    "ViewSettings5Props"
   ]
 }

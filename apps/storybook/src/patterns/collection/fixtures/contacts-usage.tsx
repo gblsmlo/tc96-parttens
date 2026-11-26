@@ -39,7 +39,7 @@ import {
   useCollectionPreferences,
   useDataGrid,
   useDataTable,
-  ViewSettingsMenu,
+  ViewSettings,
   type ViewSettingsMode,
   ViewSettingsSection,
 } from '@tc96/ui/patterns'
@@ -302,7 +302,7 @@ function ContactsWorkspace({
             aria-label="Controles da coleção de contatos"
             right={
               <>
-                <ViewSettingsMenu
+                <ViewSettings
                   activeFilterCount={activeFilterCount}
                   mode={isContactLayout(layout) ? layout : 'datatable'}
                   modes={contactLayouts}
@@ -437,7 +437,7 @@ function ContactsWorkspace({
                       </MenuSubPopup>
                     </MenuSub>
                   </ViewSettingsSection>
-                </ViewSettingsMenu>
+                </ViewSettings>
                 <Action
                   label="Novo contato"
                   onClick={() => setCreating(true)}

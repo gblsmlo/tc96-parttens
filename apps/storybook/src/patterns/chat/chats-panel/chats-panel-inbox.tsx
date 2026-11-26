@@ -14,7 +14,7 @@ import {
   type ChatsPanelVariant,
   CollectionToolbar,
   FilterRadioSubmenu,
-  ViewSettingsMenu,
+  ViewSettings,
   ViewSettingsSection,
 } from '@tc96/ui/patterns'
 import { useState } from 'react'
@@ -101,7 +101,7 @@ export function ChatInbox({
         <CollectionToolbar
           aria-label="Ajustes das conversas"
           right={
-            <ViewSettingsMenu
+            <ViewSettings
               activeFilterCount={activeFilterCount}
               onClearFilters={clearFilters}
             >
@@ -136,7 +136,7 @@ export function ChatInbox({
                   value={readStatus}
                 />
               </ViewSettingsSection>
-            </ViewSettingsMenu>
+            </ViewSettings>
           }
         />
       }

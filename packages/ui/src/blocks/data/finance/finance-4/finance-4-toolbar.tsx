@@ -27,11 +27,11 @@ import {
 } from '@tc96/ui/menu'
 import { Action } from '@tc96/ui/patterns/collection/shared/components/collection-action'
 import { CollectionToolbar } from '@tc96/ui/patterns/toolbar/components/collection-toolbar'
-import { ViewSettingsSection } from '@tc96/ui/patterns/view-settings-menu/components/view-settings-menu'
 import {
   type ViewSettingsOption,
+  ViewSettingsSection,
   ViewSettingsSubmenu,
-} from '@tc96/ui/patterns/view-settings-menu/components/view-settings-submenu'
+} from '@tc96/ui/patterns/view-settings/components'
 import { PropertyMetaIcon } from '@tc96/ui/property-meta'
 import { ToolbarButton } from '@tc96/ui/toolbar'
 import type { ReactNode } from 'react'

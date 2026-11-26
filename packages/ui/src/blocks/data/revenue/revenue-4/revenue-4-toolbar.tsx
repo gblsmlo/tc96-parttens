@@ -16,9 +16,9 @@ import {
   CollectionToolbarTitle,
 } from '@tc96/ui/patterns/toolbar/components/collection-toolbar-heading'
 import {
-  ViewSettingsMenu,
+  ViewSettings,
   ViewSettingsSection,
-} from '@tc96/ui/patterns/view-settings-menu/components/view-settings-menu'
+} from '@tc96/ui/patterns/view-settings/components'
 import {
   TableToolbar,
   TableToolbarButton,
@@ -67,7 +67,7 @@ export function Revenue4Toolbar({
             placeholder={labels.search}
             table={table}
           />
-          <ViewSettingsMenu
+          <ViewSettings
             activeFilterCount={filters.length}
             clearLabel={labels.clearFilters}
             formatTriggerLabel={labels.filtersTrigger}
@@ -101,7 +101,7 @@ export function Revenue4Toolbar({
                 value={health}
               />
             </ViewSettingsSection>
-          </ViewSettingsMenu>
+          </ViewSettings>
           {onToggleAll ? (
             <TableToolbarButton onClick={onToggleAll}>
               <ToggleIcon aria-hidden="true" />

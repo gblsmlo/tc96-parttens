@@ -5,9 +5,9 @@ import {
   CollectionToolbarTitle,
 } from '@tc96/ui/patterns/toolbar/components/collection-toolbar-heading'
 import {
-  ViewSettingsMenu,
+  ViewSettings,
   type ViewSettingsMode,
-} from '@tc96/ui/patterns/view-settings-menu/components/view-settings-menu'
+} from '@tc96/ui/patterns/view-settings/components'
 import type { ReactNode } from 'react'
 import { dataCollectionModeIcons } from './data-collection-toolbar'
 import type {
@@ -86,7 +86,7 @@ export function DataCollectionSettingsToolbar<
         loading ? undefined : (
           <>
             {search}
-            <ViewSettingsMenu
+            <ViewSettings
               activeFilterCount={activeFilterCount}
               clearLabel={labels.clearFilters}
               formatTriggerLabel={labels.filterCount}
@@ -100,7 +100,7 @@ export function DataCollectionSettingsToolbar<
               savePreferenceLabel={savePreferenceLabel}
             >
               {children}
-            </ViewSettingsMenu>
+            </ViewSettings>
             {actions}
           </>
         )

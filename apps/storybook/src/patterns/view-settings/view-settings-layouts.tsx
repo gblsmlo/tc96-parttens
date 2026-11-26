@@ -16,9 +16,9 @@ import {
   MenuSubTrigger,
 } from '@tc96/ui/menu'
 import {
+  ViewSettings,
   type ViewSettingsField,
   ViewSettingsFieldSection,
-  ViewSettingsMenu,
   type ViewSettingsMode,
   type ViewSettingsOption,
   ViewSettingsSection,
@@ -26,7 +26,7 @@ import {
   ViewSettingsSubmenu,
 } from '@tc96/ui/patterns'
 import { useState } from 'react'
-import type { ViewSettingsControls } from './view-settings-menu-controls.ts'
+import type { ViewSettingsControls } from './view-settings-controls.ts'
 import {
   agendaModes,
   assigneeOptions,
@@ -46,7 +46,7 @@ import {
   type TaskStatus,
   taskFields,
   viewModes,
-} from './view-settings-menu-data.tsx'
+} from './view-settings-data.tsx'
 
 type Density = 'comfortable' | 'compact'
 
@@ -115,7 +115,7 @@ export function ComposedViewSettings({
   }
 
   return (
-    <ViewSettingsMenu
+    <ViewSettings
       activeFilterCount={activeFilterCount}
       clearLabel={clearLabel}
       label={label}
@@ -196,7 +196,7 @@ export function ComposedViewSettings({
           </ViewSettingsSection>
         </>
       ) : null}
-    </ViewSettingsMenu>
+    </ViewSettings>
   )
 }
 
@@ -311,7 +311,7 @@ export function FieldSettingsLayout(controls: Readonly<ViewSettingsControls>) {
   }
 
   return (
-    <ViewSettingsMenu
+    <ViewSettings
       label={controls.label}
       mode={mode}
       modes={viewModes}
@@ -348,7 +348,7 @@ export function FieldSettingsLayout(controls: Readonly<ViewSettingsControls>) {
         hiddenCount={hiddenCount}
         onShowAll={showAll}
       />
-    </ViewSettingsMenu>
+    </ViewSettings>
   )
 }
 
@@ -372,7 +372,7 @@ export function SwitchOptionsLayout(controls: Readonly<ViewSettingsControls>) {
   }
 
   return (
-    <ViewSettingsMenu
+    <ViewSettings
       label={controls.label}
       mode={mode}
       modes={viewModes}
@@ -394,7 +394,7 @@ export function SwitchOptionsLayout(controls: Readonly<ViewSettingsControls>) {
           </MenuCheckboxItem>
         ))}
       </ViewSettingsSection>
-    </ViewSettingsMenu>
+    </ViewSettings>
   )
 }
 
@@ -429,7 +429,7 @@ export function PropertySubmenusLayout(
     dueDate !== undefined
 
   return (
-    <ViewSettingsMenu
+    <ViewSettings
       label={controls.label}
       onReset={controls.reset ? reset : undefined}
       onSavePreference={controls.savePreference ? () => undefined : undefined}
@@ -489,6 +489,6 @@ export function PropertySubmenusLayout(
           value={dueDate}
         />
       </ViewSettingsSection>
-    </ViewSettingsMenu>
+    </ViewSettings>
   )
 }

@@ -20,7 +20,7 @@ import {
   CollectionToolbar,
   calendarRange,
   fromZonedDateTime,
-  ViewSettingsMenu,
+  ViewSettings,
   ViewSettingsSection,
 } from '@tc96/ui/patterns'
 import { ToggleGroup, ToggleGroupItem } from '@tc96/ui/toggle-group'
@@ -188,12 +188,12 @@ export function CalendarToolbar({
       }
       right={
         <>
-          <ViewSettingsMenu
+          <ViewSettings
             activeFilterCount={activeFilterCount}
             onClearFilters={onClearFilters}
           >
             <ViewSettingsSection label="Filtros">{filters}</ViewSettingsSection>
-          </ViewSettingsMenu>
+          </ViewSettings>
           <Action label={createLabel} onClick={onCreate} />
         </>
       }

@@ -45,7 +45,7 @@ import {
   FilterRadioSubmenu,
   useDataGrid,
   useDataTable,
-  ViewSettingsMenu,
+  ViewSettings,
   type ViewSettingsMode,
   ViewSettingsSection,
   ViewSwitcherCreate,
@@ -384,7 +384,7 @@ export function CollectionScreen({
                 aria-label="Controles da coleção de tarefas"
                 right={
                   <>
-                    <ViewSettingsMenu
+                    <ViewSettings
                       activeFilterCount={countTaskQuery(query)}
                       mode={layout}
                       modes={layoutModes}
@@ -596,7 +596,7 @@ export function CollectionScreen({
                           value={query.estimates}
                         />
                       </ViewSettingsSection>
-                    </ViewSettingsMenu>
+                    </ViewSettings>
                     {actionLabel ? (
                       <Action label={actionLabel} onClick={() => undefined} />
                     ) : null}

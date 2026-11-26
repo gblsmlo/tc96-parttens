@@ -14,9 +14,9 @@ import {
   CollectionToolbarTitle,
 } from '@tc96/ui/patterns/toolbar/components/collection-toolbar-heading'
 import {
-  ViewSettingsMenu,
+  ViewSettings,
   ViewSettingsSection,
-} from '@tc96/ui/patterns/view-settings-menu/components/view-settings-menu'
+} from '@tc96/ui/patterns/view-settings/components'
 import {
   TableToolbar,
   TableToolbarButton,
@@ -60,7 +60,7 @@ export function Marketing2Toolbar({
             placeholder={labels.search}
             table={table}
           />
-          <ViewSettingsMenu
+          <ViewSettings
             activeFilterCount={table.store.state.columnFilters.length}
             clearLabel={labels.clearFilters}
             formatTriggerLabel={labels.settingsWithFilters}
@@ -100,7 +100,7 @@ export function Marketing2Toolbar({
                 value={String(statusColumn?.getFilterValue() ?? '')}
               />
             </ViewSettingsSection>
-          </ViewSettingsMenu>
+          </ViewSettings>
           {onExport ? (
             <TableToolbarButton onClick={onExport}>
               <DownloadSimpleIcon aria-hidden="true" />

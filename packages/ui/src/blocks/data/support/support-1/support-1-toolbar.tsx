@@ -10,9 +10,9 @@ import { DataGridDensitySubmenu } from '@tc96/ui/patterns/data-grid/components/d
 import { DataGridSortSubmenu } from '@tc96/ui/patterns/data-grid/components/data-grid-sort-submenu'
 import type { UseDataGridReturn } from '@tc96/ui/patterns/data-grid/hooks/use-data-grid'
 import {
-  ViewSettingsMenu,
+  ViewSettings,
   ViewSettingsSection,
-} from '@tc96/ui/patterns/view-settings-menu/components/view-settings-menu'
+} from '@tc96/ui/patterns/view-settings/components'
 import type { ReactNode } from 'react'
 import { GridToolbar, GridToolbarButton } from '../../shared/grid/grid-toolbar'
 import { support1Queues, support1Statuses } from './support-1-options'
@@ -56,7 +56,7 @@ export function Support1Toolbar({
       left={left}
       right={
         <>
-          <ViewSettingsMenu
+          <ViewSettings
             activeFilterCount={activeFilterCount}
             formatTriggerLabel={labels.filterCount}
             clearLabel={labels.clearFilters}
@@ -112,7 +112,7 @@ export function Support1Toolbar({
                 value={status ?? ''}
               />
             </ViewSettingsSection>
-          </ViewSettingsMenu>
+          </ViewSettings>
           {onExport ? (
             <GridToolbarButton onClick={onExport} variant="ghost">
               <DownloadSimpleIcon aria-hidden="true" />

@@ -38,8 +38,8 @@ import {
   useCollectionPreferences,
   useDataGrid,
   useDataTable,
-  ViewSettingsMenu,
-  type ViewSettingsMenuProps,
+  ViewSettings,
+  type ViewSettingsProps,
   type ViewSettingsMode,
   ViewSettingsSection,
 } from '@tc96/ui/patterns'
@@ -292,7 +292,7 @@ function LayoutTabs() {
   return (
     <CollectionToolbar
       right={
-        <ViewSettingsMenu
+        <ViewSettings
           mode={preferences.layout}
           modes={layoutModes}
           onClearFilters={() => undefined}
@@ -303,7 +303,7 @@ function LayoutTabs() {
           <ViewSettingsSection label="Seção">
             <MenuItem>Item</MenuItem>
           </ViewSettingsSection>
-        </ViewSettingsMenu>
+        </ViewSettings>
       }
     />
   )
@@ -984,7 +984,7 @@ function FilterSubmenu({
   return (
     <CollectionToolbar
       right={
-        <ViewSettingsMenu onClearFilters={() => undefined}>
+        <ViewSettings onClearFilters={() => undefined}>
           <ViewSettingsSection label="Filtros">
             <FilterRadioSubmenu
               icon={RadioButtonIcon}
@@ -995,7 +995,7 @@ function FilterSubmenu({
               value={value}
             />
           </ViewSettingsSection>
-        </ViewSettingsMenu>
+        </ViewSettings>
       }
     />
   )
@@ -1115,7 +1115,7 @@ function PhaseFilterSubmenu({
   return (
     <CollectionToolbar
       right={
-        <ViewSettingsMenu onClearFilters={() => undefined}>
+        <ViewSettings onClearFilters={() => undefined}>
           <ViewSettingsSection label="Filtros">
             <FilterCheckboxSubmenu
               clearLabel={clearLabel}
@@ -1130,7 +1130,7 @@ function PhaseFilterSubmenu({
               value={value}
             />
           </ViewSettingsSection>
-        </ViewSettingsMenu>
+        </ViewSettings>
       }
     />
   )
@@ -1298,7 +1298,7 @@ function DeadlineSortSubmenu({
   return (
     <CollectionToolbar
       right={
-        <ViewSettingsMenu>
+        <ViewSettings>
           <ViewSettingsSection label="Ordenar">
             <SortRadioSubmenu
               icon={ArrowsDownUpIcon}
@@ -1311,7 +1311,7 @@ function DeadlineSortSubmenu({
               value={sort}
             />
           </ViewSettingsSection>
-        </ViewSettingsMenu>
+        </ViewSettings>
       }
     />
   )
@@ -1371,7 +1371,7 @@ export const ModeTabCallsOnModeChange: Story = {
   render: ({ onModeChange }) => (
     <CollectionToolbar
       right={
-        <ViewSettingsMenu
+        <ViewSettings
           mode="mode-1"
           modes={modesOf(2)}
           onClearFilters={() => undefined}
@@ -1380,7 +1380,7 @@ export const ModeTabCallsOnModeChange: Story = {
           <ViewSettingsSection label="Seção">
             <MenuItem>Item</MenuItem>
           </ViewSettingsSection>
-        </ViewSettingsMenu>
+        </ViewSettings>
       }
     />
   ),
@@ -1402,7 +1402,7 @@ export const PopupWidthFollowsTheModes: Story = {
   render: () => (
     <CollectionToolbar
       right={popupWidths.map(([label, count]) => (
-        <ViewSettingsMenu
+        <ViewSettings
           key={label}
           label={label}
           mode="mode-1"
@@ -1412,7 +1412,7 @@ export const PopupWidthFollowsTheModes: Story = {
           <ViewSettingsSection label="Seção">
             <MenuItem>Item</MenuItem>
           </ViewSettingsSection>
-        </ViewSettingsMenu>
+        </ViewSettings>
       ))}
     />
   ),
@@ -1435,7 +1435,7 @@ export const PopupWidthFollowsTheModes: Story = {
 function SettingsMenu(
   props: Readonly<
     Pick<
-      ViewSettingsMenuProps,
+      ViewSettingsProps,
       | 'activeFilterCount'
       | 'onClearFilters'
       | 'onSavePreference'
@@ -1446,11 +1446,11 @@ function SettingsMenu(
   return (
     <CollectionToolbar
       right={
-        <ViewSettingsMenu {...props}>
+        <ViewSettings {...props}>
           <ViewSettingsSection label="Seção">
             <MenuItem>Item</MenuItem>
           </ViewSettingsSection>
-        </ViewSettingsMenu>
+        </ViewSettings>
       }
     />
   )

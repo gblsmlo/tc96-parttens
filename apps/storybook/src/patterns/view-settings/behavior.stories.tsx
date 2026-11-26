@@ -2,18 +2,18 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { MenuItem } from '@tc96/ui/menu'
 import {
   CollectionToolbar,
-  ViewSettingsMenu,
+  ViewSettings,
   ViewSettingsSection,
 } from '@tc96/ui/patterns'
 import { expect, fn, screen, userEvent, waitFor, within } from 'storybook/test'
-import { viewSettingsControlArgs } from './view-settings-menu-controls.ts'
-import { spreadsheetModes, viewModes } from './view-settings-menu-data.tsx'
+import { viewSettingsControlArgs } from './view-settings-controls.ts'
+import { spreadsheetModes, viewModes } from './view-settings-data.tsx'
 import {
   ComposedViewSettings,
   FieldSettingsLayout,
   PropertySubmenusLayout,
   StackedModeTabsLayout,
-} from './view-settings-menu-layouts.tsx'
+} from './view-settings-layouts.tsx'
 
 const onClearFilters = fn()
 const onModeChange = fn()
@@ -22,11 +22,11 @@ const onSavePreference = fn()
 
 const meta = {
   args: { children: null },
-  component: ViewSettingsMenu,
+  component: ViewSettings,
   parameters: { layout: 'padded' },
   tags: ['!autodocs'],
-  title: 'Patterns/ViewSettingsMenu/Behavior',
-} satisfies Meta<typeof ViewSettingsMenu>
+  title: 'Patterns/ViewSettings/Behavior',
+} satisfies Meta<typeof ViewSettings>
 
 export default meta
 
@@ -79,7 +79,7 @@ export const PickingATabCallsOnModeChangeAndCloses: Story = {
   render: () => (
     <CollectionToolbar
       right={
-        <ViewSettingsMenu
+        <ViewSettings
           mode="kanban"
           modes={viewModes}
           onModeChange={onModeChange}
@@ -87,7 +87,7 @@ export const PickingATabCallsOnModeChangeAndCloses: Story = {
           <ViewSettingsSection label="Exibição">
             <MenuItem>Densidade</MenuItem>
           </ViewSettingsSection>
-        </ViewSettingsMenu>
+        </ViewSettings>
       }
     />
   ),
@@ -108,19 +108,16 @@ export const SavePreferenceRendersOnlyWithItsHandler: Story = {
     <CollectionToolbar
       right={
         <>
-          <ViewSettingsMenu label="Sem salvar">
+          <ViewSettings label="Sem salvar">
             <ViewSettingsSection label="Exibição">
               <MenuItem>Densidade</MenuItem>
             </ViewSettingsSection>
-          </ViewSettingsMenu>
-          <ViewSettingsMenu
-            label="Com salvar"
-            onSavePreference={onSavePreference}
-          >
+          </ViewSettings>
+          <ViewSettings label="Com salvar" onSavePreference={onSavePreference}>
             <ViewSettingsSection label="Exibição">
               <MenuItem>Densidade</MenuItem>
             </ViewSettingsSection>
-          </ViewSettingsMenu>
+          </ViewSettings>
         </>
       }
     />
@@ -145,7 +142,7 @@ export const ModeTabsComeBeforeTheSections: Story = {
   render: () => (
     <CollectionToolbar
       right={
-        <ViewSettingsMenu
+        <ViewSettings
           mode="kanban"
           modes={viewModes}
           onClearFilters={() => undefined}
@@ -156,7 +153,7 @@ export const ModeTabsComeBeforeTheSections: Story = {
           <ViewSettingsSection label="Filtros">
             <MenuItem>Status</MenuItem>
           </ViewSettingsSection>
-        </ViewSettingsMenu>
+        </ViewSettings>
       }
     />
   ),
@@ -232,11 +229,11 @@ export const ClearFiltersKeepsTheMenuOpen: Story = {
   render: () => (
     <CollectionToolbar
       right={
-        <ViewSettingsMenu activeFilterCount={2} onClearFilters={onClearFilters}>
+        <ViewSettings activeFilterCount={2} onClearFilters={onClearFilters}>
           <ViewSettingsSection label="Filtros">
             <MenuItem>Status</MenuItem>
           </ViewSettingsSection>
-        </ViewSettingsMenu>
+        </ViewSettings>
       }
     />
   ),
@@ -421,16 +418,16 @@ export const ResetRendersOnlyWithItsHandler: Story = {
     <CollectionToolbar
       right={
         <>
-          <ViewSettingsMenu label="Sem redefinir">
+          <ViewSettings label="Sem redefinir">
             <ViewSettingsSection label="Exibição">
               <MenuItem>Densidade</MenuItem>
             </ViewSettingsSection>
-          </ViewSettingsMenu>
-          <ViewSettingsMenu label="Com redefinir" onReset={onReset}>
+          </ViewSettings>
+          <ViewSettings label="Com redefinir" onReset={onReset}>
             <ViewSettingsSection label="Exibição">
               <MenuItem>Densidade</MenuItem>
             </ViewSettingsSection>
-          </ViewSettingsMenu>
+          </ViewSettings>
         </>
       }
     />

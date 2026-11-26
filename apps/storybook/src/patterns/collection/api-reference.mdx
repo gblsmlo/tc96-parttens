@@ -34,7 +34,7 @@ import {
   projectCollection,
   SortRadioSubmenu,
   useCollectionPreferences,
-  ViewSettingsMenu,
+  ViewSettings,
   ViewSettingsSection,
   type CollectionDefinition,
 } from '@acme/patterns'
@@ -57,7 +57,7 @@ import { RadioButtonIcon } from '@phosphor-icons/react'
         left={<CollectionSearchField onCommit={setSearch} />}
         right={
           <>
-            <ViewSettingsMenu onClearFilters={clearFilters}>
+            <ViewSettings onClearFilters={clearFilters}>
               <ViewSettingsSection label="Filtros">
                 <FilterRadioSubmenu
                   icon={RadioButtonIcon}
@@ -67,7 +67,7 @@ import { RadioButtonIcon } from '@phosphor-icons/react'
                   value={type}
                 />
               </ViewSettingsSection>
-            </ViewSettingsMenu>
+            </ViewSettings>
             <Action onClick={create} />
           </>
         }
@@ -91,7 +91,7 @@ import { RadioButtonIcon } from '@phosphor-icons/react'
 </CollectionProvider>
 ```
 
-`height="fill"` makes the frame take the free height of its parent and scroll the body. `"content"` grows with the records and keeps the footer in view. `collection`, `setSearch`, `typeOptions`, `type`, `setType`, `clearFilters`, `create`, `renderRow`, `page`, `setPage`, `pageCount`, `pageSize`, `total` and `selectionActions` are the consumer's data, state and elements. `CollectionToolbar` is documented in `Patterns/CollectionToolbar`; `CollectionSearchField`, `ViewSettingsMenu` (documented in [Patterns/ViewSettingsMenu](?path=/docs/patterns-viewsettingsmenu-api-reference--api-reference)), `Action` and `PresetsMenu` render toolbar buttons and inputs, so they only mount inside it. `PresetsMenu` takes the place of the view switcher on a screen whose views are a short list, so the anatomy does not show it.
+`height="fill"` makes the frame take the free height of its parent and scroll the body. `"content"` grows with the records and keeps the footer in view. `collection`, `setSearch`, `typeOptions`, `type`, `setType`, `clearFilters`, `create`, `renderRow`, `page`, `setPage`, `pageCount`, `pageSize`, `total` and `selectionActions` are the consumer's data, state and elements. `CollectionToolbar` is documented in `Patterns/CollectionToolbar`; `CollectionSearchField`, `ViewSettings` (documented in [Patterns/ViewSettings](?path=/docs/patterns-viewsettings-api-reference--api-reference)), `Action` and `PresetsMenu` render toolbar buttons and inputs, so they only mount inside it. `PresetsMenu` takes the place of the view switcher on a screen whose views are a short list, so the anatomy does not show it.
 
 The pattern is controlled. It never fetches, filters, searches, sorts or persists: the consumer passes the records already filtered, keeps the search, the filters and the saved views, and saves every edit. The pattern keeps only the active layout and grouping when they are uncontrolled, the move in progress while the consumer settles it, the collapse state of List and Data Grid groups and the table state of `useDataGrid` and `useDataTable`.
 
@@ -174,9 +174,9 @@ The search of the collection, at the start of the toolbar. Renders a `form` with
 | `placeholder` | `string` | `"Buscar"` | Sets the placeholder. |
 | `className` | `string` | - | Adds classes to the `form`, not to the input. |
 
-## ViewSettingsMenu
+## ViewSettings
 
-The display settings of the view have their own page: [ViewSettingsMenu](?path=/docs/patterns-viewsettingsmenu-api-reference--api-reference) documents `ViewSettingsMenu` and `ViewSettingsSection`. `FilterRadioSubmenu`, `FilterCheckboxSubmenu` and `SortRadioSubmenu`, below, are items a screen puts in its sections.
+The display settings of the view have their own page: [ViewSettings](?path=/docs/patterns-viewsettings-api-reference--api-reference) documents `ViewSettings` and `ViewSettingsSection`. `FilterRadioSubmenu`, `FilterCheckboxSubmenu` and `SortRadioSubmenu`, below, are items a screen puts in its sections.
 
 ### FilterRadioSubmenu
 
@@ -362,6 +362,6 @@ Also takes every prop of a `div`.
 
 - Name `CollectionFrameBody` with `aria-label`, so the records sit in a named `region`, and name each layout through its own props (`datatable["aria-label"]`, `datagrid["aria-label"]`).
 - Name `CollectionSearchField` with `label` when the default `Buscar` does not say what it searches, and `CollectionPagination` with `label` after the collection it pages.
-- Keyboard: the toolbar is one Tab stop whose controls the arrow keys move between; the layout tabs of `ViewSettingsMenu` are radio items of the menu. Every layout keeps a keyboard path for its moves, documented on its node. Each button of `CollectionPagination` is its own Tab stop, and a disabled one is skipped.
+- Keyboard: the toolbar is one Tab stop whose controls the arrow keys move between; the layout tabs of `ViewSettings` are radio items of the menu. Every layout keeps a keyboard path for its moves, documented on its node. Each button of `CollectionPagination` is its own Tab stop, and a disabled one is skipped.
 - The copy of the parts is Portuguese (`Exibição`, `Limpar filtros`, `Salvar preferência`, `Todos`, `Buscar`, `Adicionar`, `itens`); every one of those texts is a prop. `FilterCheckboxSubmenu` and `SortRadioSubmenu` have no text of their own. The names of the `CollectionPagination` buttons (`Primeira página`, `Página anterior`, `Próxima página`, `Última página`) and the `de` of its range are fixed.
 - The colors come from the theme tokens `background`, `foreground`, `muted-foreground`, `accent`, `primary`, `primary-foreground` and `input`, through the menu, button, input and badge of the theme.

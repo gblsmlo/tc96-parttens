@@ -44,7 +44,7 @@ export const dataTableControlArgTypes: Partial<ArgTypes<DataTableControls>> = {
   columnsMenu: {
     control: 'boolean',
     description:
-      'Adds a toolbar above the table with a `DataTableColumnsSubmenu` inside its view settings menu.',
+      'Adds a toolbar above the table with a `DataTableColumnsSubmenu` inside its view settings.',
   },
   empty: {
     control: 'boolean',

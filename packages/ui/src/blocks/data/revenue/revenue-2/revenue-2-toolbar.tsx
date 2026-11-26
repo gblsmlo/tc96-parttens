@@ -4,9 +4,9 @@ import { isConditionComplete } from '@tc96/ui/patterns/data-grid/lib/data-grid-c
 import { DataTableColumnsSubmenu } from '@tc96/ui/patterns/data-table/data-table-columns-submenu'
 import type { DataTableTable } from '@tc96/ui/patterns/data-table/data-table-features'
 import {
-  ViewSettingsMenu,
+  ViewSettings,
   ViewSettingsSection,
-} from '@tc96/ui/patterns/view-settings-menu/components/view-settings-menu'
+} from '@tc96/ui/patterns/view-settings/components'
 import type { ReactNode } from 'react'
 import {
   TableToolbar,
@@ -45,7 +45,7 @@ export function Revenue2Toolbar({
       left={left}
       right={
         <>
-          <ViewSettingsMenu
+          <ViewSettings
             activeFilterCount={activeFilterCount}
             clearLabel={labels.conditions.clearFilters}
             formatTriggerLabel={labels.filterCount}
@@ -71,7 +71,7 @@ export function Revenue2Toolbar({
                 table={table}
               />
             </ViewSettingsSection>
-          </ViewSettingsMenu>
+          </ViewSettings>
           {onCreate ? (
             <TableToolbarButton onClick={onCreate} variant="default">
               {labels.create}

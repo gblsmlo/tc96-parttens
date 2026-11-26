@@ -1,7 +1,7 @@
 import { ArrowsDownUpIcon, SignpostIcon } from '@phosphor-icons/react'
 import { FilterRadioSubmenu } from '@tc96/ui/patterns/collection/shared/components/collection-filter-submenu'
 import { SortRadioSubmenu } from '@tc96/ui/patterns/collection/shared/components/collection-sort-submenu'
-import { ViewSettingsSection } from '@tc96/ui/patterns/view-settings-menu/components/view-settings-menu'
+import { ViewSettingsSection } from '@tc96/ui/patterns/view-settings/components'
 import { legal8FailureOrigins, legal8Sorts } from './legal-8-options'
 import type { Legal8FailureOrigin, Legal8Labels, Legal8Sort } from './types'
 

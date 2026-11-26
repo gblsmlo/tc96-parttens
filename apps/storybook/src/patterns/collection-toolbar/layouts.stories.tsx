@@ -48,7 +48,7 @@ export const RightSide: Story = {
 
 export const HeadingAndViewMenus: Story = {
   parameters: describe(
-    'The heading in `left` and one control per view menu in `right`: the search first, then the filter with its count, the view switcher, the sort and the grouping, and the primary action last. For a collection screen that shows each view menu on its own instead of one view settings menu.',
+    'The heading in `left` and one control per view menu in `right`: the search first, then the filter with its count, the view switcher, the sort and the grouping, and the primary action last. For a collection screen that shows each view menu on its own instead of one view settings.',
   ),
   render: () => <HeadingAndViewMenusSlots />,
 }
