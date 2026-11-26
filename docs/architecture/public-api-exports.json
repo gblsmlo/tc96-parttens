@@ -3241,5 +3241,39 @@
     "agenda1Modes",
     "agenda1Periods",
     "agenda1Window"
+  ],
+  "block:record-dialog-agenda-1": [
+    "AGENDA_1_TIME_ZONE",
+    "Agenda1",
+    "Agenda1Availability",
+    "Agenda1Calendar",
+    "Agenda1Labels",
+    "Agenda1Person",
+    "Agenda1Props",
+    "Agenda1Slot",
+    "Agenda1Type",
+    "Agenda1Values",
+    "agenda1SlotFromCalendar",
+    "createAgenda1AvailabilityOptions",
+    "createAgenda1CalendarOptions",
+    "createAgenda1TypeOptions",
+    "defaultAgenda1Slot"
+  ],
+  "block:record-dialog-agenda-2": [
+    "AGENDA_2_TIME_ZONE",
+    "Agenda2",
+    "Agenda2Availability",
+    "Agenda2Calendar",
+    "Agenda2Labels",
+    "Agenda2Person",
+    "Agenda2Props",
+    "Agenda2Slot",
+    "Agenda2Type",
+    "Agenda2Values",
+    "agenda2SlotFromCalendar",
+    "createAgenda2AvailabilityOptions",
+    "createAgenda2CalendarOptions",
+    "createAgenda2TypeOptions",
+    "defaultAgenda2Slot"
   ]
 }

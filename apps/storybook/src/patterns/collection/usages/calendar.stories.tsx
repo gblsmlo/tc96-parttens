@@ -1,6 +1,13 @@
 import { FlagIcon, TagIcon, UsersIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
+  Agenda1,
+  type Agenda1Slot,
+  type Agenda1Values,
+  agenda1SlotFromCalendar,
+  defaultAgenda1Slot,
+} from '@tc96/ui/blocks/application/record-dialog/agenda-1'
+import {
   type CalendarDate,
   CalendarEventChip,
   CalendarEventChipOpenTrigger,
@@ -18,13 +25,7 @@ import {
 } from '@tc96/ui/patterns'
 import { useCallback, useMemo, useState } from 'react'
 import { expect, within } from 'storybook/test'
-import { CreateEventDialog } from '../../records/dialog/create-event-dialog'
-import {
-  defaultSlot,
-  type EventSlot,
-  type EventValues,
-  slotFromCalendar,
-} from '../../records/dialog/event-record'
+import { agenda1People } from '../../../blocks/application/record-dialog/fixtures/agenda-1.ts'
 import {
   CALENDAR_LOCALE,
   CALENDAR_WEEK_STARTS_ON,
@@ -65,10 +66,10 @@ const stageByDealId = new Map(
   initialDeals.map((deal) => [deal.id, deal.stage] as const),
 )
 
-const toolbarSlot = (day: CalendarDate): EventSlot =>
-  slotFromCalendar({ day, endMinutes: 10 * 60, startMinutes: 9 * 60 })
+const toolbarSlot = (day: CalendarDate): Agenda1Slot =>
+  agenda1SlotFromCalendar({ day, endMinutes: 10 * 60, startMinutes: 9 * 60 })
 
-const activityFromEvent = (values: EventValues): DealActivity => {
+const activityFromEvent = (values: Agenda1Values): DealActivity => {
   const deal = initialDeals[0] as Deal
   return {
     dealId: deal.id,
@@ -171,15 +172,15 @@ const meta = {
     const [createRequest, setCreateRequest] = useState<{
       id: number
       open: boolean
-      slot: EventSlot
-    }>({ id: 0, open: false, slot: defaultSlot })
+      slot: Agenda1Slot
+    }>({ id: 0, open: false, slot: defaultAgenda1Slot })
 
-    const requestCreate = useCallback((slot: EventSlot) => {
+    const requestCreate = useCallback((slot: Agenda1Slot) => {
       setCreateRequest((current) => ({ id: current.id + 1, open: true, slot }))
     }, [])
 
     const selectSlot = useCallback(
-      (slot: CalendarSlot) => requestCreate(slotFromCalendar(slot)),
+      (slot: CalendarSlot) => requestCreate(agenda1SlotFromCalendar(slot)),
       [requestCreate],
     )
 
@@ -273,7 +274,7 @@ const meta = {
           </CollectionFrameBody>
         </CollectionFrame>
 
-        <CreateEventDialog
+        <Agenda1
           key={createRequest.id}
           onCreate={(values) =>
             setActivities((current) => [...current, activityFromEvent(values)])
@@ -282,6 +283,7 @@ const meta = {
             setCreateRequest((current) => ({ ...current, open }))
           }
           open={createRequest.open}
+          people={agenda1People}
           slot={createRequest.slot}
         />
       </main>

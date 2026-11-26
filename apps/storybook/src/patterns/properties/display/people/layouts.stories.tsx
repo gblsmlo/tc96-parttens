@@ -16,3 +16,13 @@ type Story = StoryObj<typeof meta>
 export const Default: Story = {
   render: () => <ComposedPeople {...peopleControlArgs} />,
 }
+
+export const Stack: Story = {
+  render: () => (
+    <ComposedPeople
+      {...peopleControlArgs}
+      display="stack"
+      value={['person-1', 'person-2', 'person-3']}
+    />
+  ),
+}

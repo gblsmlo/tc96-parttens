@@ -42,8 +42,6 @@ import { expect, fn, screen, userEvent, within } from 'storybook/test'
 import { initialContacts } from '../../collection/fixtures/contacts'
 import { ptBRPropertyLabels } from '../../properties/properties-labels.ts'
 import { CreateContactDialog, type NewContact } from './create-contact-dialog'
-import { CreateEventDialog } from './create-event-dialog'
-import type { EventSlot, EventValues } from './event-record'
 import {
   lawsuitClients,
   lawsuitContractOptions,
@@ -493,66 +491,5 @@ export const Lawsuits: StoryObj<LawsuitsArgs> = {
         </Accordion>
       </RecordDialog>
     )
-  },
-}
-
-interface EventsArgs {
-  onCreate: (values: EventValues) => void
-  slot: EventSlot
-}
-
-export const Events: StoryObj<EventsArgs> = {
-  argTypes: {
-    onCreate: { control: false },
-    slot: {
-      control: 'object',
-      description:
-        'The day (an ISO instant at noon UTC) and the `HH:mm` window of the Date row. The dialog reads it when it mounts and when it closes, so a change shows on the next open.',
-    },
-  },
-  args: {
-    onCreate: fn((_values: EventValues) => {}),
-    slot: { date: '2026-10-14T12:00:00.000Z', end: '10:00', start: '09:00' },
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: [
-          'A calendar event or appointment on the [Row Properties](?path=/story/patterns-records-recorddialog-layouts--row-properties) layout, prefilled with the slot the calendar picked: a borderless title and description, then rows ordered from what places the event to what classifies it: Date (a `ScheduleProperty` for the day, times, repeat and reminders), Guests, Location, Type (Event, Appointment), Calendar (Appointments, Sales, Personal) and Availability (Busy, Free). The title follows Type.',
-          'Location commits on blur and Mod+Enter submits in the same event, so the draft lives in `useRecordDraft` and `onSubmit` reads `latest`. An end before the start, or a failed save, shows in `errorMessage`. Create more keeps the dialog open after saving and puts the fields back to the slot.',
-          'The `Calendar` story of `Patterns/Collection/Usages` opens the same dialog from Nova atividade and from an empty slot of the time grid, giving it a new `key` for each request instead of passing a new slot to an open dialog.',
-        ].join('\n\n'),
-      },
-    },
-  },
-  render: function Events({ onCreate, slot }) {
-    const [open, setOpen] = useState(true)
-
-    return (
-      <>
-        <Button onClick={() => setOpen(true)} variant="outline">
-          Nova atividade
-        </Button>
-        <CreateEventDialog
-          onCreate={onCreate}
-          onOpenChange={setOpen}
-          open={open}
-          slot={slot}
-        />
-      </>
-    )
-  },
-  play: async () => {
-    const dialog = within(
-      await screen.findByRole('dialog', { name: 'New event' }),
-    )
-
-    await expect(
-      dialog.getByRole('button', { name: /^Date:/ }),
-    ).toHaveTextContent('Oct 14 · 09:00 – 10:00')
-    await expect(
-      dialog.getByRole('combobox', { name: /^Availability/ }),
-    ).toHaveTextContent('Busy')
-    await expect(dialog.getByRole('button', { name: 'Save' })).toBeDisabled()
   },
 }

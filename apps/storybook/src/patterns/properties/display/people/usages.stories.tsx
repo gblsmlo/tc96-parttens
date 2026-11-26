@@ -72,6 +72,37 @@ export const InviteToTask: Story = {
   },
 }
 
+export const TaskAssignees: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'The assignees of a task, on the [Stack](?path=/story/patterns-properties-display-people-layouts--stack) layout: three people as stacked avatars with the count from `labels.count`, as in `Blocks/Data/Tasks`.',
+      },
+    },
+  },
+  render: () => (
+    <StatefulPeople
+      ariaLabel="Responsáveis"
+      display="stack"
+      initialValue={['marina', 'tiago', 'paula']}
+      labels={{
+        count: (count) =>
+          `${count} ${count === 1 ? 'responsável' : 'responsáveis'}`,
+      }}
+      options={teamOptions}
+      placeholder="Sem responsável"
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    await expect(
+      within(canvasElement).getByRole('button', {
+        name: 'Responsáveis: 3 responsáveis',
+      }),
+    ).toBeVisible()
+  },
+}
+
 export const DocumentAccess: Story = {
   parameters: {
     docs: {

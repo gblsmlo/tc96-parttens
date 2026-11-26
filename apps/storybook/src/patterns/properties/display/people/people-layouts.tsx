@@ -30,17 +30,19 @@ export const StatefulPeople = ({
 }
 
 export const ComposedPeople = ({
+  display,
   labelsAdd,
   labelsEmpty,
   labelsLoading,
   labelsRemove,
   value,
   ...props
-}: Readonly<PeopleControls>) => (
+}: Readonly<PeopleControls> & { display?: 'chips' | 'stack' }) => (
   <StatefulPeople
     {...props}
+    display={display}
     initialValue={value}
-    key={value.join()}
+    key={`${display ?? 'chips'}:${value.join()}`}
     labels={{
       add: labelsAdd,
       empty: labelsEmpty,
