@@ -167,7 +167,7 @@ export function Agenda2({
         return true
       }}
       open={open}
-      size="large"
+      size="default"
       stretchBody
       submitDisabled={draft.title.trim() === ''}
       submitLabel={labels.submit}

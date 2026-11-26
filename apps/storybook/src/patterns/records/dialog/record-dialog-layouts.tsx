@@ -20,6 +20,7 @@ import type { RecordDialogControls } from './record-dialog-controls.ts'
 export interface ComposedRecordDialogProps extends RecordDialogControls {
   children?: ReactNode
   defaultOpen?: boolean
+  descriptionSize?: 'content' | 'stretch'
   keepOpenOnSuccess?: boolean
   onCreateMoreChange?: (checked: boolean) => void
   onOpenAsPage?: () => void
@@ -71,6 +72,7 @@ export const ComposedRecordDialog = ({
   createMore,
   defaultOpen = true,
   description,
+  descriptionSize,
   errorMessage,
   headline,
   headlineDescription,
@@ -108,6 +110,7 @@ export const ComposedRecordDialog = ({
     <RecordDialogHeadline
       descriptionLabel={headlineDescription ? 'Description' : undefined}
       descriptionPlaceholder="Add description..."
+      descriptionSize={descriptionSize}
       onTitleChange={(next) => {
         setRecordTitle(next)
         onTitleChange?.(next)

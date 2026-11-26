@@ -47,7 +47,10 @@ export const RowProperties: Story = {
     },
   },
   render: () => (
-    <ComposedRecordDialog {...recordDialogControlArgs}>
+    <ComposedRecordDialog
+      {...recordDialogControlArgs}
+      descriptionSize="stretch"
+    >
       <RowPropertiesFormation />
     </ComposedRecordDialog>
   ),

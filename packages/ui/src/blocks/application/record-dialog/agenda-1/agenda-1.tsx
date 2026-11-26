@@ -179,6 +179,7 @@ export function Agenda1({
         <RecordDialogHeadline
           descriptionLabel={labels.description}
           descriptionPlaceholder={labels.descriptionPlaceholder}
+          descriptionSize="stretch"
           onTitleChange={(title) => update({ title })}
           title={draft.title}
           titleLabel={labels.title}

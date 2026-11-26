@@ -90,6 +90,7 @@ export function LeadDialog({
         <RecordDialogHeadline
           descriptionLabel="Descrição"
           descriptionPlaceholder="Adicionar descrição..."
+          descriptionSize="stretch"
           onTitleChange={setTitle}
           title={title}
           titleLabel="Título"

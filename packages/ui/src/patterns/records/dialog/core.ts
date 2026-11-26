@@ -37,6 +37,7 @@ export interface RecordDialogHeadlineProps {
   descriptionLabel?: string
   descriptionName?: string
   descriptionPlaceholder?: string
+  descriptionSize?: 'content' | 'stretch'
   onDescriptionChange?: (description: string) => void
   onTitleChange: (title: string) => void
   title: string
