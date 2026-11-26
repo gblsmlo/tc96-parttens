@@ -28,6 +28,7 @@ export interface AppShellPage {
   href: string
   padded?: boolean
   root?: boolean
+  scrollArea?: boolean
 }
 
 interface AppShellFrameProps extends Omit<AppShellPage, 'actionsArg'> {
@@ -41,6 +42,7 @@ function AppShellFrame({
   href,
   padded,
   root = true,
+  scrollArea,
   slot,
 }: Readonly<AppShellFrameProps>) {
   const [actionsContainer, setActionsContainer] =
@@ -59,6 +61,7 @@ function AppShellFrame({
       }
       navigation={navigationFor(href)}
       padded={padded}
+      scrollArea={scrollArea}
       user={shellUser}
       userActions={shellUserActions}
       workspaceId="risine"

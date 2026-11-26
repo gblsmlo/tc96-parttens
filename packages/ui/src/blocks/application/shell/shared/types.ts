@@ -108,6 +108,7 @@ export interface AppShellBaseProps {
   onWorkspaceChange?: (workspaceId: string) => void
   open?: boolean
   padded?: boolean
+  scrollArea?: boolean
   renderLink?: ShellRenderLink
   settings?: ShellSettings
   theme?: ShellTheme

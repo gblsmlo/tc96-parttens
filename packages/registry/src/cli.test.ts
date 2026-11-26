@@ -380,9 +380,7 @@ test('installs a block under aliases.templates with a deprecation warning', asyn
       'components.json aliases.templates is deprecated; rename it to aliases.blocks.',
     )
     expect(
-      existsSync(
-        join(root, 'src/shells/shell/app-shell-1/index.ts'),
-      ),
+      existsSync(join(root, 'src/shells/shell/app-shell-1/index.ts')),
     ).toBe(true)
   } finally {
     await rm(root, { recursive: true, force: true })
