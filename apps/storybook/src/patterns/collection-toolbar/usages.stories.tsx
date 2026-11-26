@@ -1,14 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect, screen, userEvent, within } from 'storybook/test'
-import {
-  AppointmentsToolbar,
-  appointmentToday,
-  formatAppointmentPeriod,
-} from './appointments-toolbar.tsx'
 import { ToolbarCanvas } from './toolbar-canvas.tsx'
 import { toolbarControlArgs } from './toolbar-controls.ts'
 import {
+  AppointmentsToolbar,
+  appointmentToday,
   ComposedToolbar,
+  formatAppointmentPeriod,
   GroupToolbar,
   SearchFieldToolbar,
   SpreadsheetSettingsToolbar,
