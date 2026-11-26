@@ -1,6 +1,9 @@
 import type { ArgTypes } from '@storybook/react-vite'
-import type { CollectionFrameMode, CollectionLayout } from '@tc96/ui/patterns'
-import { collectionFrameModes, collectionLayouts } from './collection-variants'
+import type { CollectionFrameHeight, CollectionLayout } from '@tc96/ui/patterns'
+import {
+  collectionFrameHeights,
+  collectionLayouts,
+} from './collection-variants'
 
 export interface CollectionControls {
   action: boolean
@@ -9,9 +12,9 @@ export interface CollectionControls {
   emptyMessage: string
   filterClear: boolean
   filterLoading: boolean
+  height: CollectionFrameHeight
   layout: CollectionLayout
   loading: boolean
-  mode: CollectionFrameMode
   pagination: boolean
   search: boolean
   toolbar: boolean
@@ -24,9 +27,9 @@ export const collectionControlArgs: CollectionControls = {
   emptyMessage: 'Nenhuma tarefa com esses filtros.',
   filterClear: false,
   filterLoading: false,
+  height: 'fill',
   layout: 'datatable',
   loading: false,
-  mode: 'fill',
   pagination: true,
   search: false,
   toolbar: true,
@@ -62,6 +65,12 @@ export const collectionControlArgTypes: Partial<ArgTypes<CollectionControls>> =
       description:
         'The `loading` of the Responsável `FilterCheckboxSubmenu`: skeleton rows replace its options while the people load.',
     },
+    height: {
+      control: 'inline-radio',
+      description:
+        'The `height` of `CollectionFrame`. `fill` takes the free height and scrolls the body; `content` grows with the records and keeps the footer in view, so the page grows past the viewport.',
+      options: collectionFrameHeights,
+    },
     layout: {
       control: 'select',
       description:
@@ -72,12 +81,6 @@ export const collectionControlArgTypes: Partial<ArgTypes<CollectionControls>> =
       control: 'boolean',
       description:
         'The `loading` of `CollectionLayoutOutlet`, which the active layout takes.',
-    },
-    mode: {
-      control: 'inline-radio',
-      description:
-        'The `mode` of `CollectionFrame`. `flow` also lets the page grow past the viewport, which is what the mode is for.',
-      options: collectionFrameModes,
     },
     pagination: {
       control: 'boolean',

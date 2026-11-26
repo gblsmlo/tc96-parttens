@@ -18,7 +18,7 @@ import {
   CollectionFrameBody,
   CollectionFrameFooter,
   CollectionFrameHeader,
-  type CollectionFrameMode,
+  type CollectionFrameHeight,
   CollectionFrameOverlay,
   type CollectionGroup,
   type CollectionKanbanCardMove,
@@ -133,10 +133,10 @@ const closeMenus = async () => {
   await waitFor(() => expect(screen.queryByRole('menu')).toBeNull())
 }
 
-function Frame({ mode }: Readonly<{ mode?: CollectionFrameMode }>) {
+function Frame({ height }: Readonly<{ height?: CollectionFrameHeight }>) {
   return (
     <div className="flex h-64 flex-col">
-      <CollectionFrame mode={mode}>
+      <CollectionFrame height={height}>
         <CollectionFrameHeader>Toolbar</CollectionFrameHeader>
         <CollectionFrameBody aria-label="Tarefas">
           Registros
@@ -163,8 +163,8 @@ export const FillScrollsTheBody: Story = {
   },
 }
 
-export const FlowMakesTheFooterSticky: Story = {
-  render: () => <Frame mode="flow" />,
+export const ContentKeepsTheFooterSticky: Story = {
+  render: () => <Frame height="content" />,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     const body = canvas.getByRole('region', { name: 'Tarefas' })

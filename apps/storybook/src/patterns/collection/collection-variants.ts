@@ -1,4 +1,4 @@
-import type { CollectionFrameMode, CollectionLayout } from '@tc96/ui/patterns'
+import type { CollectionFrameHeight, CollectionLayout } from '@tc96/ui/patterns'
 
 export const collectionLayouts = [
   'datatable',
@@ -9,7 +9,7 @@ export const collectionLayouts = [
   'calendar',
 ] as const satisfies readonly CollectionLayout[]
 
-export const collectionFrameModes = [
+export const collectionFrameHeights = [
   'fill',
-  'flow',
-] as const satisfies readonly CollectionFrameMode[]
+  'content',
+] as const satisfies readonly CollectionFrameHeight[]
