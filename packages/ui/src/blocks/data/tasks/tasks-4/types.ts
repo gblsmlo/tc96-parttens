@@ -70,6 +70,7 @@ export type Tasks4ColumnId =
 
 export interface Tasks4Labels extends DataCollectionLoadLabels {
   activeFilters: (count: number) => string
+  changeStatus: (status: string) => string
   clearDate: string
   clearFilters: string
   clearSelection: string

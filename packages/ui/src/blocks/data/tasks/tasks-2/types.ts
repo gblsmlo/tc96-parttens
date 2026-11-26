@@ -73,6 +73,7 @@ export interface Tasks2Labels
   allAssignees: string
   allProjects: string
   allStatuses: string
+  changeStatus: (status: string) => string
   clearDate: string
   clearSelection: string
   complete: string

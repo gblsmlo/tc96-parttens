@@ -66,6 +66,7 @@ export type Tasks3ColumnId =
 
 export interface Tasks3Labels extends DataCollectionLoadLabels {
   activeFilters: (count: number) => string
+  changeStatus: (status: string) => string
   clearDate: string
   clearFilters: string
   clearSelection: string

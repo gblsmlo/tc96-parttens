@@ -131,7 +131,7 @@ export function ListView<TRecord>({
     >
       {header ? (
         <div
-          className="sticky top-0 z-30 border-border/80 border-b bg-card"
+          className="sticky top-0 z-30 border-b bg-[color-mix(in_srgb,var(--card),var(--color-black)_2%)] dark:bg-[color-mix(in_srgb,var(--card),var(--color-white)_2%)]"
           data-slot="list-view-header"
         >
           {header}

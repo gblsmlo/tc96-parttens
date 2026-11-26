@@ -1,10 +1,18 @@
 import { ptBR } from '@daypicker/react/locale'
 import { CircleIcon, CubeIcon } from '@phosphor-icons/react'
+import { Button } from '@tc96/ui/button'
 import {
   calendarDateFromDate,
   calendarDateKey,
 } from '@tc96/ui/helpers/calendar-date'
 import { dayOffsetInTimeZone, formatShortDate } from '@tc96/ui/helpers/date'
+import {
+  Menu,
+  MenuPopup,
+  MenuRadioGroup,
+  MenuRadioItem,
+  MenuTrigger,
+} from '@tc96/ui/menu'
 import { DateProperty } from '@tc96/ui/patterns/properties/display/date/date-property'
 import { IconLabelProperty } from '@tc96/ui/patterns/properties/display/icon-label/icon-label-property'
 import { PeopleProperty } from '@tc96/ui/patterns/properties/display/people/people-property'
@@ -17,11 +25,12 @@ import {
 } from '@tc96/ui/property-meta'
 import { cn } from '@tc96/utils'
 import { dataPriorities } from '../../shared/properties/data-priority'
-import { tasks4VisibleTags } from './tasks-4-options'
+import { tasks4Statuses, tasks4VisibleTags } from './tasks-4-options'
 import type {
   Tasks4Labels,
   Tasks4Option,
   Tasks4Person,
+  Tasks4Status,
   Tasks4Tag,
   Tasks4Task,
 } from './types'
@@ -35,6 +44,7 @@ export interface Tasks4FieldContext {
   onOpen?: (taskId: string) => void
   onProjectChange?: (taskId: string, projectId: string | null) => void
   onSelectedChange?: (taskId: string, selected: boolean) => void
+  onStatusChange?: (taskId: string, status: Tasks4Status) => void
   people: readonly Tasks4Person[]
   projects: readonly Tasks4Option[]
   selectedIds: ReadonlySet<string>
@@ -74,15 +84,54 @@ export function Tasks4PriorityMark({ context, item }: FieldProps) {
   )
 }
 
-export function Tasks4StatusMark({ context, item }: FieldProps) {
+const findTasks4Status = (value: unknown): Tasks4Status | null =>
+  tasks4Statuses.find((status) => status === value) ?? null
+
+function Tasks4StatusIcon({ status }: Readonly<{ status: Tasks4Status }>) {
   return (
-    <span className="flex size-4 items-center" data-slot="tasks-4-status">
-      <PropertyMetaIcon
-        className="size-4"
-        meta={workflowStatusMeta[item.status]}
-      />
-      <span className="sr-only">{context.labels.statuses[item.status]}</span>
-    </span>
+    <PropertyMetaIcon className="size-4" meta={workflowStatusMeta[status]} />
+  )
+}
+
+export function Tasks4StatusMark({ context, item }: FieldProps) {
+  const { labels, onStatusChange } = context
+  const statusLabel = labels.statuses[item.status]
+  if (!onStatusChange)
+    return (
+      <span className="flex size-4 items-center" data-slot="tasks-4-status">
+        <Tasks4StatusIcon status={item.status} />
+        <span className="sr-only">{statusLabel}</span>
+      </span>
+    )
+  return (
+    <Menu>
+      <MenuTrigger
+        aria-label={labels.changeStatus(statusLabel)}
+        className="relative z-10"
+        data-slot="tasks-4-status"
+        render={<Button size="icon-sm" type="button" variant="ghost" />}
+      >
+        <Tasks4StatusIcon status={item.status} />
+      </MenuTrigger>
+      <MenuPopup align="start">
+        <MenuRadioGroup
+          aria-label={labels.status}
+          onValueChange={(value) => {
+            const status = findTasks4Status(value)
+            if (status && status !== item.status)
+              onStatusChange(item.id, status)
+          }}
+          value={item.status}
+        >
+          {tasks4Statuses.map((status) => (
+            <MenuRadioItem key={status} value={status}>
+              <Tasks4StatusIcon status={status} />
+              {labels.statuses[status]}
+            </MenuRadioItem>
+          ))}
+        </MenuRadioGroup>
+      </MenuPopup>
+    </Menu>
   )
 }
 

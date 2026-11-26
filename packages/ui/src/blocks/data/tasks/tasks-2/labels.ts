@@ -10,6 +10,7 @@ export const defaultTasks2Labels: Tasks2Labels = {
   allAssignees: 'Todos os responsáveis',
   allProjects: 'Todos os projetos',
   allStatuses: 'Todos os status',
+  changeStatus: (status) => `Status: ${status}. Alterar status`,
   clearDate: 'Limpar data',
   clearFilters: 'Limpar filtros',
   clearSelection: 'Limpar seleção',

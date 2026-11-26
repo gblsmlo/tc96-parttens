@@ -22,6 +22,7 @@ export const defaultTasks4Labels: Tasks4Labels = {
   activeFilters: (count) =>
     count === 1 ? 'Filtrar, 1 ativo' : `Filtrar, ${count} ativos`,
   clearDate: 'Limpar data',
+  changeStatus: (status) => `Status: ${status}. Alterar status`,
   clearFilters: 'Limpar filtros',
   clearSelection: 'Limpar seleção',
   columns: {
