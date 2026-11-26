@@ -1,16 +1,5 @@
 {
   "collection": {
-    "bun": ["packages/ui/src/patterns/collection"],
-    "stories": ["src/patterns/collection/"],
-    "biome": [
-      "packages/ui/src/patterns/collection",
-      "apps/storybook/src/patterns/collection"
-    ],
-    "watch": {
-      "story": "apps/storybook/src/patterns/collection/behavior.stories.tsx",
-      "source": "packages/ui/src/patterns/collection/composition/collection-frame.tsx",
-      "lib": "packages/ui/src/patterns/collection/shared/lib/group-runs.ts"
-    },
     "dependents": [
       "calendar",
       "data-grid",
@@ -18,60 +7,11 @@
       "gallery",
       "kanban",
       "list-view"
-    ]
-  },
-  "calendar": {
-    "bun": ["packages/ui/src/patterns/calendar"],
-    "stories": ["src/patterns/calendar/"],
-    "biome": [
-      "packages/ui/src/patterns/calendar",
-      "apps/storybook/src/patterns/calendar"
     ],
-    "dependents": []
-  },
-  "data-grid": {
-    "bun": ["packages/ui/src/patterns/data-grid"],
-    "stories": ["src/patterns/data-grid/"],
-    "biome": [
-      "packages/ui/src/patterns/data-grid",
-      "apps/storybook/src/patterns/data-grid"
-    ],
-    "dependents": []
-  },
-  "data-table": {
-    "bun": ["packages/ui/src/patterns/data-table"],
-    "stories": ["src/patterns/data-table/"],
-    "biome": [
-      "packages/ui/src/patterns/data-table",
-      "apps/storybook/src/patterns/data-table"
-    ],
-    "dependents": []
-  },
-  "gallery": {
-    "bun": ["packages/ui/src/patterns/gallery"],
-    "stories": ["src/patterns/gallery/"],
-    "biome": [
-      "packages/ui/src/patterns/gallery",
-      "apps/storybook/src/patterns/gallery"
-    ],
-    "dependents": []
-  },
-  "kanban": {
-    "bun": ["packages/ui/src/patterns/kanban"],
-    "stories": ["src/patterns/kanban/"],
-    "biome": [
-      "packages/ui/src/patterns/kanban",
-      "apps/storybook/src/patterns/kanban"
-    ],
-    "dependents": []
-  },
-  "list-view": {
-    "bun": ["packages/ui/src/patterns/list-view"],
-    "stories": ["src/patterns/list-view/"],
-    "biome": [
-      "packages/ui/src/patterns/list-view",
-      "apps/storybook/src/patterns/list-view"
-    ],
-    "dependents": []
+    "watch": {
+      "story": "apps/storybook/src/patterns/collection/behavior.stories.tsx",
+      "source": "packages/ui/src/patterns/collection/composition/collection-frame.tsx",
+      "lib": "packages/ui/src/patterns/collection/shared/lib/group-runs.ts"
+    }
   }
 }

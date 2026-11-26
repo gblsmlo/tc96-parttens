@@ -32,19 +32,58 @@ const storybook = path.join(root, 'apps/storybook')
 const tmp =
   process.env.TC96_TEST_SCOPE_DIR ?? path.join(tmpdir(), 'tc96-test-scope')
 
-export function readScopes(): Record<string, Scope> {
+export function readScopes(): Record<string, Partial<Scope>> {
   return JSON.parse(
     readFileSync(path.join(import.meta.dir, 'scopes.json'), 'utf8'),
   )
 }
 
+export function resolveScope(
+  scopes: Record<string, Partial<Scope>>,
+  name: string,
+): Scope {
+  const declared = scopes[name]
+  const source = `packages/ui/src/patterns/${name}`
+  const stories = `apps/storybook/src/patterns/${name}`
+  if (!declared && !existsSync(path.join(root, source)))
+    throw new Error(`Unknown scope: ${name} (no ${source})`)
+  const hasStories = existsSync(path.join(root, stories))
+  return {
+    bun: [source],
+    stories: hasStories ? [`src/patterns/${name}/`] : [],
+    biome: hasStories ? [source, stories] : [source],
+    dependents: [],
+    ...declared,
+  }
+}
+
+export function isScope(
+  scopes: Record<string, Partial<Scope>>,
+  name: string,
+): boolean {
+  try {
+    resolveScope(scopes, name)
+    return true
+  } catch {
+    return false
+  }
+}
+
+export function hasBunTests(dirs: string[]): boolean {
+  const glob = new Bun.Glob('**/*.test.{ts,tsx}')
+  return dirs.some(
+    (dir) =>
+      existsSync(path.join(root, dir)) &&
+      glob.scanSync({ cwd: path.join(root, dir) }).next().done === false,
+  )
+}
+
 export function storyDirs(
-  scopes: Record<string, Scope>,
+  scopes: Record<string, Partial<Scope>>,
   name: string,
   deps: boolean,
 ): string[] {
-  const scope = scopes[name]
-  if (!scope) throw new Error(`Unknown scope: ${name}`)
+  const scope = resolveScope(scopes, name)
   const dirs = [...scope.stories]
   if (deps)
     for (const dep of scope.dependents)
@@ -163,24 +202,33 @@ function biomeCount(output: string): Counts {
 }
 
 async function declared(
-  scopes: Record<string, Scope>,
+  scopes: Record<string, Partial<Scope>>,
   name: string,
   deps: boolean,
 ): Promise<StepResult[]> {
-  const scope = scopes[name] as Scope
+  const scope = resolveScope(scopes, name)
   const id = deps ? 'declared+deps' : 'declared'
-  const results = [
+  const stories = storyDirs(scopes, name, deps)
+  return [
     await step(id, 'biome', ['bunx', 'biome', 'check', ...scope.biome], {
       parse: biomeCount,
     }),
-    await step(id, 'bun test', ['bun', 'test', '--isolate', ...scope.bun], {
-      parse: parseBunTest,
-    }),
+    hasBunTests(scope.bun)
+      ? await step(id, 'bun test', ['bun', 'test', '--isolate', ...scope.bun], {
+          parse: parseBunTest,
+        })
+      : skipped(id, 'bun test', 'no bun tests in scope'),
     await step(id, 'boundaries', ['bun', 'scripts/check-boundaries.ts']),
     await step(id, 'overrides', ['bun', 'scripts/check-overrides.ts']),
-    await vitestRun(id, 'plays', storyDirs(scopes, name, deps)),
+    stories.length > 0
+      ? await vitestRun(id, 'plays', stories)
+      : skipped(id, 'plays', 'no story folder in scope'),
   ]
-  return results
+}
+
+function skipped(scenario: string, step: string, note: string): StepResult {
+  console.log(`  [${scenario}] ${step} ... skipped (${note})`)
+  return { scenario, step, ms: 0, ok: true, note }
 }
 
 function gitChanged(since: string): string[] {
@@ -338,11 +386,11 @@ const vitestCycleEnd =
   /(Waiting for file changes|Watching for file changes|Tests failed)/
 
 async function watch(
-  scopes: Record<string, Scope>,
+  scopes: Record<string, Partial<Scope>>,
   name: string,
   poll: boolean,
 ): Promise<StepResult[]> {
-  const scope = scopes[name] as Scope
+  const scope = resolveScope(scopes, name)
   const id = 'watch'
   const results: StepResult[] = []
   const timeout = 15 * 60 * 1000
@@ -502,9 +550,9 @@ async function main(): Promise<void> {
   const deps = args.includes('--deps')
   const poll = args.includes('--poll')
   const scopes = readScopes()
-  if (!name || !scopes[name]) {
+  if (!name || !isScope(scopes, name)) {
     console.error(
-      `Usage: bun run test:scope <${Object.keys(scopes).join('|')}> [--deps] [--scenario=declared,changed,watch] [--since=main] [--budget=120] [--poll]`,
+      `Usage: bun run test:scope <pattern folder, e.g. collection or records/dialog> [--deps] [--scenario=declared,changed,watch] [--since=main] [--budget=120] [--poll]`,
     )
     process.exit(1)
   }
@@ -525,7 +573,7 @@ async function main(): Promise<void> {
   }
 
   console.log(`\n${table(results)}`)
-  const out = path.join(tmp, `${name}-${Date.now()}.json`)
+  const out = path.join(tmp, `${name.replace(/\W+/g, '-')}-${Date.now()}.json`)
   writeFileSync(out, JSON.stringify(results, null, 2))
   console.log(`\nresults: ${out}`)
   process.exit(results.every((r) => r.ok) ? 0 : 1)
