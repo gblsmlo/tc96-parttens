@@ -83,12 +83,14 @@ State lives in `data-*` attributes and is styled by their variants, never by a p
 ## Verify
 
 ```bash
+bun run test:scope editable          # biome, checks and the plays of src/patterns/editable/
+bun run test:scope editable --deps   # adds properties and checklist, which render EditableField
 bunx biome check packages/ui/src/patterns/editable
 bun run typecheck && bun run boundaries:check && bun run overrides:check && bun run verify:public-api
 cd apps/storybook && bunx vitest run --project=storybook src/patterns/editable
 ```
 
-Interface tests are `play` functions in `apps/storybook/src/patterns/editable/behavior.stories.tsx` (`Patterns/Editable/Behavior`), run by the command above. `Patterns/Properties/Display/EditableText/Behavior` exercises `EditableField` through `EditableText`, and the `Editable` story in `apps/storybook/src/ui/input.stories.tsx` is a COSS `Input` story. A change to the session also runs `cd apps/storybook && bunx vitest run --project=storybook src/patterns/properties src/patterns/checklist`. The pattern has no bun test.
+Interface tests are `play` functions in `apps/storybook/src/patterns/editable/behavior.stories.tsx` (`Patterns/Editable/Behavior`), run by the command above. `Patterns/Properties/Display/EditableText/Behavior` exercises `EditableField` through `EditableText`, and the `Editable` story in `apps/storybook/src/ui/input.stories.tsx` is a COSS `Input` story. A change to the session also runs `bun run test:scope editable --deps`, which adds the plays of `properties` and `checklist` (`scripts/scopes.json`). The pattern has no bun test.
 
 ## Pointers
 

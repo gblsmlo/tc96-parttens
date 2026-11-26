@@ -111,11 +111,17 @@ The pattern sets these attributes and styles none of them through a variant:
 ## Verify
 
 ```bash
+bun run test:scope properties/display/<display>                  # one display and its node: the edit loop (date: 47 s)
+bun run test:scope properties/display/<display> --scenario=watch # reruns on each edit (date: 12 s story, 21 s source)
+bun run test:scope properties                                    # every node, 108 story files (7 min)
+bun run test:scope properties --deps                             # adds checklist, 114 story files (7 min)
 bun test --isolate packages/ui/src/patterns/properties
 bunx biome check packages/ui/src/patterns/properties
 bun run typecheck && bun run boundaries:check && bun run overrides:check && bun run verify:public-api
 cd apps/storybook && bunx vitest run --project=storybook src/patterns/properties
 ```
+
+A display sub-scope runs only that display's node; a change under `shared/` or `hooks/` runs `bun run test:scope properties`. `--deps` stops at `checklist`: `record-group` imports only a type, which `typecheck` covers, and the 47 blocks that render a display (`blocks/application/record-dialog/*`, most of `blocks/data/*`, directly or through `blocks/data/shared/properties`) run in CI.
 
 Stories in `apps/storybook/src/patterns/properties/` (`Patterns/Properties/...`) follow the six pages of `Get Started/Component Docs` and run axe with `test: 'error'`. The root node `Patterns/Properties` documents `PropertyCollection`, `PropertySurface` and the internal parts of `shared/` and `hooks/`: those are not exported, so its `Behavior` tests them through the public displays that render them (`EmailProperty`, `TagsProperty`, `PeopleProperty`, `DateProperty`, `DateRangeProperty`, `AttachmentsProperty`, `SelectProperty`), and a display's API Reference links to the root instead of documenting them again. Each display, `AssignedProperty` included, is a node `Patterns/Properties/Display/<Display>` in `display/<display>/`. A node's `<node>-controls.ts` holds the Playground args and `<node>-layouts.tsx` the compositions its pages render, with the consumer's state in the composition (`useState`). Layout wrappers such as `p-4` or `min-h-80` are decorators, not markup in the render.
 
