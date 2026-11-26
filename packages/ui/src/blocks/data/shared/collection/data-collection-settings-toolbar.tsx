@@ -11,13 +11,12 @@ import {
 import type { ReactNode } from 'react'
 import { dataCollectionModeIcons } from './data-collection-toolbar'
 import type {
-  DataCollectionModeLabels,
+  DataCollectionMode,
   DataCollectionSettingsToolbarLabels,
-  DataCollectionToolbarMode,
 } from './types'
 
 export interface DataCollectionSettingsToolbarProps<
-  TMode extends DataCollectionToolbarMode,
+  TMode extends DataCollectionMode,
 > {
   actions?: ReactNode
   activeFilterCount: number
@@ -27,7 +26,7 @@ export interface DataCollectionSettingsToolbarProps<
   left?: ReactNode
   loading: boolean
   mode?: TMode
-  modeLabels?: DataCollectionModeLabels
+  modeLabels?: Readonly<Record<TMode, string>>
   modes?: readonly TMode[]
   onClearFilters: () => void
   onModeChange?: (mode: TMode) => void
@@ -38,7 +37,7 @@ export interface DataCollectionSettingsToolbarProps<
 }
 
 export function DataCollectionSettingsToolbar<
-  TMode extends DataCollectionToolbarMode,
+  TMode extends DataCollectionMode,
 >({
   actions,
   activeFilterCount,

@@ -3,7 +3,11 @@
 import { Empty, EmptyDescription } from '@tc96/ui/empty'
 import { ScrollArea } from '@tc96/ui/scroll-area'
 import { Separator } from '@tc96/ui/separator'
-import { Fragment, type ReactNode, useMemo, useState } from 'react'
+import { Fragment, type ReactNode, useMemo, useRef, useState } from 'react'
+import {
+  scrollbarInsetStyle,
+  useScrollbarInsets,
+} from '../../collection/shared/hooks/use-scrollbar-insets'
 
 import { projectCollection } from '../../collection/shared/lib/project-collection'
 import { skeletonKeys } from '../../collection/shared/lib/skeleton-keys'
@@ -118,12 +122,17 @@ export function ListView<TRecord>({
     )
   }
 
+  const scrollAreaRef = useRef<HTMLDivElement>(null)
+  useScrollbarInsets(scrollAreaRef, '[data-slot="list-view-header"]', '', false)
+
   return (
     <ScrollArea
       aria-busy={loading ? 'true' : undefined}
       className="min-w-0 flex-1 rounded-lg border border-border/80 bg-card/40 shadow-black/5"
       data-collection-grouping={grouping ?? undefined}
       data-slot="list-view"
+      ref={scrollAreaRef}
+      verticalScrollbarProps={{ style: scrollbarInsetStyle }}
       viewportProps={{
         className:
           'mask-b-from-[calc(100%-min(var(--fade-size),var(--scroll-area-overflow-y-end)))] [--fade-size:1.5rem]',

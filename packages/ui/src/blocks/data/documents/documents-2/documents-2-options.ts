@@ -53,7 +53,7 @@ export const documents2TypeIcons: Record<Documents2Type, Icon> = {
   video: VideoIcon,
 }
 
-export const documents2LeadingWidth = 'w-6'
+export const documents2LeadingWidth = 'w-8'
 
 export const documents2FieldWidth = {
   owner: 'w-44',

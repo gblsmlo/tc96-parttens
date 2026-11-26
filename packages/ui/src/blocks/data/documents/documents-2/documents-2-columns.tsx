@@ -40,7 +40,7 @@ export function createDocuments2Columns(
       accessorFn: (item) => item.name,
       cell: ({ row }) => (
         <span className="flex min-w-56 max-w-96 items-center gap-2">
-          <Documents2TypeIcon context={context} item={row.original} />
+          <Documents2TypeIcon context={context} item={row.original} size="sm" />
           <span className="min-w-0 truncate font-medium">
             {row.original.name}
           </span>
