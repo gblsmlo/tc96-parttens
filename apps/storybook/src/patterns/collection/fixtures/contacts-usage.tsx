@@ -6,6 +6,7 @@ import {
   TagIcon,
   TrashIcon,
 } from '@phosphor-icons/react'
+import { RecordDialog4 } from '@tc96/ui/blocks/application/record-dialog/record-dialog-4'
 import {
   MenuCheckboxItem,
   MenuGroup,
@@ -43,7 +44,6 @@ import {
   ViewSettingsSection,
 } from '@tc96/ui/patterns'
 import { type ReactElement, useCallback, useMemo, useState } from 'react'
-import { CreateContactDialog } from '../../records/dialog/create-contact-dialog'
 import {
   createContactGridColumns,
   createContactTableColumns,
@@ -524,7 +524,7 @@ function ContactsWorkspace({
           </CollectionFrameFooter>
         ) : null}
       </CollectionFrame>
-      <CreateContactDialog
+      <RecordDialog4
         companies={contacts.map((contact) => contact.company)}
         onCreate={(contact) =>
           onContactsChange((current) => [

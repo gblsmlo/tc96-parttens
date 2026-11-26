@@ -3,9 +3,12 @@ import { Button } from '@tc96/ui/button'
 import {
   PersonProperty,
   RecordDialog,
+  RecordDialogBarShell,
   RecordDialogCreateMore,
   RecordDialogHeadline,
+  RecordDialogInlineShell,
   type RecordDialogProps,
+  RecordDialogRowShell,
   RecordGroupRow,
   RichTextEditor,
   SelectProperty,
@@ -20,6 +23,7 @@ import type { RecordDialogControls } from './record-dialog-controls.ts'
 export interface ComposedRecordDialogProps extends RecordDialogControls {
   children?: ReactNode
   defaultOpen?: boolean
+  descriptionMinHeight?: boolean
   keepOpenOnSuccess?: boolean
   onCreateMoreChange?: (checked: boolean) => void
   onOpenAsPage?: () => void
@@ -71,6 +75,7 @@ export const ComposedRecordDialog = ({
   createMore,
   defaultOpen = true,
   description,
+  descriptionMinHeight,
   errorMessage,
   headline,
   headlineDescription,
@@ -107,6 +112,7 @@ export const ComposedRecordDialog = ({
   const headlineField = headline ? (
     <RecordDialogHeadline
       descriptionLabel={headlineDescription ? 'Description' : undefined}
+      descriptionMinHeight={descriptionMinHeight}
       descriptionPlaceholder="Add description..."
       onTitleChange={(next) => {
         setRecordTitle(next)
@@ -256,13 +262,11 @@ export const InlinePropertiesFormation = ({
   const { lead, priority, status } = useProjectProperties(onChange)
 
   return (
-    <div className="flex flex-1 flex-col pt-3">
-      <div className="mt-auto flex flex-wrap items-center gap-2">
-        {status}
-        {priority}
-        {lead}
-      </div>
-    </div>
+    <RecordDialogInlineShell>
+      {status}
+      {priority}
+      {lead}
+    </RecordDialogInlineShell>
   )
 }
 
@@ -272,30 +276,19 @@ export const RowPropertiesFormation = ({
   const { lead, priority, repository, status } = useProjectProperties(onChange)
 
   return (
-    <div className="mt-4">
-      <div>
-        <RecordGroupRow label="Status">{status}</RecordGroupRow>
-        <RecordGroupRow label="Priority">{priority}</RecordGroupRow>
-        <RecordGroupRow label="Lead">{lead}</RecordGroupRow>
-        <RecordGroupRow label="Repository">{repository}</RecordGroupRow>
-      </div>
-    </div>
+    <RecordDialogRowShell>
+      <RecordGroupRow label="Status">{status}</RecordGroupRow>
+      <RecordGroupRow label="Priority">{priority}</RecordGroupRow>
+      <RecordGroupRow label="Lead">{lead}</RecordGroupRow>
+      <RecordGroupRow label="Repository">{repository}</RecordGroupRow>
+    </RecordDialogRowShell>
   )
 }
 
 export const PropertyBarOverBodyFormation = () => (
-  <div className="flex flex-1 flex-col">
-    <div className="mt-2 flex flex-wrap items-center gap-2">
-      <ProjectPropertyBar />
-    </div>
-    <div className="flex flex-1 flex-col pt-6">
-      <RichTextEditor
-        aria-label="Project brief"
-        className="flex-1"
-        placeholder="Write the brief"
-      />
-    </div>
-  </div>
+  <RecordDialogBarShell bar={<ProjectPropertyBar />}>
+    <RichTextEditor aria-label="Project brief" placeholder="Write the brief" />
+  </RecordDialogBarShell>
 )
 
 export const DescriptionOverBodyFormation = ({

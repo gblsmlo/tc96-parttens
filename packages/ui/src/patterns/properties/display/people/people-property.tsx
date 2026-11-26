@@ -88,6 +88,7 @@ export function PeopleProperty<TValue extends string = string>({
     ) : display === 'stack' && selectedOptions[0] ? (
       <PersonOptionContent option={selectedOptions[0]} size="xs" />
     ) : null
+  const AddIcon = propertyDisplayIcons.personAdd
   const stackText =
     selectedOptions.length > 1
       ? labels.count(selectedOptions.length)
@@ -174,9 +175,15 @@ export function PeopleProperty<TValue extends string = string>({
                       type="button"
                     />
                   }
+                  className={cn(selectedOptions.length === 0 && 'gap-1.5')}
                   variant={variant}
                 >
-                  {stack ?? placeholder}
+                  {stack ?? (
+                    <>
+                      <AddIcon aria-hidden="true" className="size-4" />
+                      {placeholder}
+                    </>
+                  )}
                 </PropertySurface>
               )
             : undefined

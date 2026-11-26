@@ -20,6 +20,7 @@ import {
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Avatar, AvatarFallback } from '@tc96/ui/avatar'
 import { Badge } from '@tc96/ui/badge'
+import { RecordDialog5 } from '@tc96/ui/blocks/application/record-dialog/record-dialog-5'
 import { Button } from '@tc96/ui/button'
 import {
   Checklist,
@@ -46,7 +47,6 @@ import { expect, within } from 'storybook/test'
 import { sleep } from '../../../test-utils/sleep'
 import { usageParameters } from '../../../test-utils/usage-kit'
 import { ptBRPropertyLabels } from '../../properties/properties-labels.ts'
-import { NoteDialog } from '../dialog/note-dialog'
 import {
   initialNotes,
   type Note,
@@ -1044,7 +1044,7 @@ export const Notes: Story = {
     docs: {
       description: {
         story:
-          'Keeps the notes of the record, newest first: the title carries the count, and each note is a `RecordGroupLink` rendered as a `button` with the author avatar, the title in ink, the first lines of the body muted and the relative date as a `time` in `meta`. A row opens the note in the `NoteDialog` of [Patterns/Records/RecordDialog/Usages, Note](?path=/story/patterns-records-recorddialog-usages--note), + opens it empty, and a save moves the note to the top. One `NoteDialog` serves every request and resets its fields when `note` changes. `Ver tudo` opens the full list.',
+          'Keeps the notes of the record, newest first: the title carries the count, and each note is a `RecordGroupLink` rendered as a `button` with the author avatar, the title in ink, the first lines of the body muted and the relative date as a `time` in `meta`. A row opens the note in the `RecordDialog5` of [Blocks/Application/Record Dialog/Notes/RecordDialog5](?path=/story/blocks-application-record-dialog-notes-recorddialog5-playground--playground), + opens it empty, and a save moves the note to the top. One `RecordDialog5` serves every request and resets its fields when `note` changes. `Ver tudo` opens the full list.',
       },
       source: { inlineLimit: 250 },
     },
@@ -1122,7 +1122,7 @@ export const Notes: Story = {
             </RecordGroupLink>
           ))}
         </RecordGroup>
-        <NoteDialog
+        <RecordDialog5
           note={editing}
           onCopyLink={copyLink}
           onOpenChange={setOpen}
@@ -1138,6 +1138,7 @@ export const Notes: Story = {
             })
           }
           open={open}
+          people={noteAuthors}
           recordName={noteRecordName}
         />
       </>

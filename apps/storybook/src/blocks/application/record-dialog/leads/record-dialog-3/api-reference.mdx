@@ -1,0 +1,74 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# RecordDialog3
+
+A create dialog for a lead on the Record Dialog row-properties layout: a borderless title and description, then labeled rows for Etapa, Origem, Responsável and Próxima ação. Reach for it when Novo lead opens from a lead list or a pipeline. Install it with `npx @tc96/cli add record-dialog-3`.
+
+The block keeps only the draft and the create-more switch: the people catalog and the save are the consumer's. A failed save shows in `errorMessage`. Create more keeps the dialog open after saving and clears the fields. Criar lead stays disabled until the title has text.
+
+The other pages of `Blocks/Application/Record Dialog/Leads/RecordDialog3`: [Playground](?path=/story/blocks-application-record-dialog-leads-recorddialog3-playground--playground) to try the controls and [States](?path=/story/blocks-application-record-dialog-leads-recorddialog3-states--default) for the open dialog.
+
+## Import
+
+```tsx
+import { RecordDialog3 } from '@tc96/ui/blocks/application/record-dialog/record-dialog-3'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<RecordDialog3
+  onCreate={saveLead}
+  onOpenChange={setOpen}
+  open={open}
+  people={people}
+/>
+```
+
+## RecordDialog3
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `open` | `boolean` | - | Whether the dialog is open. |
+| `onOpenChange` | `(open: boolean) => void` | - | Called when the dialog asks to open or close. |
+| `onCreate` | `(values: RecordDialog3Values) => void \| Promise<void>` | - | Called with the values on save. A thrown error keeps the dialog open with its message. |
+| `people` | `readonly RecordDialog3Person[]` | - | The options of the Responsável row. |
+| `stageOptions` | `readonly PropertyOption[]` | from labels | Overrides the Etapa options. |
+| `sourceOptions` | `readonly PropertyOption[]` | from labels | Overrides the Origem options. |
+| `nextActionOptions` | `readonly PropertyOption[]` | from labels | Overrides the Próxima ação options. |
+| `labels` | `Partial<RecordDialog3Labels>` | pt-BR texts | Overrides the texts of the block. |
+| `className` | `string` | - | Merged into the dialog popup. |
+
+## RecordDialog3Values
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `title` | `string` | Trimmed title. |
+| `description` | `string` | Trimmed description from the headline. |
+| `stage` | `"new" \| "contacted" \| "qualified"` | Starts at `new`. |
+| `source` | `"referral" \| "website" \| "ads" \| "event" \| "outbound" \| null` | Starts empty. |
+| `ownerId` | `string \| null` | Selected person id. |
+| `nextAction` | `"call" \| "email" \| "meeting" \| "proposal" \| "follow-up" \| null` | Starts empty. |
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `RecordDialog3` | `component` | The create dialog. |
+| `RecordDialog3Props` | `type` | The props of the block. |
+| `RecordDialog3Labels` | `type` | The keys of `labels`. |
+| `RecordDialog3Values` | `type` | The payload of `onCreate`. |
+| `RecordDialog3Person` | `type` | One owner option. |
+| `RecordDialog3Stage`, `RecordDialog3Source`, `RecordDialog3NextAction` | `type` | The value unions. |
+| `createRecordDialog3StageOptions`, `createRecordDialog3SourceOptions`, `createRecordDialog3NextActionOptions` | `function` | Build the default options from the labels. |
+
+## Accessibility and theme
+
+- The dialog is named by `labels.titleText`.
+- Focus, Escape and Mod+Enter come from the Record Dialog pattern; errors render with `role="alert"`.
+- The block carries no raw color, radius or shadow: it composes Record Dialog, Record Group Row and the property displays.
