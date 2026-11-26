@@ -11,13 +11,13 @@ import {
 import type { ReactNode } from 'react'
 import { dataCollectionModeIcons } from './data-collection-toolbar'
 import type {
-  DataCollectionMode,
   DataCollectionModeLabels,
   DataCollectionSettingsToolbarLabels,
+  DataCollectionToolbarMode,
 } from './types'
 
 export interface DataCollectionSettingsToolbarProps<
-  TMode extends DataCollectionMode,
+  TMode extends DataCollectionToolbarMode,
 > {
   actions?: ReactNode
   activeFilterCount: number
@@ -38,7 +38,7 @@ export interface DataCollectionSettingsToolbarProps<
 }
 
 export function DataCollectionSettingsToolbar<
-  TMode extends DataCollectionMode,
+  TMode extends DataCollectionToolbarMode,
 >({
   actions,
   activeFilterCount,

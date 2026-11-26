@@ -2,6 +2,7 @@ import {
   CalendarDotsIcon,
   DownloadSimpleIcon,
   FunnelSimpleIcon,
+  GridFourIcon,
   KanbanIcon,
   RowsIcon,
   TableIcon,
@@ -25,10 +26,12 @@ import type {
   DataCollectionMode,
   DataCollectionModeLabels,
   DataCollectionToolbarLabels,
+  DataCollectionToolbarMode,
 } from './types'
 
 export const dataCollectionModeIcons = {
   calendar: CalendarDotsIcon,
+  gallery: GridFourIcon,
   kanban: KanbanIcon,
   list: RowsIcon,
   table: TableIcon,
@@ -56,7 +59,7 @@ export function DataCollectionToolbarButton({
 }
 
 export interface DataCollectionToolbarProps<
-  TMode extends DataCollectionMode,
+  TMode extends DataCollectionToolbarMode,
   TStatus extends string,
 > {
   description?: string
@@ -76,7 +79,7 @@ export interface DataCollectionToolbarProps<
 }
 
 export function DataCollectionToolbar<
-  TMode extends DataCollectionMode,
+  TMode extends DataCollectionToolbarMode,
   TStatus extends string,
 >({
   description,
