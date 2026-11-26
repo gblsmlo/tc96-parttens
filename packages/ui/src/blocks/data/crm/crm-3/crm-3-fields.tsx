@@ -1,0 +1,187 @@
+import { CircleIcon } from '@phosphor-icons/react'
+import { TagsProperty } from '@tc96/ui/patterns/properties/display/tags/tags-property'
+import { TextProperty } from '@tc96/ui/patterns/properties/display/text/text-property'
+import {
+  DataDate,
+  DataOwner,
+  DataSelect,
+} from '../../shared/properties/data-properties'
+import type { DataPropertyVariant } from '../../shared/properties/types'
+import { canEditCrm3Lead, canMoveCrm3Lead, crm3Origins } from './crm-3-options'
+import type {
+  Crm3Labels,
+  Crm3Lead,
+  Crm3Option,
+  Crm3Origin,
+  Crm3Person,
+  Crm3Stage,
+} from './types'
+
+export interface Crm3FieldContext {
+  formatMoney: (cents: number) => string
+  labels: Crm3Labels
+  locale: string
+  onOpen?: (leadId: string) => void
+  onOriginChange?: (leadId: string, origin: Crm3Origin) => void
+  onOwnerChange?: (leadId: string, ownerId: string) => void
+  onStageChange?: (leadId: string, stageId: string) => void
+  owners: readonly Crm3Person[]
+  stages: readonly Crm3Stage[]
+  tags: readonly Crm3Option[]
+  timeZone: string
+}
+
+interface FieldProps {
+  context: Crm3FieldContext
+  item: Crm3Lead
+  variant?: DataPropertyVariant
+}
+
+const stageOptionsOf = (stages: readonly Crm3Stage[]) =>
+  stages.map((stage) => ({
+    icon: CircleIcon,
+    label: stage.label,
+    tone: stage.tone ?? 'neutral',
+    value: stage.id,
+  }))
+
+export function Crm3StageField({ context, item, variant }: FieldProps) {
+  const { labels, onStageChange, stages } = context
+  const editable = Boolean(onStageChange) && canMoveCrm3Lead(item)
+  return (
+    <DataSelect<string>
+      ariaLabel={labels.columns.stage}
+      onChange={
+        onStageChange && editable
+          ? (stageId) => {
+              if (stageId !== item.stageId) onStageChange(item.id, stageId)
+            }
+          : undefined
+      }
+      options={stageOptionsOf(
+        editable
+          ? stages.filter(
+              (stage) => !stage.inactive || stage.id === item.stageId,
+            )
+          : stages,
+      )}
+      value={item.stageId}
+      variant={variant}
+    />
+  )
+}
+
+export function Crm3OriginField({ context, item, variant }: FieldProps) {
+  const { labels, onOriginChange } = context
+  return (
+    <DataSelect<Crm3Origin>
+      ariaLabel={labels.columns.origin}
+      onChange={
+        onOriginChange && canEditCrm3Lead(item)
+          ? (origin) => {
+              if (origin !== item.origin) onOriginChange(item.id, origin)
+            }
+          : undefined
+      }
+      options={crm3Origins.map((origin) => ({
+        label: labels.origins[origin],
+        value: origin,
+      }))}
+      value={item.origin}
+      variant={variant}
+    />
+  )
+}
+
+export function Crm3OwnerField({
+  avatarOnly,
+  context,
+  item,
+  variant,
+}: FieldProps & { avatarOnly?: boolean }) {
+  const { labels, onOwnerChange, owners } = context
+  return (
+    <DataOwner
+      ariaLabel={labels.columns.owner}
+      avatarOnly={avatarOnly}
+      onChange={
+        onOwnerChange && canEditCrm3Lead(item)
+          ? (ownerId) => {
+              if (ownerId !== item.ownerId) onOwnerChange(item.id, ownerId)
+            }
+          : undefined
+      }
+      owners={owners}
+      placeholder={labels.unassigned}
+      value={item.ownerId}
+      variant={variant}
+    />
+  )
+}
+
+export function Crm3ContactField({ context, item }: FieldProps) {
+  const { labels } = context
+  return (
+    <TextProperty
+      ariaLabel={labels.columns.contact}
+      value={item.contact}
+      variant="plain"
+      labels={{ fallback: labels.noContact }}
+    />
+  )
+}
+
+export function Crm3NextActionField({ context, item }: FieldProps) {
+  const { labels } = context
+  return (
+    <TextProperty
+      ariaLabel={labels.columns.nextAction}
+      value={item.nextAction}
+      variant="plain"
+      labels={{ fallback: labels.noNextAction }}
+    />
+  )
+}
+
+export function Crm3DeadlineField({ context, item }: FieldProps) {
+  const { labels, locale, timeZone } = context
+  return (
+    <DataDate
+      ariaLabel={labels.columns.nextActionAt}
+      fallback={labels.noDeadline}
+      locale={locale}
+      overdue={Boolean(item.nextActionAt && item.nextActionOverdue)}
+      timeZone={timeZone}
+      value={item.nextActionAt}
+      variant="plain"
+    />
+  )
+}
+
+export function Crm3ValueField({ context, item }: FieldProps) {
+  const { formatMoney, labels } = context
+  if (item.valueCents === null)
+    return <span className="text-muted-foreground">{labels.noValue}</span>
+  return (
+    <span className="tabular-nums" data-slot="crm-3-value">
+      {formatMoney(item.valueCents)}
+    </span>
+  )
+}
+
+export function Crm3TagsField({ context, item }: FieldProps) {
+  const { labels, tags } = context
+  const options = tags
+    .filter((tag) => item.tagIds.includes(tag.id))
+    .map((tag) => ({ label: tag.label, value: tag.id }))
+  if (options.length === 0) return null
+  return (
+    <TagsProperty
+      ariaLabel={labels.columns.tags}
+      options={options}
+      readOnly
+      value={options.map((option) => option.value)}
+      variant="badge"
+    />
+  )
+}

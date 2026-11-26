@@ -1,0 +1,65 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# Crm3
+
+`Crm2` with the collection toolbar of `Tasks4`. The same leads, fields, columns, stages and bulk actions: a Quadro with one column per pipeline stage and a Tabela with Lead, Contato, Etapa, Origem, Responsável, Valor, Próxima ação, Prazo and Tags. Install it with `npx @tc96/cli add crm-3`.
+
+The toolbar `left` slot holds the view switcher (`labels.viewList`): one fixed view named by `labels.views.all`, with its count from `counts`, then the saved views, with create, update, rename, duplicate and delete when their callbacks are passed. The page has no `h2`; the section keeps its name from `labels.title`. The `right` slot holds, in this order: the filter menu, the layout menu, the sort menu (Tabela only), the group menu (Quadro only) and the primary `Action` (`labels.create`). The filter trigger is an icon button that grows into an icon and a count `Badge` while a filter is active, and its name turns into `labels.activeFilters(count)`. The filter menu holds `labels.filterProperties` with one submenu per property (Etapa, Responsável, Origem, Tags with several choices, and Arquivados in the Tabela), then `labels.clearFilters`, disabled while no filter is active. The layout menu shows the icon of the current layout and lists Quadro and Tabela as radio items. There is no search field and no Salvar preferência: the saved views take that role.
+
+The block is controlled and renders what it gets. Mode, grouping, sort, every filter, the selection and the page are a value and a callback; without the value the block keeps it locally. It does **not** filter, sort or page `leads`. Each filter submenu renders only with its callback (Etapa, Responsável and Tags also need their catalog), the filter menu with at least one of them, the sort menu with `onSortChange` and the `Action` with `onCreate`. Picking the fixed view calls `onSavedViewSelect(null)`; the block never applies a saved view.
+
+`leads` is one list for both modes, projected into columns by the active grouping in the Quadro. Grouped by Etapa, each active column has Novo lead em (`onCreateInStage`) and a card drop calls `onStageChange(leadId, stageId)` and returns `false`: the card goes back and moves when `leads` changes. A drop is refused, with no call, when the lead is not `editable`, not `open` or `archived`, and on an inactive stage. Selected rows of the Tabela open the `ActionBar` with Mover para etapa, Responsável and Arquivar.
+
+Every text is a key of `labels`, with English defaults; the stories pass pt-BR. Texts that carry a number or a name (`activeFilters`, `selectedCount`, `openRecord`, `createInStage`, `viewCountName`, `pageRange`) are functions, so the consumer decides the word order.
+
+## Import
+
+```tsx
+import { Crm3 } from '@tc96/ui/blocks/data/crm/crm-3'
+```
+
+## Anatomy
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+## Crm3
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `leads` | `Crm3Lead[]` | required | The board's open leads in the Quadro, the page in the Tabela. |
+| `stages`, `owners`, `tags` | `Crm3Stage[]`, `Crm3Person[]`, `Crm3Option[]` | `[]` | The workspace catalogs: board columns and Etapa, Responsável, the tag badges, and their filters. |
+| `mode`, `onModeChange` | `'kanban' \| 'table'` | `'kanban'` | The controllable layout, changed from the layout menu. |
+| `groupBy`, `onGroupByChange` | `'stage' \| 'owner' \| 'origin'` | `'stage'` | How the Quadro groups its cards; the Tabela is never grouped. |
+| `sort`, `onSortChange` | `Crm3Sort` | `'created'` | The sort menu of the Tabela, rendered with `onSortChange`. |
+| `stageFilter`, `ownerFilter`, `originFilter`, `tagFilter`, `archivedFilter` and their callbacks | `string \| null`, `string \| null`, `Crm3Origin \| null`, `string[]`, `Crm3Archived \| null` | `null`, `[]` | The filter submenus; picking Sem arquivados reports `null`. |
+| `filtered` | `boolean` | `false` | Picks `labels.noResult` instead of `labels.empty`. |
+| `stageValues` | `Partial<Record<string, number>>` | - | The value in cents of each stage, shown in the column title when grouped by Etapa. |
+| `boardHasMore` | `boolean` | `false` | Shows the notice that some stages hold only their first leads. |
+| `onStageChange` | `(leadId, stageId) => void` | - | Makes Etapa editable and takes the card drop when grouped by Etapa. |
+| `onOwnerChange`, `onOriginChange` | `(leadId, value) => void` | - | Make Responsável and Origem editable in a row. |
+| `onCreate`, `onCreateInStage` | `() => void`, `(stageId) => void` | - | The primary `Action`, and Novo lead em on each active stage column. |
+| `onOpen` | `(leadId) => void` | - | Makes a card and a row open the lead. |
+| `selectedIds`, `onSelectedIdsChange` | `string[]` | `[]` | The row selection of the Tabela. Either one, or a bulk callback, adds the select column. |
+| `onBulkStageChange`, `onBulkOwnerChange`, `onBulkArchive` | `(leadIds, value?) => void` | - | The `ActionBar` items. |
+| `page`, `onPageChange`, `pageCount`, `pageSize`, `total` | `number` | `1` | The pagination footer of the Tabela. |
+| `counts` | `Partial<Record<'all', number>>` | - | The count of the fixed view, shown in the switcher popup. |
+| `savedViews`, `savedViewId`, `savedViewModified`, `savedViewsLoading`, `savedViewsPending` | - | - | The saved views after the fixed view. |
+| `onSavedViewSelect` | `(savedViewId: string \| null) => void` | - | A saved view, or `null` for the fixed view. |
+| `onSavedViewCreate`, `onSavedViewUpdate`, `onSavedViewRename`, `onSavedViewDuplicate`, `onSavedViewDelete` | callbacks | - | Each menu action renders with its callback; the dialogs are the consumer's. |
+| `locale`, `currency`, `timeZone` | `string` | `'pt-BR'`, `'BRL'`, `'America/Sao_Paulo'` | Format the values and the deadlines. |
+| `pending`, `error`, `onRetry` | `boolean`, `boolean`, `() => void` | - | The loading contract of the data blocks; the toolbar keeps only the view switcher meanwhile. |
+| `labels` | `Crm3LabelsOverride` | English texts | Overrides the texts; the record groups merge key by key. |
+| `className` | `string` | - | Merged into the root classes. |
+
+`Crm3Lead` and `Crm3Stage` have the fields of `Crm2Lead` and `Crm2Stage`.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `Crm3` | `component` | The leads board and table with the collection toolbar. |
+| `crm3Modes`, `crm3Groupings`, `crm3Sorts`, `crm3Origins` | `const` | The modes, groupings, sorts and origins, in menu order. |
+| `Crm3Props`, `Crm3Lead`, `Crm3Stage`, `Crm3StageTone`, `Crm3Option`, `Crm3Person`, `Crm3SavedView`, `Crm3Mode`, `Crm3View`, `Crm3GroupBy`, `Crm3Sort`, `Crm3Origin`, `Crm3Archived`, `Crm3Status`, `Crm3FilterId`, `Crm3ColumnId`, `Crm3Labels`, `Crm3LabelsOverride` | `type` | The props, the data and the labels. |
