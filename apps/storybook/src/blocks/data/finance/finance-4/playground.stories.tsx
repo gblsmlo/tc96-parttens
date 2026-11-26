@@ -9,6 +9,13 @@ import { ComposedFinance4 } from './finance-4-layouts.tsx'
 const meta = {
   args: finance4ControlArgs,
   argTypes: finance4ControlArgTypes,
+  decorators: [
+    (Story) => (
+      <div className="h-[calc(100dvh-2rem)]">
+        <Story />
+      </div>
+    ),
+  ],
   parameters: { layout: 'padded' },
   render: (args) => <ComposedFinance4 {...args} />,
   tags: ['!autodocs'],

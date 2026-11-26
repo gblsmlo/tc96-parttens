@@ -9,6 +9,13 @@ import { ComposedLegal8 } from './legal-8-layouts.tsx'
 const meta = {
   args: legal8ControlArgs,
   argTypes: legal8ControlArgTypes,
+  decorators: [
+    (Story) => (
+      <div className="h-[calc(100dvh-2rem)]">
+        <Story />
+      </div>
+    ),
+  ],
   parameters: { layout: 'padded' },
   render: (args) => <ComposedLegal8 {...args} />,
   tags: ['!autodocs'],
