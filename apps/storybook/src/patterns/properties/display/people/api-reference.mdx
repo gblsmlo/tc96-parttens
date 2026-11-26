@@ -9,7 +9,7 @@ A property for several people at once: the participants of a meeting, the member
 
 The other pages of `Patterns/Properties/Display/People`: [Playground](?path=/story/patterns-properties-display-people-playground--playground) to try the people, the texts and the states, [Variants](?path=/story/patterns-properties-display-people-variants--default) for each surface and state, [Layouts](?path=/story/patterns-properties-display-people-layouts--default) for the formation, [Behavior](?path=/story/patterns-properties-display-people-behavior--empty-trigger-shows-placeholder-last) for the tests, and [Usages](?path=/story/patterns-properties-display-people-usages--meeting-participants) for real content.
 
-Used in: the access block of [Patterns/Records/Group/Usages](?path=/story/patterns-records-group-usages--access) and the event dialog of [Patterns/Records/RecordDialog/Usages, Events](?path=/story/patterns-records-recorddialog-usages--events).
+Used in: the access block of [Patterns/Records/Group/Usages](?path=/story/patterns-records-group-usages--access) and the Guests chip of [Blocks/Application/Record Dialog/Agenda/Agenda1](?path=/story/blocks-application-record-dialog-agenda-agenda1-playground--playground).
 
 ## Import
 
@@ -42,11 +42,12 @@ Renders a `fieldset` named by `ariaLabel` that holds a multiple combobox. It nev
 | `onValueChange` | `(value: readonly TValue[]) => void` | - | Called with the next list after a person is picked or removed. |
 | `action` | `(value, context) => void` | - | Called instead of `onValueChange`, with who changed. `context` is a `PropertyListChangeContext`. |
 | `variant` | `"badge"` or `"plain"` | `"plain"` | Controls the frame: the bordered frame of a combobox field around the chips, or no frame. |
+| `display` | `"chips"` or `"stack"` | `"chips"` | Controls the value: one chip per person, or a single surface with stacked avatars and `labels.count` when two or more are applied. |
 | `placeholder` | `string` | `"Add person"` | Sets the text of the add chip, and of the read-only row, while no one is applied. |
 | `ariaLabel` | `string` | `"People"` | Names the row, the list and its popup. |
 | `isLoading` | `boolean` | `false` | When true, shows `labels.loading` at the top of the open list. |
 | `dropdownPlacement` | `PropertyMultiSelectDropdownPlacement` | - | Sets the `side`, `align`, `sideOffset` and `alignOffset` of the list; it aligns to the end of the add chip by default. |
-| `labels` | `Partial<PeoplePropertyLabels>` | English | Overrides the texts, merged over `defaultPropertyLabels.people`: `add` (`"Add person"`, the name of the `+` chip), `remove` (`"Remove"`, followed by the name), `loading` (`"Loading people…"`) and `empty` (`"No people found."`). |
+| `labels` | `Partial<PeoplePropertyLabels>` | English | Overrides the texts, merged over `defaultPropertyLabels.people`: `add` (`"Add person"`, the name of the `+` chip), `remove` (`"Remove"`, followed by the name), `count` (the stack summary), `loading` (`"Loading people…"`) and `empty` (`"No people found."`). |
 | `disabled` | `boolean` | `false` | When true, disables the combobox, the add chip and the remove buttons. |
 | `readOnly` | `boolean` | `false` | When true, shows the people with no add chip and no remove buttons. |
 | `className` | `string` | - | Adds classes to the row. |
@@ -56,6 +57,7 @@ Renders a `fieldset` named by `ariaLabel` that holds a multiple combobox. It nev
 | Attribute | Values | Description |
 | --- | --- | --- |
 | `data-slot` | `"people-property"` | Selects the row |
+| `data-display` | `"chips"` or `"stack"` | Follows `display` on the row |
 | `data-variant` | `"badge"` or `"plain"` | Follows `variant` on the row |
 | `data-slot` | `"combobox-chip"` | Selects each person of the editable row |
 | `data-slot` | `"property-surface"` | Selects the add chip, and each person of the read-only row |
@@ -64,7 +66,9 @@ Renders a `fieldset` named by `ariaLabel` that holds a multiple combobox. It nev
 
 ### The row
 
-Each person is a chip with a 16px avatar, the name, the `supportingLabel` from the `sm` breakpoint (in `foreground` at 72% inside the chip, `muted-foreground` elsewhere), and a remove button named `"<labels.remove> <name>"` (`"Remove <name>"`); the chip sets its text size and radius to match the property surface. An id that no option declares shows as a chip with the id as its name. The add chip comes last: while no one is applied it shows a user icon and `placeholder` and takes its name from that text; once someone is applied it shrinks to a 24px `+` named `labels.add` (`"Add person"`), whatever `placeholder` says.
+With `display="chips"` (the default), each person is a chip with a 16px avatar, the name, the `supportingLabel` from the `sm` breakpoint (in `foreground` at 72% inside the chip, `muted-foreground` elsewhere), and a remove button named `"<labels.remove> <name>"` (`"Remove <name>"`); the chip sets its text size and radius to match the property surface. An id that no option declares shows as a chip with the id as its name. The add chip comes last: while no one is applied it shows a user icon and `placeholder` and takes its name from that text; once someone is applied it shrinks to a 24px `+` named `labels.add` (`"Add person"`), whatever `placeholder` says.
+
+With `display="stack"`, one surface holds the value: a single person shows avatar and name; two or more show up to three stacked 16px avatars and `labels.count`. The surface opens the list; there is no per-person remove chip.
 
 ### The list
 

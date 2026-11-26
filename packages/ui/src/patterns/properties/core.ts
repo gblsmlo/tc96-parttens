@@ -20,6 +20,7 @@ export {
   type PropertyTone,
   propertyToneClassName,
 } from './shared/property-catalog'
+export { propertyDisplayIcons } from './shared/property-display-meta'
 export {
   type AttachmentPropertyLabels,
   type DatePropertyLabels,

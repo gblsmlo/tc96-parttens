@@ -14,7 +14,7 @@ Controlled property displays (date, date range, editable text, email, flag, icon
 | `shared/property-labels.ts` | React-free English defaults: `defaultPropertyLabels` keyed by display, each `<Display>Labels` type, the default `ariaLabel`s and `placeholder`s, and `resolvePropertyLabels` |
 | `shared/property-display-meta.ts` | the default icon of each display, the reference kind icons and the attachment type icon and tone (`AttachmentType`, `ReferencePropertyKind` live here) |
 | `shared/lib/` | `isEditable`/`emitChange` (handler rule), option lookup and diff, zod entry parser |
-| `core.ts` | React-free surface: catalog types, `defaultPropertyLabels` and the label types, `propertyToneClassName`, date formatters; reached by package subpath `@tc96/ui/patterns/properties/core` (blocks import `PropertyOption` from it), not from the barrel |
+| `core.ts` | catalog types, `defaultPropertyLabels`, `propertyToneClassName`, date formatters and `propertyDisplayIcons` (the display icons, including `meeting`, `video`, `phone`, `location` and `link`); reached by `@tc96/ui/patterns/properties/core`, not from the barrel |
 
 Import direction: `composition/` → `display/`, `shared/`; `display/<property>/` → `hooks/`, `shared/`, other display folders; `display/editable-text/` → `editable/index.ts` (`Editable`, `EditableField`), the only import into another pattern; `hooks/` → `shared/lib/`; `shared/` → only COSS, Base UI, Phosphor, `@tc96/utils`, `@tc96/ui/lib/property-tone` (the tone it re-exports) and zod types, never a display, hook or composition.
 

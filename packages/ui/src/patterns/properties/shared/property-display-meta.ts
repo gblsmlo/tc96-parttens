@@ -8,10 +8,13 @@ import {
   FileIcon,
   FileTextIcon,
   LinkIcon,
+  MapPinIcon,
   PackageIcon,
   PhoneIcon,
   TagIcon,
   UserPlusIcon,
+  UsersThreeIcon,
+  VideoCameraIcon,
   WaveformIcon,
 } from '@phosphor-icons/react'
 import type { PropertyIcon, PropertyOption } from './property-catalog'
@@ -29,10 +32,14 @@ export const propertyDisplayIcons = {
   date: CalendarDotsIcon,
   dateRange: CalendarIcon,
   email: EnvelopeSimpleIcon,
+  link: LinkIcon,
+  location: MapPinIcon,
+  meeting: UsersThreeIcon,
   personAdd: UserPlusIcon,
   phone: PhoneIcon,
   schedule: CalendarBlankIcon,
   tags: TagIcon,
+  video: VideoCameraIcon,
 } as const satisfies Record<string, PropertyIcon>
 
 export const referenceKindIcons = {
