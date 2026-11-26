@@ -114,7 +114,14 @@ const blocksPath = resolveAliasPath(
 )
 for (const name of blockNames)
   if (
-    !existsSync(join(consumer.root, blocksPath, blockSources[name], 'index.ts'))
+    !existsSync(
+      join(
+        consumer.root,
+        blocksPath,
+        blockSources[name].replace(/^[^/]+\//, ''),
+        'index.ts',
+      ),
+    )
   )
     throw new Error(`The CLI did not install ${name}`)
 for (const file of await files(join(consumer.root, blocksPath)))
