@@ -1,87 +1,165 @@
 ---
 title: Instalação
-description: Instale os fontes dos patterns no seu projeto COSS.
+description: Como instalar o CLI e estruturar o monorepo que recebe os componentes, patterns e blocks do tc96.
 ---
 
 # Instalação
 
-O CLI é o pacote `@tc96/cli`, com o comando `tc96`.
+Como instalar o CLI e estruturar o monorepo que recebe os componentes, patterns e blocks do tc96.
+
+O CLI é o pacote `@tc96/ui`, com o comando `tc96`. Ele copia o código-fonte para
+o seu monorepo: não há pacote de runtime para instalar nem atualizar.
+
+Escolha o caminho que corresponde ao seu ponto de partida:
+
+- [Monorepo no layout do tc96-mono](#monorepo-no-layout-do-tc96-mono): o
+  `init` grava a configuração e você instala em seguida.
+- [Projeto existente](#projeto-existente): você aponta cada camada para onde ela
+  já mora no seu projeto.
 
 ## Requisitos
 
 - React 19, TypeScript e Tailwind CSS 4.
-- Um monorepo Bun no layout do tc96-mono, ou qualquer workspace com um `components.json` na raiz.
-- Node e npm para executar o CLI. Bun não é exigido.
+- Um monorepo com workspaces (Bun, pnpm, Yarn ou npm).
+- Node 22 ou superior para executar o CLI. Bun não é exigido.
 
-## Estrutura padrão
+## Monorepo no layout do tc96-mono
 
-O padrão é o layout do tc96-mono: um pacote `@tc96/ui` guarda todas as camadas e
-o `@tc96/utils` guarda o `cn`. Os pacotes resolvem pelos `exports`, sem `paths`
-no `tsconfig`:
+### Estrutura
+
+O padrão é o layout do tc96-mono: o pacote `@tc96/components` guarda todas as
+camadas e o `@tc96/utils` guarda o `cn`. Os pacotes resolvem pelos `exports`,
+sem `paths` no `tsconfig`.
 
 ```text
-packages/ui/src/
-  components/   COSS e os componentes do tc96 que o COSS não tem (Text, IconFrame)
-  hooks/ lib/   hooks e módulos dos componentes
-  helpers/      funções sem React
-  patterns/     patterns do tc96
-  blocks/       blocks do tc96
-packages/utils/ cn
+packages/
+  components/          @tc96/components
+    src/
+      ui/              componentes COSS e os do tc96 que o COSS não tem (Text, IconFrame)
+      hooks/           hooks dos componentes
+      lib/             módulos dos componentes
+      helpers/         funções sem React
+      patterns/        patterns do tc96
+      blocks/          blocks do tc96
+      styles/globals.css
+    package.json
+  utils/               @tc96/utils, exporta cn
+apps/
+  web/                 importa de @tc96/components
+components.json
+package.json
 ```
+
+O pacote de componentes não pode se chamar `@tc96/ui`: esse é o nome do CLI no
+npm, e um pacote local com o mesmo nome faz o `npx @tc96/ui` resolver para ele em
+vez do CLI.
+
+### Inicializar
 
 Rode uma vez na raiz do monorepo:
 
 ```sh
-npx @tc96/cli init
+npx @tc96/ui init
 ```
 
 O `init` grava o `components.json` com esse layout e acrescenta ao
-`packages/ui/package.json` os `exports` de camada que faltam. Um
+`packages/components/package.json` os `exports` de camada que faltam. Um
 `components.json` que já existe é mantido.
 
-```json
+```json title="components.json"
 {
   "aliases": {
-    "components": "@tc96/ui",
-    "ui": "@tc96/ui",
+    "components": "@tc96/components/ui",
+    "ui": "@tc96/components/ui",
     "utils": "@tc96/utils",
-    "lib": "@tc96/ui/lib",
-    "hooks": "@tc96/ui/hooks",
-    "helpers": "@tc96/ui/helpers",
-    "patterns": "@tc96/ui/patterns",
-    "blocks": "@tc96/ui/blocks"
+    "lib": "@tc96/components/lib",
+    "hooks": "@tc96/components/hooks",
+    "helpers": "@tc96/components/helpers",
+    "patterns": "@tc96/components/patterns",
+    "blocks": "@tc96/components/blocks"
   }
 }
 ```
 
-## Instalar em outro lugar
+```json title="packages/components/package.json"
+{
+  "name": "@tc96/components",
+  "exports": {
+    "./ui/*": "./src/ui/*.tsx",
+    "./hooks/*": "./src/hooks/*.ts",
+    "./lib/*": "./src/lib/*.ts",
+    "./helpers/*": "./src/helpers/*.ts",
+    "./patterns": "./src/patterns/index.ts",
+    "./patterns/*/core": "./src/patterns/*/core.ts",
+    "./patterns/*": "./src/patterns/*.tsx",
+    "./blocks/*": "./src/blocks/*/index.ts"
+  }
+}
+```
 
-Para mudar o destino de uma camada, edite o alias dela no `components.json`.
-Cada alias precisa resolver pelos `exports` do pacote do workspace que o contém
+### Adicionar
+
+Instale um ou vários patterns e blocks de uma vez:
+
+```sh
+npx @tc96/ui add collection properties
+```
+
+```sh
+npx @tc96/ui add login-1 app-shell-1
+```
+
+Se o repositório bloqueia o `npx`, use `bunx @tc96/ui` ou `pnpm dlx @tc96/ui`.
+A lista de itens e todas as opções estão na [referência do CLI](./cli).
+
+### Importar
+
+```tsx
+import { Button } from '@tc96/components/ui/button'
+import { CollectionViewOutlet, TextProperty } from '@tc96/components/patterns'
+import { Login1 } from '@tc96/components/blocks/login-1'
+import { cn } from '@tc96/utils'
+```
+
+O `index.ts` em `src/patterns` é gerado pelo CLI e exporta todos os patterns
+instalados, inclusive os de execuções anteriores.
+
+## Projeto existente
+
+Para instalar em outro lugar, escreva o `components.json` na raiz e aponte cada
+alias para onde a camada mora no seu projeto. Cada alias precisa resolver pelos
+`exports` do pacote do workspace que o contém
 (`"./patterns/*": "./src/patterns/*.tsx"`) ou por uma entrada em `paths` no
-`tsconfig` da raiz (`"@acme/ui/patterns/*": ["./packages/ui/src/patterns/*"]`).
-Sem `hooks` e `lib`, esses arquivos vão para dentro do diretório de `ui`; sem
-`helpers`, `patterns` ou `blocks`, o alias troca o último segmento do `ui`.
-O CLI reescreve os imports para os seus aliases e instala as dependências npm no
-pacote do workspace que contém o diretório de `patterns`.
+`tsconfig` da raiz (`"@acme/web/patterns/*": ["./apps/web/src/patterns/*"]`).
+
+```json title="components.json"
+{
+  "tailwind": {
+    "css": "apps/web/src/styles.css"
+  },
+  "aliases": {
+    "ui": "@acme/web/ui",
+    "utils": "@acme/web/lib/utils",
+    "hooks": "@acme/web/hooks",
+    "lib": "@acme/web/lib",
+    "patterns": "@acme/web/patterns",
+    "blocks": "@acme/web/blocks"
+  }
+}
+```
+
+- Sem `hooks` e `lib`, esses arquivos vão para o lado do diretório de `ui`.
+- Sem `helpers`, `patterns` ou `blocks`, o alias troca o último segmento do `ui`
+  (`@acme/web/ui` dá `@acme/web/patterns`).
+- `blocks` só é exigido para instalar um block.
+- O CLI reescreve os imports para os seus aliases e instala as dependências npm
+  no pacote do workspace que contém o diretório de `patterns`.
 
 Se você usa o shadcn, o `shadcn init --force` regrava o `components.json` sem as
 chaves do tc96 e troca o alias `ui`. Se rodar esse comando, acrescente as chaves
 de novo e revise o `ui`.
 
-## Instalar
-
-Instale um ou vários patterns de uma vez:
-
-```sh
-npx @tc96/cli add collection-views properties
-```
-
-Para instalar o checklist isoladamente, use `npx @tc96/cli add checklist`.
-
-Os widgets de finanças, produtividade, CRM e gamificação vêm juntos em `npx @tc96/cli add widgets`. Os gráficos de saldo, progresso de tarefas e fluxo de caixa usam `recharts`, instalado como dependência do pattern.
-
-O editor de texto estilo Notion vem em `npx @tc96/cli add rich-text-editor`. Ele usa o Plate headless (`platejs` e os plugins `@platejs/basic-nodes`, `@platejs/list-classic`, `@platejs/slash-command` e `@platejs/combobox`), instalados como dependências do pattern.
+## Componentes e tema
 
 Os componentes de `ui` que os patterns usam e que faltam no seu projeto vêm
 junto com o próprio CLI, sem acessar a rede. Os componentes que você já tem
@@ -91,6 +169,9 @@ Alguns componentes declaram tokens de tema, como o `--info` do `badge` e o
 `--animate-skeleton` do `skeleton`. O CLI não edita o seu CSS: procura cada
 token no arquivo de `tailwind.css` do `components.json` e lista os que não
 encontrar, prontos para copiar.
+
+Para instalar um tema completo, use `npx @tc96/ui add --theme <nome>`; ele é
+descrito na [referência do CLI](./cli#add---theme).
 
 ### Regras de tema do menu
 
@@ -119,30 +200,13 @@ CLI não grava. Copie-as para o arquivo de `tailwind.css` do `components.json`:
 
 As medidas são do tema de exemplo; com outro tema, meça de novo.
 
-O CLI grava os arquivos, reescreve os imports para os seus aliases e instala as
-dependências npm que faltam com o gerenciador do seu lockfile (bun, pnpm, yarn
-ou npm). Depois, gera o `index.ts` no diretório de `patterns`, que exporta todos
-os patterns instalados, inclusive os de execuções anteriores:
-
-```tsx
-import { CollectionViewOutlet, TextProperty } from '@tc96/ui/patterns'
-```
-
-Arquivos existentes que diferem são preservados. Num terminal, o CLI pergunta
-antes de sobrescrever cada um; com `--yes` ou sem terminal, preserva sem
-perguntar. `--dry-run` lista o que mudaria, `--view` mostra os arquivos novos e
-`--diff` as diferenças nos existentes, sem gravar nada.
-O `index.ts` é do CLI e é regravado a cada `add`. Se você já tinha um
-`index.ts` seu nesse diretório, o CLI não mexe nele e avisa para exportar os
-patterns instalados por conta própria.
-
 ## Atualizar
 
 Não há pacote para atualizar. Compare os arquivos instalados com a versão atual
 e incorpore as correções manualmente:
 
 ```sh
-npx @tc96/cli add collection-views --diff
+npx @tc96/ui add collection --diff
 ```
 
 Filter Builder não faz parte desta versão.

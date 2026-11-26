@@ -1,0 +1,135 @@
+---
+title: CLI
+description: Use o CLI do tc96 para instalar componentes, patterns, blocks e temas no seu monorepo.
+---
+
+# tc96
+
+Use o CLI do tc96 para instalar componentes, patterns, blocks e temas no seu
+monorepo.
+
+O pacote é `@tc96/ui` e o comando é `tc96`. Os exemplos usam `npx`; `bunx` e
+`pnpm dlx` funcionam da mesma forma.
+
+## init
+
+Use o `init` para configurar um monorepo no layout do tc96-mono. Ele grava o
+`components.json` quando ele falta e acrescenta ao
+`packages/components/package.json` os `exports` de camada que faltam.
+
+```sh
+npx @tc96/ui init
+```
+
+O `init` exige `packages/components` (`@tc96/components`) e `packages/utils`
+(`@tc96/utils`, que exporta `cn`). Para instalar em outro lugar, escreva o
+`components.json` você mesmo; veja [Projeto existente](./installation#projeto-existente).
+
+**Opções**
+
+```text
+Usage: tc96 init [options]
+
+writes components.json with the tc96-mono layout and adds the missing layer exports
+
+Options:
+  --cwd <path>    the working directory. defaults to the current directory.
+  -h, --help      display help for command
+```
+
+## add
+
+Use o `add` para instalar patterns e blocks, com os componentes de `ui` e as
+dependências npm que faltam.
+
+```sh
+npx @tc96/ui add [item...]
+```
+
+O CLI procura o `components.json` a partir de `--cwd` e sobe até achar o
+primeiro. Antes de gravar, confere se os patterns compilam contra os seus
+componentes e para se não compilarem. Arquivos existentes que diferem são
+preservados: num terminal, o CLI pergunta antes de sobrescrever cada um; com
+`--yes` ou sem terminal, preserva sem perguntar.
+
+```sh
+npx @tc96/ui add collection properties
+```
+
+```sh
+npx @tc96/ui add record-dialog --dry-run
+npx @tc96/ui add record-dialog --diff
+```
+
+**Opções**
+
+```text
+Usage: tc96 add [options] [items...]
+
+installs patterns and blocks as source, with the ui components and npm dependencies they need
+
+Arguments:
+  items           the patterns and blocks to install
+
+Options:
+  --cwd <path>    the working directory. defaults to the current directory.
+  --dry-run       list what would change without writing files.
+  --view          print the new files without writing them.
+  --diff          print the changes to existing files without writing them.
+  --yes           preserve existing files that differ without asking.
+  --force         install even when the patterns do not type-check against your components.
+  --theme <name>  also install a theme. see add --theme.
+  -h, --help      display help for command
+```
+
+**Itens disponíveis**
+
+| Tipo | Itens |
+| --- | --- |
+| Patterns | `collection` `properties` `editable` `checklist` `record-dialog` `record-preview` `record-group` `record-status-list` `widgets` `stats` `rich-text-editor` `state-surface` `settings` `chats-panel` `wizard` `flow-canvas` `flow-step-library` `flow-inspector` `chat-assistant` `list` `charts` |
+| Blocks | 165 blocks numerados por família, como `app-shell-1`, `login-1`, `signup-1`, `otp-1`, `flow-1`; `npx @tc96/ui --help` lista todos |
+
+Depois de instalar patterns, o CLI regrava o `index.ts` do diretório de
+`patterns`, que exporta todos os instalados. Se você já tinha um `index.ts` seu
+nesse diretório, o CLI não mexe nele e avisa para exportar os patterns por conta
+própria.
+
+## add --theme
+
+Use o `add --theme` para instalar um tema como o único do projeto.
+
+```sh
+npx @tc96/ui add --theme twincan
+```
+
+O CLI grava `themes/<nome>.css` ao lado do stylesheet que o `components.json`
+indica em `tailwind.css`, importa o arquivo depois do `tailwindcss` com as
+fontes web do tema e remove o tema que ele substitui. Antes de mudar o seu CSS,
+ele pergunta, a menos que você passe `--yes`. A opção combina com itens:
+`npx @tc96/ui add --theme twincan collection` instala os dois.
+
+**Opções**
+
+```text
+Usage: tc96 add --theme <name> [options] [items...]
+
+installs one theme as your only theme
+
+Options:
+  --cwd <path>    the working directory. defaults to the current directory.
+  --dry-run       list what would change without writing files.
+  --view          print the new files without writing them.
+  --yes           change your CSS without asking.
+  -h, --help      display help for command
+```
+
+**Temas disponíveis**
+
+`amber-minimal` `amethyst-haze` `bold-tech` `bubblegum` `caffeine` `candyland`
+`catppuccin` `claude` `claymorphism` `clean-slate` `cosmic-night` `cyberpunk`
+`darkmatter` `doom-64` `elegant-luxury` `graphite` `kodama-grove`
+`midnight-bloom` `mocha-mousse` `modern-minimal` `mono` `nature` `neo-brutalism`
+`neutral` `northern-lights` `notebook` `ocean-breeze` `pastel-dreams`
+`perpetuity` `quantum-rose` `retro-arcade` `sage-garden` `slate` `soft-pop`
+`solar-dusk` `starry-night` `stone` `sunset-horizon` `supabase` `t3-chat`
+`tangerine` `twincan` `twitter` `vercel` `vintage-paper` `violet-bloom` `zinc`

@@ -15,6 +15,19 @@ export const layerExports: Record<string, string> = {
   './helpers/*': './src/helpers/*.ts',
   './patterns': './src/patterns/index.ts',
   './patterns/*/core': './src/patterns/*/core.ts',
+  './patterns/data-grid/hooks/*': './src/patterns/data-grid/hooks/*.ts',
+  './patterns/data-grid/lib/create-select-column':
+    './src/patterns/data-grid/lib/create-select-column.tsx',
+  './patterns/data-grid/lib/*': './src/patterns/data-grid/lib/*.ts',
+  './patterns/data-grid/types': './src/patterns/data-grid/types.ts',
+  './patterns/data-table/data-table-aggregation':
+    './src/patterns/data-table/data-table-aggregation.ts',
+  './patterns/data-table/data-table-features':
+    './src/patterns/data-table/data-table-features.ts',
+  './patterns/data-table/data-table-types':
+    './src/patterns/data-table/data-table-types.ts',
+  './patterns/data-table/use-data-table':
+    './src/patterns/data-table/use-data-table.ts',
   './patterns/*': './src/patterns/*.tsx',
   './blocks/*': './src/blocks/*/index.ts',
 }
