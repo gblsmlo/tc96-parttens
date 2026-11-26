@@ -112,7 +112,7 @@ The pill under the active item. `SegmentedControl` renders it as a `span` with `
 
 It measures the first direct child of the track with `data-checked`, `aria-current="page"` or `data-pressed`, and follows it when those attributes change, when an item is added or removed and when the track or an item resizes. An item wrapped in another element never moves it.
 
-It slides in 200ms with an ease-in-out curve, and jumps without a transition when the user prefers reduced motion. Its surface is `bg-background` with `rounded-md` and `shadow-sm/5`, `bg-input` in dark mode.
+It slides in 200ms with an ease-in-out curve, and jumps without a transition when the user prefers reduced motion. Its surface is `bg-background` with `rounded-md` and the theme's input shadow (`shadow-(shadow:--input-shadow)`), `bg-input` in dark mode.
 
 While the indicator shows, the active item drops its own background. Before the first layout effect, as in a server render, the indicator is hidden and the active item draws the same pill itself.
 

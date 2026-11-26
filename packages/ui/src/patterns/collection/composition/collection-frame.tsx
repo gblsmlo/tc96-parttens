@@ -8,12 +8,13 @@ import {
   useContext,
 } from 'react'
 
-export type CollectionFrameMode = 'fill' | 'flow'
+export type CollectionFrameHeight = 'fill' | 'content'
 
-const CollectionFrameModeContext = createContext<CollectionFrameMode>('fill')
+const CollectionFrameHeightContext =
+  createContext<CollectionFrameHeight>('fill')
 
 export interface CollectionFrameProps extends ComponentProps<'div'> {
-  mode?: CollectionFrameMode
+  height?: CollectionFrameHeight
 }
 
 export type CollectionFrameHeaderProps = ComponentProps<'div'>
@@ -26,22 +27,22 @@ export type CollectionFrameOverlayProps = ComponentProps<'div'>
 
 export function CollectionFrame({
   className,
-  mode = 'fill',
+  height = 'fill',
   ...props
 }: Readonly<CollectionFrameProps>): ReactElement {
   return (
-    <CollectionFrameModeContext.Provider value={mode}>
+    <CollectionFrameHeightContext.Provider value={height}>
       <div
         className={cn(
           'flex min-w-0 flex-col gap-3',
-          mode === 'fill' && 'min-h-0 flex-1',
+          height === 'fill' && 'min-h-0 flex-1',
           className,
         )}
-        data-mode={mode}
+        data-height={height}
         data-slot="collection-frame"
         {...props}
       />
-    </CollectionFrameModeContext.Provider>
+    </CollectionFrameHeightContext.Provider>
   )
 }
 
@@ -62,13 +63,13 @@ export function CollectionFrameBody({
   className,
   ...props
 }: Readonly<CollectionFrameBodyProps>): ReactElement {
-  const mode = useContext(CollectionFrameModeContext)
+  const height = useContext(CollectionFrameHeightContext)
 
   return (
     <section
       className={cn(
         'flex min-w-0 flex-col gap-2',
-        mode === 'fill' && 'min-h-0 flex-1 overflow-auto',
+        height === 'fill' && 'min-h-0 flex-1 overflow-auto',
         className,
       )}
       data-slot="collection-frame-body"
@@ -81,13 +82,13 @@ export function CollectionFrameFooter({
   className,
   ...props
 }: Readonly<CollectionFrameFooterProps>): ReactElement {
-  const mode = useContext(CollectionFrameModeContext)
+  const height = useContext(CollectionFrameHeightContext)
 
   return (
     <div
       className={cn(
         'relative flex min-w-0 shrink-0 flex-col gap-2',
-        mode === 'flow' && 'sticky bottom-0 z-10 bg-background',
+        height === 'content' && 'sticky bottom-0 z-10 bg-background',
         className,
       )}
       data-slot="collection-frame-footer"

@@ -87,10 +87,10 @@ export const flowEdgeControlsClassName =
   'flex items-center gap-1 opacity-0 transition-opacity focus-within:opacity-100 hover:opacity-100 pointer-coarse:opacity-100'
 
 export const flowControlsPanelClassName =
-  'm-4 flex items-center gap-2 rounded-xl border bg-card p-1 text-card-foreground shadow-xs/5'
+  'm-4 flex items-center gap-2 rounded-xl border bg-card p-1 text-card-foreground shadow-(shadow:--card-shadow)'
 
 export const flowMinimapClassName =
-  'm-4 hidden overflow-hidden rounded-xl border! shadow-sm/5 md:block'
+  'm-4 hidden overflow-hidden rounded-xl border! shadow-(shadow:--card-shadow) md:block'
 
 export const flowShortcutRowClassName =
   'flex items-center justify-between gap-6 text-sm'

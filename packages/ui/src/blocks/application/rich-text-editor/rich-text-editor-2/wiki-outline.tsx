@@ -57,7 +57,7 @@ export function WikiOutlineRail({
     >
       <nav
         aria-label={labels.outline}
-        className="group/outline pointer-events-auto sticky top-24 ms-auto w-8 rounded-xl border border-transparent p-1 transition-[width] focus-within:w-60 focus-within:border-border focus-within:bg-popover focus-within:shadow-lg/5 hover:w-60 hover:border-border hover:bg-popover hover:shadow-lg/5"
+        className="group/outline pointer-events-auto sticky top-24 ms-auto w-8 rounded-xl border border-transparent p-1 transition-[width] focus-within:w-60 focus-within:border-border focus-within:bg-popover focus-within:shadow-(shadow:--popover-shadow) hover:w-60 hover:border-border hover:bg-popover hover:shadow-(shadow:--popover-shadow)"
       >
         <ul className="flex flex-col gap-0.5">
           {items.map((item) => (

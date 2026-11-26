@@ -35,7 +35,7 @@ export function Login10Testimonials({
               <figure
                 aria-hidden={isActive ? undefined : true}
                 className={cn(
-                  'flex w-3/4 shrink-0 flex-col gap-4 rounded-xl bg-background p-6 shadow-sm motion-safe:transition-opacity motion-safe:duration-500',
+                  'flex w-3/4 shrink-0 flex-col gap-4 rounded-xl bg-background p-6 shadow-(shadow:--card-shadow) motion-safe:transition-opacity motion-safe:duration-500',
                   !isActive && 'opacity-40',
                 )}
                 data-active={isActive ? '' : undefined}

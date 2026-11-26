@@ -1,9 +1,11 @@
 import type { Preview } from '@storybook/react-vite'
 import { setupWorker } from 'msw/browser'
 import { mswLoader } from 'msw-storybook-addon/csf3'
+import { GLOBALS_UPDATED, SET_GLOBALS } from 'storybook/internal/core-events'
+import { addons } from 'storybook/preview-api'
 import '../../example/packages/ui/src/styles.css'
 import '@xyflow/react/dist/base.css'
-import { themePresets } from '../../example/packages/ui/src/themes/presets.ts'
+import { applyThemePreset, themeOptions } from '@tc96/themes'
 import { ThemedDocsContainer } from './docs-container.tsx'
 import { DocsPage } from './docs-page.tsx'
 import { withQueryClient } from './query-client.tsx'
@@ -32,26 +34,12 @@ const applyTheme = () => {
   document.body.dataset.theme = theme
 }
 
-const presetFontsId = 'theme-preset-fonts'
-
 const applyPreset = (value: unknown) => {
-  const preset = themePresets.find((item) => item.value === value)
-  const root = document.documentElement
-  if (!preset || preset.value === 'default') {
-    delete root.dataset.themePreset
-  } else {
-    root.dataset.themePreset = preset.value
-  }
-
-  const current = document.getElementById(presetFontsId)
-  if (current?.getAttribute('href') === preset?.fontsHref) return
-  current?.remove()
-  if (!preset?.fontsHref) return
-  const link = document.createElement('link')
-  link.id = presetFontsId
-  link.rel = 'stylesheet'
-  link.href = preset.fontsHref
-  document.head.append(link)
+  const option = themeOptions.find((item) => item.value === value)
+  applyThemePreset(
+    document.documentElement,
+    option && { name: option.value, fontsHref: option.fontsHref },
+  )
 }
 
 const listenToSystem = () => {
@@ -62,6 +50,21 @@ const listenToSystem = () => {
   })
 }
 
+const applyGlobals = (globals: Record<string, unknown>) => {
+  mode = toThemeMode(globals.theme)
+  listenToSystem()
+  applyTheme()
+  applyPreset(globals.themePreset)
+}
+
+// Docs pages render no story, so the decorator never applies the toolbar globals there.
+for (const event of [SET_GLOBALS, GLOBALS_UPDATED])
+  addons
+    .getChannel()
+    .on(event, ({ globals }: { globals: Record<string, unknown> }) =>
+      applyGlobals(globals),
+    )
+
 const mockedNetwork = mswLoader(async () => {
   const worker = setupWorker()
   await worker.start({ onUnhandledRequest: 'bypass', quiet: true })
@@ -71,10 +74,7 @@ const mockedNetwork = mswLoader(async () => {
 const preview: Preview = {
   decorators: [
     (Story, context) => {
-      mode = toThemeMode(context.globals.theme)
-      listenToSystem()
-      applyTheme()
-      applyPreset(context.globals.themePreset)
+      applyGlobals(context.globals)
 
       return Story()
     },
@@ -89,7 +89,7 @@ const preview: Preview = {
       toolbar: {
         dynamicTitle: true,
         icon: 'paintbrush',
-        items: themePresets.map(({ value, title, source }) => ({
+        items: themeOptions.map(({ value, title, source }) => ({
           value,
           title,
           right: source,
@@ -111,7 +111,7 @@ const preview: Preview = {
   },
   initialGlobals: {
     theme: 'dark',
-    themePreset: 'default',
+    themePreset: 'twincan',
   },
   parameters: {
     a11y: {
@@ -133,7 +133,14 @@ const preview: Preview = {
     layout: 'centered',
     options: {
       storySort: (a, b) => {
-        const roots = ['Get Started', 'UI', 'Patterns', 'Blocks', 'Templates']
+        const roots = [
+          'Get Started',
+          'Theme',
+          'UI',
+          'Patterns',
+          'Blocks',
+          'Templates',
+        ]
         const rootA = a.title.split('/')[0] ?? ''
         const rootB = b.title.split('/')[0] ?? ''
         const rankA = roots.includes(rootA)
@@ -150,6 +157,8 @@ const preview: Preview = {
         if (rootA !== 'Get Started') {
           const folderA = a.title.split('/')[1] ?? ''
           const folderB = b.title.split('/')[1] ?? ''
+          if (folderA !== folderB && folderA === 'Overview') return -1
+          if (folderA !== folderB && folderB === 'Overview') return 1
           const bySubfolder = folderA.localeCompare(folderB)
           if (bySubfolder !== 0) return bySubfolder
         }

@@ -22,7 +22,7 @@ COSS components, React patterns and blocks without business rules, installed as 
 
 - **Source, not a dependency**: the CLI copies the pattern source into your workspace. You own it and change it as you like
 - **Built on COSS**: patterns import `Button`, `Menu`, `Popover` and the rest from your project's own UI alias
-- **Themeable**: tc96 ships no CSS, tokens or theme, only layout classes on top of your components
+- **Themeable**: patterns ship no CSS or tokens, only layout classes on top of your components; a theme is a separate, optional install (`tc96 add --theme`)
 - **No business rules**: your app provides prepared data and handles events. Filtering, sorting, persistence and API calls stay with you
 - **Layered**: imports only go down a layer (`blocks` → `patterns` → `ui` → `utils`), checked by a boundaries script
 - **Tested**: Storybook stories, bun tests, consumer install checks and a view benchmark
@@ -57,6 +57,16 @@ npx @tc96/cli add record-dialog --diff
 ```
 
 If the repo blocks `npx`, use `bunx @tc96/cli add ...` or `pnpm dlx @tc96/cli add ...`.
+
+### Themes
+
+Install one theme preset as your only theme:
+
+```bash
+npx @tc96/cli add --theme claude
+```
+
+It writes `themes/claude.css` next to the stylesheet that `components.json` names in `tailwind.css`, imports it after `tailwindcss` with the preset's web fonts, and asks before changing your CSS (`--yes` skips the question, `--dry-run` only lists the changes). Installing another theme replaces it. `npx @tc96/cli --help` lists the themes.
 
 Before copying anything, the CLI type-checks the patterns against your own `ui` components. If they do not type-check, it stops with exit code 1, in a `--dry-run` too. Fix the diagnostics it prints, or pass `--force` to install anyway.
 

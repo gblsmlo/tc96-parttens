@@ -44,7 +44,7 @@ const meta = {
         collection={collection}
         defaultPreferences={{ groupBy: null, layout: 'list' }}
       >
-        <CollectionFrame>
+        <CollectionFrame height="fill">
           <CollectionFrameHeader>
             <CollectionToolbar
               right={
@@ -122,6 +122,9 @@ export const Anatomy: Story = {
         canvasElement.querySelector(`[data-slot="${slot}"]`),
       ).not.toBeNull()
     }
+    await expect(
+      canvasElement.querySelector('[data-slot="collection-frame"]'),
+    ).toHaveAttribute('data-height', 'fill')
     await expect(
       canvas.getByRole('searchbox', { name: 'CollectionSearchField' }),
     ).toBeVisible()

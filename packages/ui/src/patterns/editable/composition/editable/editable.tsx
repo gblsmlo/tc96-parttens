@@ -544,7 +544,7 @@ export function EditableInput(props: EditableInputProps) {
           }
         },
         className: cn(
-          'flex h-9 rounded-md border border-input bg-transparent px-2 py-1 text-sm shadow-xs outline-none transition-colors placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 disabled:cursor-not-allowed disabled:opacity-50',
+          'flex h-9 rounded-md border border-input bg-transparent px-2 py-1 text-sm shadow-(shadow:--input-shadow) outline-none transition-colors placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 disabled:cursor-not-allowed disabled:opacity-50',
           context.autosize ? 'w-auto min-w-8' : 'w-full',
           className,
         ),
@@ -746,7 +746,7 @@ export function EditableTrigger(props: EditableTriggerProps) {
             ? () => context.beginEditing()
             : undefined,
         className: cn(
-          'inline-flex h-8 w-fit items-center justify-center rounded-md border border-input bg-background px-3 font-medium text-sm shadow-xs outline-none hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring/30 disabled:pointer-events-none disabled:opacity-50',
+          'inline-flex h-8 w-fit items-center justify-center rounded-md border border-input bg-background px-3 font-medium text-sm shadow-(shadow:--input-shadow) outline-none hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring/30 disabled:pointer-events-none disabled:opacity-50',
           className,
         ),
       },
@@ -832,7 +832,7 @@ export function EditableCancel(props: EditableCancelProps) {
         ...dataAttributes({ 'data-slot': 'editable-cancel' }),
         onClick: context.cancelEditing,
         className: cn(
-          'inline-flex h-8 items-center justify-center rounded-md border border-input bg-background px-3 font-medium text-sm shadow-xs outline-none hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring/30',
+          'inline-flex h-8 items-center justify-center rounded-md border border-input bg-background px-3 font-medium text-sm shadow-(shadow:--input-shadow) outline-none hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring/30',
           className,
         ),
       },
@@ -867,7 +867,7 @@ export function EditableSubmit(props: EditableSubmitProps) {
         ...dataAttributes({ 'data-slot': 'editable-submit' }),
         onClick: context.submitValue,
         className: cn(
-          'inline-flex h-8 items-center justify-center rounded-md border border-primary bg-primary px-3 font-medium text-primary-foreground text-sm shadow-xs outline-none hover:bg-primary/90 focus-visible:ring-2 focus-visible:ring-ring/30',
+          'inline-flex h-8 items-center justify-center rounded-md border border-primary bg-primary px-3 font-medium text-primary-foreground text-sm shadow-(shadow:--input-shadow) outline-none hover:bg-primary/90 focus-visible:ring-2 focus-visible:ring-ring/30',
           className,
         ),
       },

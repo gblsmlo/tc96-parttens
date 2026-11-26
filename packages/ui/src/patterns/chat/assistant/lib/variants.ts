@@ -19,7 +19,8 @@ export const assistantPanelVariants = cva('flex min-h-0 flex-col', {
     expanded: { false: '', true: '' },
     placement: {
       docked: 'size-full',
-      floating: 'absolute end-4 bottom-4 z-20 rounded-2xl shadow-lg/10',
+      floating:
+        'absolute end-4 bottom-4 z-20 rounded-2xl shadow-(shadow:--popover-shadow)',
     },
   },
 })

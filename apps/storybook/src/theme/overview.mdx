@@ -1,0 +1,147 @@
+import { Meta } from '@storybook/addon-docs/blocks'
+
+<Meta title="Theme/Overview" />
+
+# Theme
+
+Using CSS variables and theme tokens.
+
+Your components and patterns never hard-code a color, a radius, a font or a shadow. They read tokens, and a theme sets those tokens under `:root` and `.dark`. Switch the preset with the paintbrush in the toolbar and the mode with the sun and moon; every page in this Storybook follows.
+
+The pages of `Theme`: [Colors](?path=/docs/theme-colors--palette), [Shadows](?path=/story/theme-shadows--surfaces), [Radius](?path=/story/theme-radius--scale) and [Typography](?path=/story/theme-typography--families). Each one renders the tokens as shapes, and its tests check that every shape reads its token.
+
+## Install a theme
+
+A theme is one preset installed as the only theme of your app:
+
+```bash
+npx @tc96/cli add --theme twincan
+```
+
+The CLI writes `themes/twincan.css` next to the stylesheet that `components.json` names in `tailwind.css`, and imports it after `tailwindcss`:
+
+```css title="src/styles.css"
+@import "tailwindcss";
+@import "./themes/twincan.css";
+```
+
+Installing another preset replaces it. `npx @tc96/cli --help` lists the presets.
+
+## Token convention
+
+Tokens come in pairs. The base token is the surface, and `-foreground` is the text and icon color on it. The surface drops the `background` suffix:
+
+```css
+--primary: oklch(0.205 0 0);
+--primary-foreground: oklch(0.985 0 0);
+```
+
+```tsx
+<div className="bg-primary text-primary-foreground">Hello</div>
+```
+
+## Theme tokens
+
+Tokens are grouped by what they paint. Each preset defines the color groups for light and dark.
+
+| Group | Tokens | What it controls |
+| --- | --- | --- |
+| Base | `background`, `foreground` | The page and its default text. |
+| Card | `card`, `card-foreground`, `card-shadow` | Cards, frames, tables in a card and empty states. |
+| Popover | `popover`, `popover-foreground`, `popover-shadow` | Menus, selects, tooltips, toasts, dialogs, sheets and drawers. |
+| Primary | `primary`, `primary-foreground` | High-emphasis actions: the default `Button`, selected states. |
+| Secondary | `secondary`, `secondary-foreground` | Lower-emphasis actions and badges. |
+| Muted | `muted`, `muted-foreground` | Subdued surfaces, placeholders and secondary text. |
+| Accent | `accent`, `accent-foreground` | Hover and highlighted items. |
+| Destructive | `destructive`, `destructive-foreground` | Errors and destructive actions. `destructive-foreground` is destructive text on a surface, not text on the destructive fill. |
+| Border & Input | `border`, `input`, `ring`, `input-shadow` | Borders, field outlines, focus rings and the shadow of fields and controls. |
+| Chart | `chart-1` to `chart-5`, `chart-shadow` | Chart series and the value tooltip of a chart. |
+| Sidebar | `sidebar` and its `-foreground`, `-primary`, `-accent`, `-border`, `-ring`, `sidebar-shadow` | The app sidebar, apart from the page. |
+| Status | `info`, `success`, `warning` and their `-foreground`, `code`, `switch-track` | Alerts, toasts, code blocks and the switch track. |
+
+A preset that leaves out a status token, `destructive-foreground` or a shadow takes the Twincan value.
+
+## Shadows
+
+Each surface has one shadow token, set per mode. Components read it with a typed arbitrary value:
+
+```tsx
+<div className="rounded-xl border bg-card shadow-(shadow:--card-shadow)" />
+```
+
+Every shadow is drawn in `--shadow-color`, a token per mode, so a theme can tint all of its shadows at once:
+
+```css
+:root {
+  --shadow-color: var(--color-stone-950);
+  --card-shadow: 0 1px 2px 0 color-mix(in oklab, var(--shadow-color) 4%, transparent),
+    0 1px 4px -1px color-mix(in oklab, var(--shadow-color) 5%, transparent);
+}
+
+.dark {
+  --shadow-color: var(--color-black);
+  --card-shadow: 0 1px 2px 0 color-mix(in oklab, var(--shadow-color) 25%, transparent),
+    0 2px 8px -2px color-mix(in oklab, var(--shadow-color) 25%, transparent);
+}
+```
+
+A shadow that reads on a light page disappears on a dark one, so the dark values are several times stronger. In Twincan, card, input and chart share one shadow, the popover floats higher and the sidebar sits between them.
+
+The `shadow:` hint matters. With it, `cn` (`tailwind-merge`) knows the class is a shadow and replaces it when you pass `shadow-none`. A theme changes a surface without touching the Tailwind shadow scale:
+
+```css
+:root {
+  --card-shadow: 0 8px 24px -4px oklch(0 0 0 / 12%);
+}
+```
+
+Redefining `--shadow-xs` per theme has no effect: Tailwind writes its shadow scale into each class at build time.
+
+## Radius scale
+
+`--radius` is the base radius. Tailwind's radius scale is derived from it:
+
+```css
+--radius-sm: calc(var(--radius) - 4px);
+--radius-md: calc(var(--radius) - 2px);
+--radius-lg: var(--radius);
+--radius-xl: calc(var(--radius) + 4px);
+```
+
+- `rounded-lg` is the base value.
+- A smaller or larger `--radius` moves the whole scale.
+
+## Typography
+
+`--font-sans`, `--font-serif` and `--font-mono` are the three stacks, and `--font-heading` is the heading family, `var(--font-sans)` unless the preset sets another. A preset that names a web font lists it, and the CLI imports it from Google Fonts at the top of your stylesheet.
+
+## Presets
+
+- **Twincan**: the tc96 theme, and the base every other preset falls back to.
+- **Stone, Neutral, Slate, Zinc**: the COSS color recipe on each Tailwind gray.
+- **42 presets first published by [tweakcn](https://github.com/jnsahaj/tweakcn)**, such as Claude, Vercel and Supabase, kept as project data.
+
+Some tweakcn pairs fall below WCAG contrast; `docs/accessibility.md` lists them per preset.
+
+## Adding a new token
+
+Define the token under `:root` and `.dark`, then expose it to Tailwind with `@theme inline`:
+
+```css
+:root {
+  --warning: oklch(0.84 0.16 84);
+  --warning-foreground: oklch(0.28 0.07 46);
+}
+
+.dark {
+  --warning: oklch(0.41 0.11 46);
+  --warning-foreground: oklch(0.99 0.02 95);
+}
+
+@theme inline {
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+}
+```
+
+You can now use `bg-warning` and `text-warning-foreground` in your components. In this repository a token belongs to a group in `packages/themes/src/schema/tokens.ts`, and every preset is a data file in `packages/themes/src/presets/`.

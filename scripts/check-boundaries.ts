@@ -11,7 +11,8 @@ const allowed: Record<string, string[]> = {
   ui: ['utils'],
   patterns: ['ui', 'utils', 'helpers'],
   blocks: ['patterns', 'ui', 'utils', 'helpers'],
-  registry: [],
+  themes: [],
+  registry: ['themes'],
 }
 const layerRoots: Record<string, string[]> = {
   utils: ['packages/utils/src'],
@@ -23,6 +24,7 @@ const layerRoots: Record<string, string[]> = {
   ],
   patterns: ['packages/ui/src/patterns'],
   blocks: ['packages/ui/src/blocks'],
+  themes: ['packages/themes/src', 'packages/themes/scripts'],
   registry: ['packages/registry/src'],
 }
 function layerOfFile(file: string) {

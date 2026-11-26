@@ -36,7 +36,7 @@ export function SchedulePopupFrame({
       >
         <PopoverPrimitive.Popup
           aria-label={ariaLabel}
-          className="relative flex max-h-(--available-height) origin-(--transform-origin) rounded-xl border bg-popover not-dark:bg-clip-padding text-popover-foreground shadow-lg/5 outline-none transition-[scale,opacity] before:pointer-events-none before:absolute before:inset-0 before:rounded-[calc(var(--radius-xl)-1px)] before:shadow-[0_1px_--theme(--color-black/4%)] data-starting-style:scale-98 data-starting-style:opacity-0 dark:before:shadow-[0_-1px_--theme(--color-white/6%)]"
+          className="relative flex max-h-(--available-height) origin-(--transform-origin) rounded-xl border bg-popover not-dark:bg-clip-padding text-popover-foreground shadow-(shadow:--popover-shadow) outline-none transition-[scale,opacity] before:pointer-events-none before:absolute before:inset-0 before:rounded-[calc(var(--radius-xl)-1px)] before:shadow-[0_1px_--theme(--color-black/4%)] data-starting-style:scale-98 data-starting-style:opacity-0 dark:before:shadow-[0_-1px_--theme(--color-white/6%)]"
           data-slot="popover-popup"
         >
           <div className="relative min-h-0 w-full overflow-y-auto p-2">

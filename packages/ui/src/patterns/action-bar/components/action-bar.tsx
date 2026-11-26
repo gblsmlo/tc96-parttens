@@ -175,7 +175,7 @@ export function ActionBar<TData = unknown>({
     <div
       aria-label={label}
       className={cn(
-        'flex min-h-11 w-fit max-w-full items-center gap-1 overflow-x-auto rounded-xl border bg-popover px-2 py-1 text-popover-foreground shadow-lg',
+        'flex min-h-11 w-fit max-w-full items-center gap-1 overflow-x-auto rounded-xl border bg-popover px-2 py-1 text-popover-foreground shadow-(shadow:--popover-shadow)',
         className,
       )}
       data-slot="action-bar"
@@ -224,7 +224,7 @@ export function ActionBar<TData = unknown>({
   return (
     <div className="flex w-fit max-w-full flex-col items-center gap-2">
       <output
-        className="block max-w-full rounded-md border bg-popover px-3 py-1.5 text-center text-muted-foreground text-sm shadow-sm"
+        className="block max-w-full rounded-md border bg-popover px-3 py-1.5 text-center text-muted-foreground text-sm shadow-(shadow:--popover-shadow)"
         data-slot="action-bar-notice"
       >
         {notice}

@@ -3,6 +3,7 @@ import { fileURLToPath } from 'node:url'
 import { storybookTest } from '@storybook/addon-vitest/vitest-plugin'
 import { playwright } from '@vitest/browser-playwright'
 import {
+  configDefaults,
   defineConfig,
   mergeConfig,
   type TestProjectInlineConfiguration,
@@ -38,11 +39,27 @@ const storybookProject = (
   },
 })
 
+const workspaceSources = ['packages/ui/src', 'packages/utils/src'].map(
+  (folder) => path.resolve(dirname, '../..', folder),
+)
+
 export default mergeConfig(
   viteConfig,
   defineConfig({
+    plugins: [
+      {
+        name: 'tc96-watch-workspace-sources',
+        configureServer(server) {
+          server.watcher.add(workspaceSources)
+        },
+      },
+    ],
     test: {
       maxWorkers: 2,
+      forceRerunTriggers: [
+        ...configDefaults.forceRerunTriggers,
+        ...workspaceSources.map((folder) => `${folder}/**`),
+      ],
       projects: [
         storybookProject('storybook', { theme: 'light' }),
         storybookProject('storybook-dark', { theme: 'dark' }),

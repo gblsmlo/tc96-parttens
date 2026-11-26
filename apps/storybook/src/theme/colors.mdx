@@ -1,0 +1,26 @@
+import { ColorItem, ColorPalette, Meta } from '@storybook/addon-docs/blocks'
+import { colorGroupNames, colorGroups } from '@tc96/themes'
+import * as ColorsStories from './colors.stories.tsx'
+
+<Meta of={ColorsStories} name="Palette" />
+
+# Colors
+
+The color tokens of the selected preset, grouped by what they paint. Each swatch reads its token, so switching the preset or the mode in the toolbar repaints the palette. [Groups](?path=/story/theme-colors--groups) renders the same tokens as shapes and tests that each one resolves.
+
+<ColorPalette>
+  {colorGroupNames.flatMap((group) => {
+    const tokens = colorGroups[group].filter((token) => token !== 'switch-track')
+    const rows = Array.from({ length: Math.ceil(tokens.length / 6) }, (_, row) =>
+      tokens.slice(row * 6, row * 6 + 6),
+    )
+    return rows.map((row, index) => (
+      <ColorItem
+        key={`${group}-${index}`}
+        title={index === 0 ? group : ''}
+        subtitle={`--${row[0]}`}
+        colors={Object.fromEntries(row.map((token) => [token, `var(--${token})`]))}
+      />
+    ))
+  })}
+</ColorPalette>

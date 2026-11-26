@@ -99,11 +99,11 @@ It takes no other prop: the role, the name, `data-slot` and the texts are fixed,
 | `data-slot` | `"action-bar"` | Selects the bar in the theme and in tests; the bar has no rule on it |
 | `data-slot` | `"action-bar-notice"` | Selects the notice, only with `notice` |
 
-The count reads "1 selecionado" for one record and "N selecionados" for any other count. The bar is `w-fit` up to `max-w-full`, at least 44px tall (`min-h-11`), with a 1px `border`, `rounded-xl` corners, `shadow-lg` and the `bg-popover` background; past its parent's width it scrolls sideways. The actions do not shrink, but the count does: in a tight bar "1 selecionado" breaks onto two lines.
+The count reads "1 selecionado" for one record and "N selecionados" for any other count. The bar is `w-fit` up to `max-w-full`, at least 44px tall (`min-h-11`), with a 1px `border`, `rounded-xl` corners, the theme's popover shadow (`--popover-shadow`) and the `bg-popover` background; past its parent's width it scrolls sideways. The actions do not shrink, but the count does: in a tight bar "1 selecionado" breaks onto two lines.
 
 The bar spaces its children 4px apart and a group spaces its actions 2px apart. The divider before a group is an `hr` with `aria-orientation="vertical"`, 1px wide and 20px tall in `bg-border`, with 4px of margin on each side.
 
-The notice is an `output`, whose implicit role is `status`, so a screen reader announces it politely, outside the toolbar and above it. It is as wide as its text up to the width of the parent and wraps there, so a long notice never widens the bar; it has a 1px `border`, `rounded-md` corners, `shadow-sm`, the `bg-popover` background and `text-muted-foreground` text, centered. The pattern never builds its text: pass the final string, such as "Só publicações sem processo são vinculadas ou descartadas juntas.", and pass nothing when the selection needs no message.
+The notice is an `output`, whose implicit role is `status`, so a screen reader announces it politely, outside the toolbar and above it. It is as wide as its text up to the width of the parent and wraps there, so a long notice never widens the bar; it has a 1px `border`, `rounded-md` corners, the popover shadow, the `bg-popover` background and `text-muted-foreground` text, centered. The pattern never builds its text: pass the final string, such as "Só publicações sem processo são vinculadas ou descartadas juntas.", and pass nothing when the selection needs no message.
 
 The clear button is an icon-only ghost `Button` at `size="sm"` with `data-slot="button"`, named "Limpar seleção" through `aria-label` and `title`.
 
@@ -181,4 +181,4 @@ The value every `onSelect` receives, in the bar and in a submenu.
 - Pass icons that hide themselves (`aria-hidden="true"`; the `@phosphor-icons/react` icons do not set it, so pass it), since the label already names the action.
 - Use `notice` for a message about the selection, such as why an action is disabled, instead of joining it to the count in `formatSelection`: the notice keeps its status role and wraps above the bar.
 - Place the bar where it should float, such as over the bottom of a list: the bar does not position itself.
-- The bar reads `--popover`, `--popover-foreground`, `--border`, `--muted-foreground` and `--radius-xl` from the theme, plus the `shadow-lg` shadow; its actions read the tokens of `Button` and `Menu`.
+- The bar reads `--popover`, `--popover-foreground`, `--border`, `--muted-foreground` and `--radius-xl` from the theme, plus `--popover-shadow`; its actions read the tokens of `Button` and `Menu`.

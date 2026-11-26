@@ -12,7 +12,7 @@ export interface SettingsPreference3Controls {
 }
 
 export const settingsPreference3ControlArgs: SettingsPreference3Controls = {
-  colorTheme: 'default',
+  colorTheme: 'twincan',
   mode: 'system',
   modeDescription: 'Claro, escuro ou a configuração do seu sistema',
   modeLabel: 'Modo',
@@ -28,7 +28,7 @@ export const settingsPreference3ControlArgTypes: Partial<
   colorTheme: {
     control: 'select',
     description: 'Passes `colorTheme`, the preset shown in the theme select.',
-    options: ['default', 'stone', 'zinc'],
+    options: ['twincan', 'stone', 'zinc'],
   },
   mode: {
     control: 'select',

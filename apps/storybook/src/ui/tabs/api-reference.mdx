@@ -82,7 +82,7 @@ The variant sets no attribute. The `default` list is a `bg-muted` track with 2px
 | `"default"` | 34px | 30px | 9px |
 | `"lg"` | 38px | 34px | 11px |
 
-The indicator is a `span` with `data-slot="tab-indicator"` and `role="presentation"`, placed over the active tab through the variables below and moved in 200ms; under `prefers-reduced-motion` it jumps to the new tab without the transition. It stays hidden until the layout settles and is not rendered while no tab is active. In `default` it is the raised surface behind the active tab (`bg-background` with `shadow-sm/5`, `bg-input` in dark). In `underline` it is a 2px `primary` bar 1px below the bottom edge of the list, or 1px left of its left edge when vertical, so it covers a `border-b` or `border-s` on a wrapper.
+The indicator is a `span` with `data-slot="tab-indicator"` and `role="presentation"`, placed over the active tab through the variables below and moved in 200ms; under `prefers-reduced-motion` it jumps to the new tab without the transition. It stays hidden until the layout settles and is not rendered while no tab is active. In `default` it is the raised surface behind the active tab (`bg-background` with the theme's input shadow, `shadow-(shadow:--input-shadow)`, `bg-input` in dark). In `underline` it is a 2px `primary` bar 1px below the bottom edge of the list, or 1px left of its left edge when vertical, so it covers a `border-b` or `border-s` on a wrapper.
 
 | Variable | Default | Description |
 | --- | --- | --- |

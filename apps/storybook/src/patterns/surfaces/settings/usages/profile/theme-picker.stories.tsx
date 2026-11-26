@@ -1,5 +1,6 @@
 import { CircleHalfIcon, PaletteIcon } from '@phosphor-icons/react'
 import type { Decorator, Meta, StoryObj } from '@storybook/react-vite'
+import { type ThemeOption as Preset, themeOptions } from '@tc96/themes'
 import {
   SettingsRow,
   SettingsSection,
@@ -19,10 +20,6 @@ import {
 import { Fragment } from 'react'
 import { useGlobals } from 'storybook/preview-api'
 import { expect, fn, within } from 'storybook/test'
-import {
-  type ThemePreset,
-  themePresets,
-} from '../../../../../../../example/packages/ui/src/themes/presets.ts'
 
 type ThemeMode = 'system' | 'light' | 'dark'
 
@@ -32,21 +29,20 @@ const modeOptions: { label: string; value: ThemeMode }[] = [
   { label: 'Dark', value: 'dark' },
 ]
 
-const presetItems = themePresets.map(({ title, value }) => ({
+const presetItems = themeOptions.map(({ title, value }) => ({
   label: title,
   value,
 }))
 
-const presetGroups: { label: string; source: ThemePreset['source'] }[] = [
-  { label: 'Base colors', source: 'coss' },
+const presetGroups: { label: string; source: Preset['source'] }[] = [
   { label: 'tweakcn', source: 'tweakcn' },
 ]
 
-const presetsFrom = (source: ThemePreset['source']) =>
-  themePresets.filter((preset) => preset.source === source)
+const presetsFrom = (source: Preset['source']) =>
+  themeOptions.filter((preset) => preset.source === source)
 
 const titleOf = (value: string) =>
-  themePresets.find((preset) => preset.value === value)?.title ?? value
+  themeOptions.find((preset) => preset.value === value)?.title ?? value
 
 function ThemeSwatch({ preset }: Readonly<{ preset: string }>) {
   return (
@@ -63,7 +59,7 @@ function ThemeSwatch({ preset }: Readonly<{ preset: string }>) {
   )
 }
 
-function ThemeOption({ preset }: Readonly<{ preset: ThemePreset }>) {
+function ThemeOption({ preset }: Readonly<{ preset: Preset }>) {
   return (
     <SelectItem value={preset.value}>
       <span className="flex items-center gap-2">
@@ -190,7 +186,7 @@ const withStorybookTheme: Decorator<ThemeSettingsProps> = (Story, { args }) => {
       <Story
         args={{
           ...args,
-          colorTheme: globals.themePreset ?? 'default',
+          colorTheme: globals.themePreset ?? 'twincan',
           mode: globals.theme ?? 'dark',
           onColorThemeChange: (themePreset) => {
             args.onColorThemeChange?.(themePreset)
@@ -208,7 +204,7 @@ const withStorybookTheme: Decorator<ThemeSettingsProps> = (Story, { args }) => {
 
 const meta = {
   args: {
-    colorTheme: 'default',
+    colorTheme: 'twincan',
     mode: 'dark',
     onColorThemeChange: fn(),
     onModeChange: fn(),

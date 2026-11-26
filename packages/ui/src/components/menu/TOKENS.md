@@ -57,7 +57,7 @@ Why each rule exists, with its contrast: `ACCESSIBILITY.md`.
 | `layout` | `relative flex` | |
 | `size` | `min-w-40` | at least 160px, also when a `w-*` class is passed |
 | `motion` | `origin-(--transform-origin)` | opens from the trigger |
-| `shape` | `rounded-lg border shadow-lg/5` | `--radius-lg`, 1px `--border` |
+| `shape` | `rounded-lg border shadow-(shadow:--popover-shadow)` | `--radius-lg`, 1px `--border` |
 | `color` | `bg-popover not-dark:bg-clip-padding` | |
 | `focus` | `outline-none focus:outline-none` | the popup itself shows no outline |
 | `highlight` | `before:pointer-events-none before:absolute before:inset-0 before:rounded-[calc(var(--radius-lg)-1px)] before:shadow-[0_1px_--theme(--color-black/4%)] dark:before:shadow-[0_-1px_--theme(--color-white/6%)]` | fixed alpha, not a token |
@@ -171,7 +171,7 @@ A `MenuPopup` with `side="inline-end"`, `align="start"`, `sideOffset={0}` and `a
 | Name | Selectors | Description |
 | --- | --- | --- |
 | `layout` | `pointer-events-none block aspect-square h-full` | |
-| `shape` | `rounded-(--thumb-size) shadow-sm/5` | |
+| `shape` | `rounded-(--thumb-size) shadow-(shadow:--input-shadow)` | |
 | `color` | `bg-background` | |
 | `checked` | `in-[[data-slot=menu-checkbox-item][data-checked]]:origin-[var(--thumb-size)_50%] in-[[data-slot=menu-checkbox-item][data-checked]]:translate-x-[calc(var(--thumb-size)-4px)]` | slides to the end |
 | `pressed` | `in-[[data-slot=menu-checkbox-item]:active]:not-data-disabled:scale-x-110 in-[[data-slot=menu-checkbox-item]:active]:rounded-[var(--thumb-size)/calc(var(--thumb-size)*1.10)]` | stretches while pressed |

@@ -43,9 +43,22 @@ import {
   type RegistryItem,
   selectItems,
 } from './manifest'
+import {
+  planTheme,
+  readTheme,
+  type ThemePlan,
+  themeNames,
+  writeTheme,
+} from './theme'
 import { addFolderExports } from './workspace'
 
-const help = `tc96 init [--cwd path]\nWrites components.json with the tc96-mono layout when it is missing: ui, hooks, lib, helpers, patterns and blocks in packages/ui (@tc96/ui), cn in packages/utils (@tc96/utils). Edit its aliases to install elsewhere. Adds the layer exports packages/ui/package.json lacks.\n\ntc96 add <patterns or blocks...> [--cwd path] [--dry-run] [--diff] [--view] [--yes] [--force]\nPatterns: ${patternNames.join(' ')}\nBlocks: ${blockNames.join(' ')}\nReads the aliases from the nearest components.json, searching from --cwd up to the filesystem root. Each alias resolves through tsconfig paths or, without them, through the exports of the workspace package that owns it. hooks and lib default to children of ui; helpers, patterns and blocks replace the last segment of the ui alias (@acme/ui/components gives @acme/ui/patterns) unless set; the blocks path is needed only to install a block.\nInstalls only the ui components missing from the ui alias, from this package. Their theme tokens are listed, never written to your CSS.\nStops before installing when the patterns do not type-check against your components, in a dry run too; --force installs anyway.\nExisting files that differ are preserved; in a terminal the CLI asks before overwriting each one, unless --yes.\nInstalls the missing npm dependencies with the package manager of your lockfile, into the workspace package that holds the patterns path.\n--dry-run lists what would change, --view prints the new files and --diff the changes to existing ones; none of them writes.\nWrites index.ts at the patterns path, exporting every installed pattern.\n`
+const defaultRegistryDirectory = join(
+  dirname(fileURLToPath(import.meta.url)),
+  'registry',
+)
+const themeList =
+  themeNames(defaultRegistryDirectory).join(' ') || 'none in this build'
+const help = `tc96 init [--cwd path]\nWrites components.json with the tc96-mono layout when it is missing: ui, hooks, lib, helpers, patterns and blocks in packages/ui (@tc96/ui), cn in packages/utils (@tc96/utils). Edit its aliases to install elsewhere. Adds the layer exports packages/ui/package.json lacks.\n\ntc96 add <patterns or blocks...> [--cwd path] [--dry-run] [--diff] [--view] [--yes] [--force]\nPatterns: ${patternNames.join(' ')}\nBlocks: ${blockNames.join(' ')}\nReads the aliases from the nearest components.json, searching from --cwd up to the filesystem root. Each alias resolves through tsconfig paths or, without them, through the exports of the workspace package that owns it. hooks and lib default to children of ui; helpers, patterns and blocks replace the last segment of the ui alias (@acme/ui/components gives @acme/ui/patterns) unless set; the blocks path is needed only to install a block.\nInstalls only the ui components missing from the ui alias, from this package. Their theme tokens are listed, never written to your CSS.\nStops before installing when the patterns do not type-check against your components, in a dry run too; --force installs anyway.\nExisting files that differ are preserved; in a terminal the CLI asks before overwriting each one, unless --yes.\nInstalls the missing npm dependencies with the package manager of your lockfile, into the workspace package that holds the patterns path.\n--dry-run lists what would change, --view prints the new files and --diff the changes to existing ones; none of them writes.\nWrites index.ts at the patterns path, exporting every installed pattern.\n\ntc96 add --theme <name> [--cwd path] [--dry-run] [--view] [--yes]\nInstalls one theme as your only theme: writes themes/<name>.css next to the stylesheet that components.json names in tailwind.css, imports it there with its web fonts, and removes the theme it replaces. Asks before changing your CSS, unless --yes. Combine it with patterns or blocks to install both.\nThemes: ${themeList}\n`
 async function main() {
   const args = process.argv.slice(2)
   if (!args.length || args.includes('--help') || args.includes('-h')) {
@@ -79,21 +92,20 @@ async function main() {
   }
   if (command !== 'add') throw new Error(help)
   let cwd = process.cwd()
-  let registryDirectory = join(
-    dirname(fileURLToPath(import.meta.url)),
-    'registry',
-  )
+  let registryDirectory = defaultRegistryDirectory
   const names: string[] = []
   const flags = new Set<string>()
   let force = false
+  let themeName: string | undefined
   for (let i = 0; i < args.length; i++) {
     const argument = args[i]
     if (!argument) throw new Error('Missing argument')
-    if (['--cwd', '--registry-dir'].includes(argument)) {
+    if (['--cwd', '--registry-dir', '--theme'].includes(argument)) {
       const value = args[++i]
       if (!value || value.startsWith('--'))
         throw new Error(`Missing value for ${argument}`)
       if (argument === '--cwd') cwd = resolve(value)
+      else if (argument === '--theme') themeName = value
       else registryDirectory = resolve(value)
     } else if (argument === '--force') force = true
     else if (
@@ -111,6 +123,10 @@ async function main() {
     else names.push(argument)
   }
   cwd = findProjectRoot(cwd)
+  if (themeName) {
+    await installTheme(cwd, registryDirectory, themeName, flags)
+    if (!names.length) return
+  }
   const selected = selectItems(names)
   const configuration = await readInstallConfig(cwd, {
     blocks: selected.some(isBlock),
@@ -333,6 +349,75 @@ async function main() {
     `Installed: ${selected.join(', ')}. Visual and behavioral compatibility still require consumer validation.`,
   )
 }
+async function installTheme(
+  cwd: string,
+  registryDirectory: string,
+  name: string,
+  flags: Set<string>,
+) {
+  const item = await readTheme(registryDirectory, name)
+  const stylesheetPath = await readStylesheet(cwd)
+  if (!stylesheetPath || !existsSync(join(cwd, stylesheetPath)))
+    throw new Error(
+      'components.json names no readable tailwind.css; set tailwind.css to the stylesheet that imports Tailwind.',
+    )
+  const plan = await planTheme(
+    registryDirectory,
+    join(cwd, stylesheetPath),
+    item,
+  )
+  const show = (path: string) => relative(cwd, path)
+  const changes = themeChanges(plan, show)
+  if (flags.has('--dry-run') || flags.has('--diff') || flags.has('--view')) {
+    for (const change of changes) console.log(change)
+    if (flags.has('--view'))
+      console.log(`--- ${show(plan.themePath)}\n${plan.themeCss}`)
+    return
+  }
+  if (!changes.length) {
+    console.log(`Theme ${name} is already installed.`)
+    return
+  }
+  if (!flags.has('--yes')) {
+    if (!process.stdin.isTTY)
+      throw new Error(
+        `Installing theme ${name} changes your CSS:\n${changes.join('\n')}\nPass --yes to apply.`,
+      )
+    const terminal = createInterface({
+      input: process.stdin,
+      output: process.stdout,
+    })
+    const answer = await terminal
+      .question(`${changes.join('\n')}\nInstall theme ${name}? (y/N) `)
+      .finally(() => terminal.close())
+    if (!/^y(es)?$/i.test(answer.trim())) {
+      console.log(`Theme ${name} was not installed.`)
+      return
+    }
+  }
+  await writeTheme(plan)
+  console.log(`Installed theme ${name}.`)
+}
+
+function themeChanges(plan: ThemePlan, show: (path: string) => string) {
+  const changes: string[] = []
+  if (plan.themeStatus === 'create')
+    changes.push(`create: ${show(plan.themePath)}`)
+  if (plan.themeStatus === 'conflict')
+    changes.push(
+      `overwrite: ${show(plan.themePath)}, which differs from the registry`,
+    )
+  if (plan.stylesheetChanged)
+    changes.push(
+      `update: ${show(plan.stylesheetPath)}, importing only this theme`,
+    )
+  if (plan.replaced)
+    changes.push(
+      `remove: ${show(plan.replaced.path)}, the replaced ${plan.replaced.name} theme`,
+    )
+  return changes
+}
+
 main().catch((error: unknown) => {
   console.error(error instanceof Error ? error.message : error)
   process.exitCode = 1

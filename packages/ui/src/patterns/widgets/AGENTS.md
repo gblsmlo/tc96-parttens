@@ -28,7 +28,7 @@ Six files still carry Portuguese JSDoc from before the no-comments rule (`shared
 Frame and regions:
 
 - Every card widget renders `WidgetShell` with `aria-labelledby` pointing at a `useId()` title, so it is a `region` named by its title; plays query `getByRole('region', { name })`. Exceptions: `AssetStatWidget` is named by `name` plus `symbol` (Chromium computes `ZcashZEC`, with no space, so its play matches `/^Zcash ?ZEC$/`), `ContactWidget` by `person.label`, `WorldClockWidget` by `aria-label={label}`. `ProgressHud` (a `section` with a required `aria-label`) and `ProgressFooter` (a plain `div`) do not use the shell.
-- `Patterns/Widgets/Behavior` (`Keeps Transparent Border And Card Shadow`, `Mounts A Region Named By The Consumer`) asserts the shell is a `section[data-slot="card"]` with `border` and `border-transparent` and neither `border-border/80` nor `border-0`, keeps `shadow-xs/5` and the consumer's `className`.
+- `Patterns/Widgets/Behavior` (`Keeps Transparent Border And Card Shadow`, `Mounts A Region Named By The Consumer`) asserts the shell is a `section[data-slot="card"]` with `border` and `border-transparent` and neither `border-border/80` nor `border-0`, keeps `shadow-(shadow:--card-shadow)` and the consumer's `className`.
 - `tone="inverted"` on `AssetStatWidget` and `TaskProgressWidget` wraps the card in `<div className="dark contents">` and sets `data-tone` on the shell; the dark palette comes from the consumer's theme, not from the pattern.
 
 Numbers:
