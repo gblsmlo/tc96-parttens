@@ -1,0 +1,108 @@
+import type { Documents5Labels, Documents5LabelsOverride } from './types'
+
+export const defaultDocuments5Labels: Documents5Labels = {
+  actionsFor: (name) => `Actions for ${name}`,
+  clearFilters: 'Clear filters',
+  clearSelection: 'Clear selection',
+  columns: {
+    actions: 'Actions',
+    name: 'Name',
+    owner: 'Owner',
+    size: 'Size',
+    type: 'Type',
+    updated: 'Updated',
+  },
+  create: 'New',
+  createLink: 'Link',
+  createNote: 'Note',
+  delete: 'Delete',
+  download: 'Download',
+  empty: 'No documents yet.',
+  errorDescription: 'Check your connection and try again.',
+  errorTitle: 'Could not load the documents',
+  display: 'Display',
+  filterBy: {
+    owner: 'Owner',
+    type: 'Type',
+  },
+  filterCount: (label, count) => `${label} (${count})`,
+  filters: 'Filters',
+  groupBy: 'Group by',
+  groupings: {
+    none: 'None',
+    owner: 'Owner',
+    type: 'Type',
+  },
+  groupToggle: (group, collapsed) =>
+    collapsed ? `Expand ${group}` : `Collapse ${group}`,
+  loading: 'Loading documents',
+  modes: {
+    gallery: 'Gallery',
+    list: 'List',
+    table: 'Table',
+  },
+  noOwner: 'No owner',
+  noResult: 'No documents match these filters.',
+  noSize: '—',
+  open: 'Open',
+  openRecord: (name) => `Open ${name}`,
+  pin: 'Pin',
+  pinned: 'Pinned',
+  pinnedMark: 'Pinned',
+  retry: 'Try again',
+  savedViews: {
+    create: 'Save view',
+    delete: 'Delete',
+    duplicate: 'Duplicate',
+    modified: (label) => `${label} (modified)`,
+    options: (label) => `Options for ${label}`,
+    rename: 'Rename',
+    savedViews: 'My views',
+    search: 'Search views',
+    searchPlaceholder: 'Search views...',
+    update: (label) => `Update “${label}”`,
+  },
+  selectAll: 'Select all documents',
+  selectedCount: (count) =>
+    count === 1 ? '1 document selected' : `${count} documents selected`,
+  selectionActions: 'Selected documents actions',
+  selectRecord: (name) => `Select ${name}`,
+  sortBy: 'Sort by',
+  sorts: {
+    name: 'Name',
+    owner: 'Owner',
+    type: 'Type',
+    updated: 'Last updated',
+  },
+  title: 'All documents',
+  toolbar: 'Document controls',
+  types: {
+    audio: 'Audio',
+    document: 'Document',
+    image: 'Image',
+    link: 'Link',
+    note: 'Note',
+    video: 'Video',
+  },
+  unpin: 'Unpin',
+  unpinRecord: (name) => `Unpin ${name}`,
+  upload: 'Upload files',
+  viewList: 'Views',
+}
+
+export function resolveDocuments5Labels(
+  labels: Documents5LabelsOverride | undefined,
+): Documents5Labels {
+  const base = defaultDocuments5Labels
+  return {
+    ...base,
+    ...labels,
+    columns: { ...base.columns, ...labels?.columns },
+    filterBy: { ...base.filterBy, ...labels?.filterBy },
+    groupings: { ...base.groupings, ...labels?.groupings },
+    modes: { ...base.modes, ...labels?.modes },
+    savedViews: { ...base.savedViews, ...labels?.savedViews },
+    sorts: { ...base.sorts, ...labels?.sorts },
+    types: { ...base.types, ...labels?.types },
+  }
+}

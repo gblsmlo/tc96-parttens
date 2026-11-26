@@ -3390,6 +3390,27 @@
     "documents4Sorts",
     "documents4Types"
   ],
+  "block:documents-5": [
+    "Documents5",
+    "Documents5ColumnId",
+    "Documents5FilterId",
+    "Documents5GroupBy",
+    "Documents5Kind",
+    "Documents5Labels",
+    "Documents5LabelsOverride",
+    "Documents5Mode",
+    "Documents5Person",
+    "Documents5Props",
+    "Documents5Record",
+    "Documents5SavedView",
+    "Documents5Sort",
+    "Documents5Type",
+    "Documents5TypeColors",
+    "documents5GroupBys",
+    "documents5Modes",
+    "documents5Sorts",
+    "documents5Types"
+  ],
   "block:agenda-1": [
     "Agenda1",
     "Agenda1ColumnId",
