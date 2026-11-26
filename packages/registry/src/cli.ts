@@ -58,7 +58,47 @@ const defaultRegistryDirectory = join(
 )
 const themeList =
   themeNames(defaultRegistryDirectory).join(' ') || 'none in this build'
-const help = `tc96 init [--cwd path]\nWrites components.json with the tc96-mono layout when it is missing: ui, hooks, lib, helpers, patterns and blocks in packages/ui (@tc96/ui), cn in packages/utils (@tc96/utils). Edit its aliases to install elsewhere. Adds the layer exports packages/ui/package.json lacks.\n\ntc96 add <patterns or blocks...> [--cwd path] [--dry-run] [--diff] [--view] [--yes] [--force]\nPatterns: ${patternNames.join(' ')}\nBlocks: ${blockNames.join(' ')}\nReads the aliases from the nearest components.json, searching from --cwd up to the filesystem root. Each alias resolves through tsconfig paths or, without them, through the exports of the workspace package that owns it. hooks and lib default to children of ui; helpers, patterns and blocks replace the last segment of the ui alias (@acme/ui/components gives @acme/ui/patterns) unless set; the blocks path is needed only to install a block.\nInstalls only the ui components missing from the ui alias, from this package. Their theme tokens are listed, never written to your CSS.\nStops before installing when the patterns do not type-check against your components, in a dry run too; --force installs anyway.\nExisting files that differ are preserved; in a terminal the CLI asks before overwriting each one, unless --yes.\nInstalls the missing npm dependencies with the package manager of your lockfile, into the workspace package that holds the patterns path.\n--dry-run lists what would change, --view prints the new files and --diff the changes to existing ones; none of them writes.\nWrites index.ts at the patterns path, exporting every installed pattern.\n\ntc96 add --theme <name> [--cwd path] [--dry-run] [--view] [--yes]\nInstalls one theme as your only theme: writes themes/<name>.css next to the stylesheet that components.json names in tailwind.css, imports it there with its web fonts, and removes the theme it replaces. Asks before changing your CSS, unless --yes. Combine it with patterns or blocks to install both.\nThemes: ${themeList}\n`
+const help = `Usage: tc96 init [options]
+
+writes components.json with the tc96-mono layout and adds the missing layer exports
+
+Options:
+  --cwd <path>    the working directory. defaults to the current directory.
+  -h, --help      display help for command
+
+Usage: tc96 add [options] [items...]
+
+installs patterns and blocks as source, with the ui components and npm dependencies they need
+
+Arguments:
+  items           the patterns and blocks to install
+
+Options:
+  --cwd <path>    the working directory. defaults to the current directory.
+  --dry-run       list what would change without writing files.
+  --view          print the new files without writing them.
+  --diff          print the changes to existing files without writing them.
+  --yes           preserve existing files that differ without asking.
+  --force         install even when the patterns do not type-check against your components.
+  --theme <name>  also install a theme. see add --theme.
+  -h, --help      display help for command
+
+Patterns: ${patternNames.join(' ')}
+Blocks: ${blockNames.join(' ')}
+
+Usage: tc96 add --theme <name> [options] [items...]
+
+installs one theme as your only theme
+
+Options:
+  --cwd <path>    the working directory. defaults to the current directory.
+  --dry-run       list what would change without writing files.
+  --view          print the new files without writing them.
+  --yes           change your CSS without asking.
+  -h, --help      display help for command
+
+Themes: ${themeList}
+`
 async function main() {
   const args = process.argv.slice(2)
   if (!args.length || args.includes('--help') || args.includes('-h')) {
