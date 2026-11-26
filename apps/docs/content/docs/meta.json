@@ -1,3 +1,3 @@
 {
-  "pages": ["index", "installation", "text", "collection", "action-bar"]
+  "pages": ["index", "installation", "cli", "text", "collection", "action-bar"]
 }
