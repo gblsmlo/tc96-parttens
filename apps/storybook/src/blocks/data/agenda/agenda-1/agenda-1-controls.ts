@@ -42,8 +42,7 @@ export const agenda1ControlArgTypes: Partial<ArgTypes<Agenda1Controls>> = {
   },
   catalogsLoading: {
     control: 'boolean',
-    description:
-      'Passes `ownersLoading`; on, the Responsável filter shows skeleton rows.',
+    description: 'Passes `ownersLoading` for the owner catalog.',
   },
   create: {
     control: 'text',
@@ -62,12 +61,12 @@ export const agenda1ControlArgTypes: Partial<ArgTypes<Agenda1Controls>> = {
   filters: {
     control: 'boolean',
     description:
-      'Passes `onKindFilterChange`; on, Exibição lists the Tipo filter. The Responsável filter follows `owners`.',
+      'Passes `onKindFilterChange`; on, the Tipo filter is controllable. The Responsável filter follows `owners`. The toolbar has no Exibição menu for them.',
   },
   mode: {
     control: 'inline-radio',
     description:
-      'The active layout; the mode tabs of Exibição change it too and call `onModeChange`.',
+      'The active layout; changing it calls `onModeChange`. The toolbar has no Exibição menu for the mode tabs.',
     options: ['calendar', 'list', 'table'],
   },
   openable: {
@@ -78,7 +77,7 @@ export const agenda1ControlArgTypes: Partial<ArgTypes<Agenda1Controls>> = {
   period: {
     control: 'inline-radio',
     description:
-      'The period of the window; Período in Exibição changes it too and calls `onPeriodChange`.',
+      'The period of the window; the Dia, Semana and Mês toggle in the toolbar changes it and calls `onPeriodChange`.',
     options: ['day', 'week', 'month'],
   },
   reschedulable: {
@@ -88,11 +87,11 @@ export const agenda1ControlArgTypes: Partial<ArgTypes<Agenda1Controls>> = {
   },
   title: {
     control: 'text',
-    description: 'Text of `labels.title`: the heading and the section name.',
+    description: 'Text of `labels.title`: the section name.',
   },
   withOwners: {
     control: 'boolean',
     description:
-      'Passes `owners`; on, the Responsável column, the avatar of a list row and the Responsável filter appear.',
+      'Passes `owners`; on, the Responsável column and the avatar of a list row appear.',
   },
 }

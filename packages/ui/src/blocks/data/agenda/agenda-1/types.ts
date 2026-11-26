@@ -4,7 +4,6 @@ import type {
   DataCollectionLoadProps,
   DataCollectionModeLabels,
   DataCollectionPerson,
-  DataCollectionSettingsToolbarLabels,
 } from '../../shared/collection/types'
 
 export type Agenda1Mode = 'calendar' | 'list' | 'table'
@@ -59,12 +58,8 @@ export type Agenda1ColumnId =
   | 'title'
   | 'when'
 
-export interface Agenda1Labels
-  extends DataCollectionLoadLabels,
-    DataCollectionSettingsToolbarLabels {
+export interface Agenda1Labels extends DataCollectionLoadLabels {
   allDay: string
-  allKinds: string
-  allOwners: string
   cancel: string
   cancelEntry: (title: string) => string
   columns: Record<Agenda1ColumnId, string>
@@ -73,25 +68,20 @@ export interface Agenda1Labels
   empty: string
   emptyGroup: string
   entryName: (kind: string, title: string) => string
-  filters: string
-  group: string
-  groupBy: string
   groupings: Record<Agenda1GroupBy, string>
   groupToggle: (group: string, collapsed: boolean) => string
-  kind: string
   kinds: Record<Agenda1Kind, string>
   modalities: Record<Agenda1Modality, string>
   modes: DataCollectionModeLabels
   next: string
-  noGrouping: string
   noResult: string
   openEntry: (title: string) => string
-  owner: string
   period: string
   periods: Record<Agenda1Period, string>
   previous: string
-  savePreference: string
+  title: string
   today: string
+  toolbar: string
   unassigned: string
 }
 
@@ -133,7 +123,6 @@ export interface Agenda1Props
   onOwnerFilterChange?: (ownerId: string | null) => void
   onPeriodChange?: (period: Agenda1Period) => void
   onReschedule?: (change: Agenda1Reschedule) => boolean | Promise<boolean>
-  onSavePreference?: () => void
   ownerFilter?: string | null
   owners?: Agenda1Person[]
   ownersLoading?: boolean

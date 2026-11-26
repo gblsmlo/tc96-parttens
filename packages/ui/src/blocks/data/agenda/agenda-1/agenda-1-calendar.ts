@@ -78,14 +78,13 @@ export function createAgenda1Formatters(
   weekStartsOn: 0 | 1,
 ): Agenda1Formatters {
   const dayTitle = new Intl.DateTimeFormat(locale, {
-    dateStyle: 'long',
-    timeZone: 'UTC',
-  })
-  const weekTitle = new Intl.DateTimeFormat(locale, {
     day: 'numeric',
     month: 'short',
     timeZone: 'UTC',
-    year: 'numeric',
+  })
+  const monthShort = new Intl.DateTimeFormat(locale, {
+    month: 'short',
+    timeZone: 'UTC',
   })
   const monthTitle = new Intl.DateTimeFormat(locale, {
     month: 'long',
@@ -125,10 +124,17 @@ export function createAgenda1Formatters(
       if (period === 'day') return dayTitle.format(asUtcDate(anchor))
       if (period === 'month') return monthTitle.format(asUtcDate(anchor))
       const days = agenda1Range(anchor, 'week', weekStartsOn)
-      return weekTitle.formatRange(
-        asUtcDate(days[0] ?? anchor),
-        asUtcDate(days[days.length - 1] ?? anchor),
-      )
+      const first = days[0] ?? anchor
+      const last = days[days.length - 1] ?? anchor
+      const lastMonth = monthShort.format(asUtcDate(last))
+      if (first.month === last.month && first.year === last.year) {
+        return `${first.day} – ${last.day} de ${lastMonth}`
+      }
+      const firstMonth = monthShort.format(asUtcDate(first))
+      if (first.year === last.year) {
+        return `${first.day} de ${firstMonth} – ${last.day} de ${lastMonth}`
+      }
+      return `${first.day} de ${firstMonth} de ${first.year} – ${last.day} de ${lastMonth} de ${last.year}`
     },
     time: (instant) => clock.format(new Date(instant)),
     when: (entry, allDayLabel) => {
