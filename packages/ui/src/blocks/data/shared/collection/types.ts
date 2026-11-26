@@ -1,6 +1,13 @@
 import type { ReactNode } from 'react'
 
-export type DataCollectionMode = 'calendar' | 'kanban' | 'list' | 'table'
+export type DataCollectionMode =
+  | 'calendar'
+  | 'gallery'
+  | 'kanban'
+  | 'list'
+  | 'table'
+
+export type DataCollectionToolbarMode = Exclude<DataCollectionMode, 'gallery'>
 
 export interface DataCollectionPerson {
   id: string
@@ -44,7 +51,7 @@ export type DataCollectionSettingsToolbarLabels = Pick<
   'clearFilters' | 'display' | 'filterCount' | 'title' | 'toolbar'
 >
 
-export type DataCollectionModeLabels = Record<DataCollectionMode, string>
+export type DataCollectionModeLabels = Record<DataCollectionToolbarMode, string>
 
 export interface DataCollectionSavedView {
   icon?: ReactNode

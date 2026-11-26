@@ -3,6 +3,7 @@
 import type { RowData } from '@tanstack/react-table'
 import {
   type CollectionCalendarViewProps,
+  type CollectionGalleryViewProps,
   type CollectionKanbanViewProps,
   CollectionLayoutOutlet,
   type CollectionLayoutOutletProps,
@@ -16,6 +17,7 @@ import { useControllable } from './use-controllable'
 
 const layoutOf = {
   calendar: 'calendar',
+  gallery: 'gallery',
   kanban: 'kanban',
   list: 'list',
   table: 'datatable',
@@ -32,6 +34,7 @@ export interface DataCollectionProps<TRecord extends RowData> {
   emptyGroupMessage?: string
   emptyMessage: string
   footer?: ReactNode
+  gallery?: CollectionGalleryViewProps<TRecord>
   getGroupToggleLabel?: (group: string, collapsed: boolean) => string
   getRowCanOpen?: (record: TRecord) => boolean
   getRowOpenLabel?: (record: TRecord) => string
@@ -45,6 +48,7 @@ export interface DataCollectionProps<TRecord extends RowData> {
   onEndReached?: () => void
   onGroupByChange?: (groupBy: string | null) => void
   onOpen?: (record: TRecord) => void
+  renderGalleryRecord?: (record: TRecord) => ReactNode
   renderKanbanRecord?: (record: TRecord) => ReactNode
   renderListRecord?: (record: TRecord) => ReactNode
   selectionActions?: DataTableSelectionActionsProp<TRecord>
@@ -59,6 +63,7 @@ export function DataCollection<TRecord extends RowData>({
   emptyGroupMessage,
   emptyMessage,
   footer,
+  gallery,
   getGroupToggleLabel,
   getRowCanOpen,
   getRowOpenLabel,
@@ -72,6 +77,7 @@ export function DataCollection<TRecord extends RowData>({
   onEndReached,
   onGroupByChange,
   onOpen,
+  renderGalleryRecord,
   renderKanbanRecord,
   renderListRecord,
   selectionActions,
@@ -83,7 +89,7 @@ export function DataCollection<TRecord extends RowData>({
     onGroupByChange,
   )
   const activeGroupBy = useMemo(() => {
-    if (mode === 'calendar') return null
+    if (mode === 'calendar' || mode === 'gallery') return null
     const known = collection.groupings.some(({ id }) => id === groupBy)
     if (mode === 'kanban')
       return known ? groupBy : (collection.groupings[0]?.id ?? null)
@@ -173,6 +179,7 @@ export function DataCollection<TRecord extends RowData>({
             selectionActions,
             table,
           }}
+          gallery={{ emptyMessage, ...gallery }}
           kanban={kanban}
           list={{
             collapseEmptyGroups,
@@ -183,6 +190,7 @@ export function DataCollection<TRecord extends RowData>({
             header: listHeader,
             onCollapsedGroupIdsChange,
           }}
+          renderGalleryRecord={renderGalleryRecord}
           renderKanbanRecord={renderKanbanRecord}
           renderListRecord={renderListRecord}
         />

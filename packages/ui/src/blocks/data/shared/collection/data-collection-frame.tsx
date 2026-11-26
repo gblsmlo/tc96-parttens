@@ -9,6 +9,7 @@ import type { ComponentProps, ReactNode } from 'react'
 export interface DataCollectionFrameProps
   extends Omit<ComponentProps<'div'>, 'title'> {
   notice?: ReactNode
+  subheader?: ReactNode
   title: string
   toolbar: ReactNode
 }
@@ -17,6 +18,7 @@ export function DataCollectionFrame({
   children,
   className,
   notice,
+  subheader,
   title,
   toolbar,
   ...props
@@ -31,6 +33,7 @@ export function DataCollectionFrame({
       <CollectionFrameHeader className="gap-4">
         {notice}
         {toolbar}
+        {subheader}
       </CollectionFrameHeader>
       <CollectionFrameBody>{children}</CollectionFrameBody>
     </CollectionFrame>

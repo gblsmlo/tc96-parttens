@@ -3283,6 +3283,27 @@
     "documents1ViewTypes",
     "documents1Views"
   ],
+  "block:documents-2": [
+    "Documents2",
+    "Documents2ColumnId",
+    "Documents2FilterId",
+    "Documents2GroupBy",
+    "Documents2Kind",
+    "Documents2Labels",
+    "Documents2LabelsOverride",
+    "Documents2Mode",
+    "Documents2Person",
+    "Documents2Props",
+    "Documents2Record",
+    "Documents2SavedView",
+    "Documents2Sort",
+    "Documents2Type",
+    "Documents2TypeColors",
+    "documents2GroupBys",
+    "documents2Modes",
+    "documents2Sorts",
+    "documents2Types"
+  ],
   "block:agenda-1": [
     "Agenda1",
     "Agenda1ColumnId",
