@@ -34,6 +34,7 @@ export const defaultTasks3Labels: Tasks3Labels = {
   },
   complete: 'Concluir',
   create: 'Nova tarefa',
+  description: 'Acompanhe prazos, prioridades e responsáveis de cada tarefa.',
   delete: 'Excluir',
   empty: 'Nenhuma tarefa ainda.',
   emptyColumn: 'Nenhuma tarefa nesta coluna.',
@@ -78,7 +79,6 @@ export const defaultTasks3Labels: Tasks3Labels = {
     remove: 'Remover',
   },
   priorities: defaultDataPriorityLabels,
-  search: 'Buscar tarefas',
   selectedCount: (count) =>
     count === 1 ? '1 tarefa selecionada' : `${count} tarefas selecionadas`,
   selectionActions: 'Ações das tarefas selecionadas',

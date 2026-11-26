@@ -46,7 +46,7 @@ export const tasks3ControlArgTypes: Partial<ArgTypes<Tasks3Controls>> = {
   filters: {
     control: 'boolean',
     description:
-      'Passes `onStatusFilterChange`, `onPriorityFilterChange` and `onAssigneeFilterChange`; on, the filter menu sits after the search with one submenu per property and a count badge.',
+      'Passes `onStatusFilterChange`, `onPriorityFilterChange` and `onAssigneeFilterChange`; on, the filter menu opens the right slot with one submenu per property and a count badge.',
   },
   groupBy: {
     control: 'inline-radio',
@@ -56,8 +56,7 @@ export const tasks3ControlArgTypes: Partial<ArgTypes<Tasks3Controls>> = {
   },
   headerActions: {
     control: 'boolean',
-    description:
-      'Passes `onSearchChange` and `onCreate`; on, the search field opens the toolbar and the `Action` closes it.',
+    description: 'Passes `onCreate`; on, the `Action` closes the toolbar.',
   },
   mode: {
     control: 'inline-radio',

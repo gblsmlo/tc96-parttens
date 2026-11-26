@@ -16,7 +16,6 @@ const meta = {
     onOpen: fn(),
     onPriorityFilterChange: fn(),
     onProjectChange: fn(),
-    onSearchChange: fn(),
     onSelectedIdsChange: fn(),
     onSortChange: fn(),
     onStatusFilterChange: fn(),

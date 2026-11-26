@@ -25,9 +25,9 @@ import {
   MenuTrigger,
 } from '@tc96/ui/menu'
 import { Action } from '@tc96/ui/patterns/collection/shared/components/collection-action'
-import { CollectionSearchField } from '@tc96/ui/patterns/collection/shared/components/collection-search-field'
 import { CollectionToolbar } from '@tc96/ui/patterns/toolbar/components/collection-toolbar'
 import {
+  CollectionToolbarDescription,
   CollectionToolbarHeading,
   CollectionToolbarTitle,
 } from '@tc96/ui/patterns/toolbar/components/collection-toolbar-heading'
@@ -76,12 +76,10 @@ export interface Tasks3ToolbarProps {
   onGroupByChange: (groupBy: Tasks3GroupBy | null) => void
   onModeChange: (mode: Tasks3Mode) => void
   onPriorityFilterChange?: (priority: Tasks3PriorityFilter | null) => void
-  onSearchChange?: (search: string) => void
   onSortChange?: (sort: Tasks3Sort) => void
   onStatusFilterChange?: (status: Tasks3Status | null) => void
   people: readonly Tasks3Person[]
   priorityFilter: Tasks3PriorityFilter | null
-  search: string
   sort: Tasks3Sort
   statusFilter: Tasks3Status | null
 }
@@ -205,12 +203,10 @@ export function Tasks3Toolbar({
   onGroupByChange,
   onModeChange,
   onPriorityFilterChange,
-  onSearchChange,
   onSortChange,
   onStatusFilterChange,
   people,
   priorityFilter,
-  search,
   sort,
   statusFilter,
 }: Readonly<Tasks3ToolbarProps>) {
@@ -234,19 +230,16 @@ export function Tasks3Toolbar({
       left={
         <CollectionToolbarHeading>
           <CollectionToolbarTitle>{labels.title}</CollectionToolbarTitle>
+          {labels.description ? (
+            <CollectionToolbarDescription>
+              {labels.description}
+            </CollectionToolbarDescription>
+          ) : null}
         </CollectionToolbarHeading>
       }
       right={
         loading ? undefined : (
           <>
-            {onSearchChange ? (
-              <CollectionSearchField
-                label={labels.search}
-                onCommit={onSearchChange}
-                placeholder={labels.search}
-                value={search}
-              />
-            ) : null}
             {hasFilters ? (
               <Tasks3Menu
                 icon={FunnelSimpleIcon}

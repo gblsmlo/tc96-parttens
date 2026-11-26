@@ -73,6 +73,7 @@ export interface Tasks3Labels extends DataCollectionLoadLabels {
   complete: string
   create: string
   delete: string
+  description: string
   empty: string
   emptyColumn: string
   filter: string
@@ -95,7 +96,6 @@ export interface Tasks3Labels extends DataCollectionLoadLabels {
   openTask: (title: string) => string
   peoplePicker: PeoplePropertyLabels
   priorities: Record<Tasks3Priority, string>
-  search: string
   selectedCount: (count: number) => string
   selectionActions: string
   selectAll: string
@@ -160,7 +160,6 @@ export interface Tasks3Props
   onPriorityChange?: (taskId: string, priority: Tasks3Priority | null) => void
   onPriorityFilterChange?: (priority: Tasks3PriorityFilter | null) => void
   onProjectChange?: (taskId: string, projectId: string | null) => void
-  onSearchChange?: (search: string) => void
   onSelectedIdsChange?: (taskIds: string[]) => void
   onSortChange?: (sort: Tasks3Sort, direction: Tasks3SortDirection) => void
   onStatusChange?: (taskId: string, status: Tasks3Status) => void
@@ -168,7 +167,6 @@ export interface Tasks3Props
   people?: Tasks3Person[]
   priorityFilter?: Tasks3PriorityFilter | null
   projects?: Tasks3Option[]
-  search?: string
   selectedIds?: string[]
   sort?: Tasks3Sort
   sortDirection?: Tasks3SortDirection
