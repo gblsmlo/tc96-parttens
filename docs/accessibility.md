@@ -12,7 +12,7 @@ Fonte única das regras, boas práticas e uso de acessibilidade e usabilidade do
 | 4. Config do Storybook | `apps/storybook/.storybook/preview.ts` | O `@storybook/addon-a11y` com `test: 'error'` roda o axe depois de cada story; as regras e exclusões que valem para todas as stories ficam aqui. |
 | 5. Runner | `@storybook/addon-vitest` em `apps/storybook/vitest.config.ts` | Executa render, `play` e axe no Chromium, nos projetos `storybook` (claro) e `storybook-dark` (escuro). |
 | 6. Desenvolvimento | Storybook (`bun run storybook`) | O painel a11y e o "Run tests" da sidebar mostram a violação enquanto se trabalha. |
-| 7. CI | `.github/workflows/check.yml`, job `storybook` | No PR roda as stories afetadas (`--changed`) e a suíte inteira quando a config do Storybook ou o tema mudam. |
+| 7. CI | `.github/workflows/storybook.yml`, job `play` | Roda a suíte inteira em 5 shards nos PRs `chore/release-*` e no disparo manual. O label `skip-storybook` e o input `skip-play` pulam só os plays; `storybook:build` e `docs:build` rodam. |
 
 A validação de acessibilidade é das camadas 4 a 7. Nenhum script local de gate a substitui.
 
