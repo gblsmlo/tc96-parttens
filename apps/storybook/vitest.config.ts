@@ -56,12 +56,10 @@ export default mergeConfig(
     ],
     test: {
       maxWorkers: 2,
-      forceRerunTriggers: process.env.TC96_CHANGED_SOURCES_ONLY
-        ? []
-        : [
-            ...configDefaults.forceRerunTriggers,
-            ...workspaceSources.map((folder) => `${folder}/**`),
-          ],
+      forceRerunTriggers: [
+        ...configDefaults.forceRerunTriggers,
+        ...workspaceSources.map((folder) => `${folder}/**`),
+      ],
       projects: [
         storybookProject('storybook', { theme: 'light' }),
         storybookProject('storybook-dark', { theme: 'dark' }),

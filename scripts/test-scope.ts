@@ -231,92 +231,6 @@ function skipped(scenario: string, step: string, note: string): StepResult {
   return { scenario, step, ms: 0, ok: true, note }
 }
 
-function gitChanged(since: string): string[] {
-  const proc = Bun.spawnSync(['git', 'diff', '--name-only', since], {
-    cwd: root,
-  })
-  return proc.stdout
-    .toString()
-    .split('\n')
-    .filter(
-      (file) => /\.(ts|tsx)$/.test(file) && existsSync(path.join(root, file)),
-    )
-}
-
-async function changed(since: string, budget: number): Promise<StepResult[]> {
-  const id = 'changed'
-  const files = gitChanged(since)
-  return [
-    await step(
-      id,
-      'biome',
-      ['bunx', 'biome', 'check', '--no-errors-on-unmatched', ...files],
-      {
-        parse: biomeCount,
-      },
-    ),
-    await step(
-      id,
-      'bun test',
-      ['bun', 'test', '--isolate', `--changed=${since}`],
-      {
-        parse: parseBunTest,
-      },
-    ),
-    await step(id, 'boundaries', ['bun', 'scripts/check-boundaries.ts']),
-    await step(id, 'overrides', ['bun', 'scripts/check-overrides.ts']),
-    ...(await changedPlays(id, since, budget)),
-  ]
-}
-
-async function changedPlays(
-  id: string,
-  since: string,
-  budget: number,
-): Promise<StepResult[]> {
-  process.env.TC96_CHANGED_SOURCES_ONLY = '1'
-  try {
-    const json = path.join(tmp, `${id}-select.json`)
-    const select = await step(
-      id,
-      'plays: select',
-      [
-        'bunx',
-        'vitest',
-        'list',
-        '--project=storybook',
-        `--changed=${since}`,
-        '--filesOnly',
-        `--json=${json}`,
-      ],
-      {
-        cwd: storybook,
-        parse: () => ({
-          files: existsSync(json)
-            ? JSON.parse(readFileSync(json, 'utf8')).length
-            : 0,
-        }),
-      },
-    )
-    const selected = select.files ?? 0
-    if (selected > budget)
-      return [
-        select,
-        {
-          scenario: id,
-          step: 'plays: run',
-          ms: 0,
-          ok: true,
-          files: selected,
-          note: `skipped, ${selected} files over budget ${budget}`,
-        },
-      ]
-    return [select, await vitestRun(id, 'plays: run', [`--changed=${since}`])]
-  } finally {
-    delete process.env.TC96_CHANGED_SOURCES_ONLY
-  }
-}
-
 interface Watched {
   child: ChildProcess
   output: () => string
@@ -545,14 +459,12 @@ async function main(): Promise<void> {
   const flag = (key: string) =>
     args.find((arg) => arg.startsWith(`--${key}=`))?.split('=')[1]
   const scenarios = (flag('scenario') ?? 'declared').split(',')
-  const since = flag('since') ?? 'main'
-  const budget = Number(flag('budget') ?? 120)
   const deps = args.includes('--deps')
   const poll = args.includes('--poll')
   const scopes = readScopes()
   if (!name || !isScope(scopes, name)) {
     console.error(
-      `Usage: bun run test:scope <pattern folder, e.g. collection or records/dialog> [--deps] [--scenario=declared,changed,watch] [--since=main] [--budget=120] [--poll]`,
+      `Usage: bun run test:scope <pattern folder, e.g. collection or records/dialog> [--deps] [--scenario=declared,watch] [--poll]`,
     )
     process.exit(1)
   }
@@ -565,8 +477,6 @@ async function main(): Promise<void> {
     )
     if (scenario === 'declared')
       results.push(...(await declared(scopes, name, deps)))
-    else if (scenario === 'changed')
-      results.push(...(await changed(since, budget)))
     else if (scenario === 'watch')
       results.push(...(await watch(scopes, name, poll)))
     else throw new Error(`Unknown scenario: ${scenario}`)
