@@ -1,5 +1,6 @@
 import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { dirname, join, relative, resolve } from 'node:path'
+import { defaultPreset, presets, themeRegistryItem } from '@tc96/themes'
 import { build } from 'esbuild'
 import ts from 'typescript'
 import {
@@ -270,6 +271,13 @@ for (const name of [...entries.map(([name]) => name), 'view', 'aggregate'])
 await cp(join(output, 'ui'), join(cliOutput, 'registry/ui'), {
   recursive: true,
 })
+await rm(join(cliOutput, 'registry/themes'), { recursive: true, force: true })
+await mkdir(join(cliOutput, 'registry/themes'), { recursive: true })
+for (const preset of presets)
+  await writeFile(
+    join(cliOutput, `registry/themes/${preset.name}.json`),
+    `${JSON.stringify(themeRegistryItem(preset, defaultPreset), null, 2)}\n`,
+  )
 if (ts.sys.fileExists('packages/registry/src/cli.ts')) {
   await build({
     entryPoints: ['packages/registry/src/cli.ts'],

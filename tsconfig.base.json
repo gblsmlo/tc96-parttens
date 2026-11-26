@@ -11,6 +11,7 @@
     "noEmit": true,
     "paths": {
       "@tc96/utils": ["./packages/utils/src/index.ts"],
+      "@tc96/themes": ["./packages/themes/src/index.ts"],
       "@tc96/ui/patterns": ["./packages/ui/src/patterns/index.ts"],
       "@tc96/ui/patterns/*": ["./packages/ui/src/patterns/*"],
       "@tc96/ui/blocks/*": ["./packages/ui/src/blocks/*"],

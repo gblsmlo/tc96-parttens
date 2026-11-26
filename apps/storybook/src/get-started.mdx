@@ -53,9 +53,9 @@ The consumer layout and the aliases the CLI reads are in the root `README.md`.
 
 Patterns carry no theme: colors, radius and fonts come from your COSS tokens. This Storybook renders with the theme of the example consumer in the tc96 repo (`apps/example/packages/ui/src/styles.css`). Pick a preset with the paintbrush in the toolbar, and light or dark with the sun and moon:
 
-- **Default**: the tc96 example theme.
+- **Twincan**: the tc96 theme.
 - **Stone, Neutral, Slate, Zinc**: the COSS color recipe on each Tailwind gray.
-- **42 tweakcn presets**, such as Claude, Vercel, Supabase and Doom 64, with their colors, radius and fonts. Shadows are left out, because COSS components add their own.
+- **42 presets first published by [tweakcn](https://github.com/jnsahaj/tweakcn)**, such as Claude, Vercel, Supabase and Doom 64, with their colors, radius and fonts. Shadows are left out, because COSS components add their own.
 
 A preset is a set of token rules that an attribute on `html` turns on, next to the `dark` class:
 
@@ -63,7 +63,13 @@ A preset is a set of token rules that an attribute on `html` turns on, next to t
 <html data-theme-preset="zinc" class="dark">
 ```
 
-To use one, copy its rules from `apps/example/packages/ui/src/themes/` into your stylesheet. The tweakcn presets name web fonts, which your app has to load, and keep their published colors: some of their token pairs fall below WCAG contrast, and the architecture doc lists them for each preset.
+To use one, install it as your only theme:
+
+```bash
+npx @tc96/cli add --theme zinc
+```
+
+The CLI writes `themes/zinc.css` next to the stylesheet `components.json` names in `tailwind.css` and imports it there, with the preset's web fonts. Running it with another name replaces the theme. The tweakcn presets keep their published colors: some of their token pairs fall below WCAG contrast, and the architecture doc lists them for each preset.
 
 ## How this Storybook is organized
 

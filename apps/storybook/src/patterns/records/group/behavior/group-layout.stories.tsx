@@ -272,7 +272,7 @@ export const CardAndInsetShellsAreFlatMutedPanels: Story = {
       ]) {
         await expect(classes).toContain(shellClass)
       }
-      for (const cardClass of ['bg-card', 'shadow-xs/5']) {
+      for (const cardClass of ['bg-card', 'shadow-(shadow:--card-shadow)']) {
         await expect(classes).not.toContain(cardClass)
       }
     }

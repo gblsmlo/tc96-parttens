@@ -6,6 +6,7 @@
     ".": "./src/index.ts"
   },
   "dependencies": {
+    "@tc96/themes": "workspace:*",
     "typescript": "6.0.3"
   }
 }
