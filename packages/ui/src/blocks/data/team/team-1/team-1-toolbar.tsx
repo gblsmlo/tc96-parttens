@@ -13,9 +13,9 @@ import {
   CollectionToolbarTitle,
 } from '@tc96/ui/patterns/toolbar/components/collection-toolbar-heading'
 import {
-  ViewSettingsMenu,
+  ViewSettings,
   ViewSettingsSection,
-} from '@tc96/ui/patterns/view-settings-menu/components/view-settings-menu'
+} from '@tc96/ui/patterns/view-settings/components'
 import { sortFromSorting } from '../../shared/grid/grid-state'
 import { GridToolbar } from '../../shared/grid/grid-toolbar'
 import type {
@@ -112,7 +112,7 @@ export function Team1Toolbar({
         </CollectionToolbarHeading>
       }
       right={
-        <ViewSettingsMenu
+        <ViewSettings
           activeFilterCount={activeFilterCount}
           clearLabel={labels.clearFilters}
           formatTriggerLabel={labels.settingsWithFilters}
@@ -178,7 +178,7 @@ export function Team1Toolbar({
               table={table}
             />
           </ViewSettingsSection>
-        </ViewSettingsMenu>
+        </ViewSettings>
       }
     />
   )

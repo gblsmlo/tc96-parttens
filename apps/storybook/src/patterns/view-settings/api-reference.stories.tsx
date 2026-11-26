@@ -1,16 +1,16 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { ViewSettingsMenu } from '@tc96/ui/patterns'
+import { ViewSettings } from '@tc96/ui/patterns'
 import { Slot } from '../../test-utils/anatomy-slot'
-import { ViewSettingsCanvas } from './view-settings-menu-canvas.tsx'
+import { ViewSettingsCanvas } from './view-settings-canvas.tsx'
 
 const meta = {
   args: { children: null },
-  component: ViewSettingsMenu,
+  component: ViewSettings,
   decorators: [ViewSettingsCanvas],
   parameters: { layout: 'fullscreen' },
   tags: ['!autodocs', '!dev'],
-  title: 'Patterns/ViewSettingsMenu/API Reference',
-} satisfies Meta<typeof ViewSettingsMenu>
+  title: 'Patterns/ViewSettings/API Reference',
+} satisfies Meta<typeof ViewSettings>
 
 export default meta
 
@@ -18,8 +18,8 @@ type Story = StoryObj<typeof meta>
 
 export const Anatomy: Story = {
   render: () => (
-    <ViewSettingsMenu onClearFilters={() => undefined}>
+    <ViewSettings onClearFilters={() => undefined}>
       <Slot name="children" />
-    </ViewSettingsMenu>
+    </ViewSettings>
   ),
 }

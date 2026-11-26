@@ -4,9 +4,9 @@ import { DataGridSortSubmenu } from '@tc96/ui/patterns/data-grid/components/data
 import type { UseDataGridReturn } from '@tc96/ui/patterns/data-grid/hooks/use-data-grid'
 import { isConditionComplete } from '@tc96/ui/patterns/data-grid/lib/data-grid-conditions'
 import {
-  ViewSettingsMenu,
+  ViewSettings,
   ViewSettingsSection,
-} from '@tc96/ui/patterns/view-settings-menu/components/view-settings-menu'
+} from '@tc96/ui/patterns/view-settings/components'
 import type { ReactNode } from 'react'
 import { GridToolbar, GridToolbarButton } from '../../shared/grid/grid-toolbar'
 import type {
@@ -42,7 +42,7 @@ export function Revenue1Toolbar({
       left={left}
       right={
         <>
-          <ViewSettingsMenu
+          <ViewSettings
             activeFilterCount={activeFilterCount}
             clearLabel={labels.conditions.clearFilters}
             formatTriggerLabel={labels.filterCount}
@@ -68,7 +68,7 @@ export function Revenue1Toolbar({
                 table={table}
               />
             </ViewSettingsSection>
-          </ViewSettingsMenu>
+          </ViewSettings>
           {onCreate ? (
             <GridToolbarButton onClick={onCreate} variant="default">
               {labels.create}

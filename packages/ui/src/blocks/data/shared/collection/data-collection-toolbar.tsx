@@ -16,10 +16,10 @@ import {
   CollectionToolbarTitle,
 } from '@tc96/ui/patterns/toolbar/components/collection-toolbar-heading'
 import {
-  ViewSettingsMenu,
+  ViewSettings,
   type ViewSettingsMode,
   ViewSettingsSection,
-} from '@tc96/ui/patterns/view-settings-menu/components/view-settings-menu'
+} from '@tc96/ui/patterns/view-settings/components'
 import { ToolbarButton } from '@tc96/ui/toolbar'
 import type { ReactNode } from 'react'
 import type {
@@ -122,7 +122,7 @@ export function DataCollectionToolbar<
       right={
         loading ? undefined : (
           <>
-            <ViewSettingsMenu
+            <ViewSettings
               activeFilterCount={statusFilter ? 1 : 0}
               clearLabel={labels.clearFilters}
               formatTriggerLabel={labels.filterCount}
@@ -148,7 +148,7 @@ export function DataCollectionToolbar<
                   value={statusFilter ?? ''}
                 />
               </ViewSettingsSection>
-            </ViewSettingsMenu>
+            </ViewSettings>
             {onExport ? (
               <DataCollectionToolbarButton onClick={onExport} variant="ghost">
                 <DownloadSimpleIcon aria-hidden="true" />

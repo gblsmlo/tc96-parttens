@@ -14,9 +14,9 @@ import { DataGridDensitySubmenu } from '@tc96/ui/patterns/data-grid/components/d
 import { DataGridSortSubmenu } from '@tc96/ui/patterns/data-grid/components/data-grid-sort-submenu'
 import type { UseDataGridReturn } from '@tc96/ui/patterns/data-grid/hooks/use-data-grid'
 import {
-  ViewSettingsMenu,
+  ViewSettings,
   ViewSettingsSection,
-} from '@tc96/ui/patterns/view-settings-menu/components/view-settings-menu'
+} from '@tc96/ui/patterns/view-settings/components'
 import { ToolbarButton } from '@tc96/ui/toolbar'
 import { cn } from '@tc96/utils'
 import type { ReactNode } from 'react'
@@ -114,7 +114,7 @@ export function Finance1Toolbar({
               {labels.refresh}
             </ToolbarButton>
           ) : null}
-          <ViewSettingsMenu
+          <ViewSettings
             activeFilterCount={onFiltersChange ? activeFilterCount : 0}
             clearLabel={labels.clearFilters}
             label={labels.viewSettings}
@@ -168,7 +168,7 @@ export function Finance1Toolbar({
                 </ViewSettingsSection>
               </>
             ) : null}
-          </ViewSettingsMenu>
+          </ViewSettings>
           {onExport ? (
             <GridToolbarButton onClick={onExport}>
               <DownloadSimpleIcon aria-hidden="true" />

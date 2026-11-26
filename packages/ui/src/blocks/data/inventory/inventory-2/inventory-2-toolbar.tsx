@@ -8,9 +8,9 @@ import {
   CollectionToolbarTitle,
 } from '@tc96/ui/patterns/toolbar/components/collection-toolbar-heading'
 import {
-  ViewSettingsMenu,
+  ViewSettings,
   ViewSettingsSection,
-} from '@tc96/ui/patterns/view-settings-menu/components/view-settings-menu'
+} from '@tc96/ui/patterns/view-settings/components'
 import {
   TableToolbar,
   TableToolbarButton,
@@ -56,7 +56,7 @@ export function Inventory2Toolbar({
             placeholder={labels.search}
             table={table}
           />
-          <ViewSettingsMenu
+          <ViewSettings
             activeFilterCount={statusFilter ? 1 : 0}
             clearLabel={labels.clearFilters}
             formatTriggerLabel={labels.viewWithFilters}
@@ -76,7 +76,7 @@ export function Inventory2Toolbar({
                 value={statusFilter}
               />
             </ViewSettingsSection>
-          </ViewSettingsMenu>
+          </ViewSettings>
           {onAdd ? (
             <TableToolbarButton onClick={onAdd}>
               <PlusIcon aria-hidden="true" />

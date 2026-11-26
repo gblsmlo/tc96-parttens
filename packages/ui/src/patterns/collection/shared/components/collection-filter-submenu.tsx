@@ -50,7 +50,7 @@ export interface FilterRadioSubmenuProps {
 
 /**
  * Submenu de filtro por valor único — a forma que Tasks e Contatos repetem
- * dentro do `ViewSettingsMenu`. O pacote fornece a moldura e a semântica do
+ * dentro do `ViewSettings`. O pacote fornece a moldura e a semântica do
  * "todos"; quais opções existem e o que cada uma significa é da vitrine.
  */
 export function FilterRadioSubmenu({

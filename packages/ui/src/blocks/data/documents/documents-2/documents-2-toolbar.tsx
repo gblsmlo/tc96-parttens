@@ -22,11 +22,11 @@ import {
   MenuTrigger,
 } from '@tc96/ui/menu'
 import { CollectionToolbar } from '@tc96/ui/patterns/toolbar/components/collection-toolbar'
-import { ViewSettingsSection } from '@tc96/ui/patterns/view-settings-menu/components/view-settings-menu'
 import {
   type ViewSettingsOption,
+  ViewSettingsSection,
   ViewSettingsSubmenu,
-} from '@tc96/ui/patterns/view-settings-menu/components/view-settings-submenu'
+} from '@tc96/ui/patterns/view-settings/components'
 import { ToolbarButton } from '@tc96/ui/toolbar'
 import type { ReactNode } from 'react'
 import { dataCollectionModeIcons } from '../../shared/collection/data-collection-toolbar'

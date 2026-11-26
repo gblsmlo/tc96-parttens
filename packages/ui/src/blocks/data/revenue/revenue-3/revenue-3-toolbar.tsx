@@ -16,9 +16,9 @@ import {
   CollectionToolbarTitle,
 } from '@tc96/ui/patterns/toolbar/components/collection-toolbar-heading'
 import {
-  ViewSettingsMenu,
+  ViewSettings,
   ViewSettingsSection,
-} from '@tc96/ui/patterns/view-settings-menu/components/view-settings-menu'
+} from '@tc96/ui/patterns/view-settings/components'
 import { GridToolbar, GridToolbarButton } from '../../shared/grid/grid-toolbar'
 import { revenue3HealthOrder } from './revenue-3-options'
 import type { Revenue3Account, Revenue3Labels } from './types'
@@ -64,7 +64,7 @@ export function Revenue3Toolbar({
             placeholder={labels.search}
             table={table}
           />
-          <ViewSettingsMenu
+          <ViewSettings
             activeFilterCount={filters.length}
             clearLabel={labels.clearFilters}
             formatTriggerLabel={labels.filtersTrigger}
@@ -98,7 +98,7 @@ export function Revenue3Toolbar({
                 value={health}
               />
             </ViewSettingsSection>
-          </ViewSettingsMenu>
+          </ViewSettings>
           {onToggleAll ? (
             <GridToolbarButton onClick={onToggleAll}>
               <ToggleIcon aria-hidden="true" />

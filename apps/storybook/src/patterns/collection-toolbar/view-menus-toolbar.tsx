@@ -45,7 +45,7 @@ import {
   type TaskAssignee,
   type TaskPriority,
   type TaskStatus,
-} from '../view-settings-menu/view-settings-menu-data.tsx'
+} from '../view-settings/view-settings-data.tsx'
 
 type TaskView = 'board' | 'list' | 'timeline'
 

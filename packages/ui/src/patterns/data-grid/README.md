@@ -39,7 +39,7 @@ function Invoices({ invoices }: { invoices: Invoice[] }) {
 }
 ```
 
-`useDataGrid` creates the TanStack table with every feature the grid reads (sorting, filtering, pagination, selection, visibility, ordering, pinning, sizing, resizing) and keeps the state locally. `tableOptions` is the escape hatch for anything else. Toolbar parts take the same `table`: `DataGridSearch`, `DataGridFilterMenu`, `DataGridSelectionSummary`, and the sections `DataGridSortSubmenu`, `DataGridColumnsSubmenu`, `DataGridDensitySubmenu` for `ViewSettingsMenu`.
+`useDataGrid` creates the TanStack table with every feature the grid reads (sorting, filtering, pagination, selection, visibility, ordering, pinning, sizing, resizing) and keeps the state locally. `tableOptions` is the escape hatch for anything else. Toolbar parts take the same `table`: `DataGridSearch`, `DataGridFilterMenu`, `DataGridSelectionSummary`, and the sections `DataGridSortSubmenu`, `DataGridColumnsSubmenu`, `DataGridDensitySubmenu` for `ViewSettings`.
 
 ## Rows per page, condition filters and cell validation
 

@@ -21,7 +21,7 @@ import {
   calendarRange,
   FilterRadioSubmenu,
   toZonedDateTime,
-  ViewSettingsMenu,
+  ViewSettings,
   ViewSettingsSection,
 } from '@tc96/ui/patterns'
 import { Text } from '@tc96/ui/text'
@@ -29,12 +29,12 @@ import { ToggleGroup, ToggleGroupItem } from '@tc96/ui/toggle-group'
 import { ToolbarButton } from '@tc96/ui/toolbar'
 import { useState } from 'react'
 import { Slot } from '../../test-utils/anatomy-slot'
-import { viewSettingsControlArgs } from '../view-settings-menu/view-settings-menu-controls.ts'
+import { viewSettingsControlArgs } from '../view-settings/view-settings-controls.ts'
 import {
   spreadsheetModes,
   viewModes,
-} from '../view-settings-menu/view-settings-menu-data.tsx'
-import { ComposedViewSettings } from '../view-settings-menu/view-settings-menu-layouts.tsx'
+} from '../view-settings/view-settings-data.tsx'
+import { ComposedViewSettings } from '../view-settings/view-settings-layouts.tsx'
 import { viewSwitcherControlArgs } from '../view-switcher/view-switcher-controls.ts'
 import {
   ComposedViewSwitcher,
@@ -124,7 +124,7 @@ export function SearchFieldToolbar() {
     <CollectionToolbar
       right={
         <>
-          <ViewSettingsMenu
+          <ViewSettings
             activeFilterCount={activeFilterCount}
             onClearFilters={() => {
               setSearch('')
@@ -157,7 +157,7 @@ export function SearchFieldToolbar() {
                 value={type}
               />
             </ViewSettingsSection>
-          </ViewSettingsMenu>
+          </ViewSettings>
           <Action label="Novo contato" onClick={ignore} />
         </>
       }

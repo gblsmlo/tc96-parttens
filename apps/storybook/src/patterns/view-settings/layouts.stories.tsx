@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { screen, userEvent, within } from 'storybook/test'
-import { ViewSettingsCanvas } from './view-settings-menu-canvas.tsx'
-import { viewSettingsControlArgs } from './view-settings-menu-controls.ts'
+import { ViewSettingsCanvas } from './view-settings-canvas.tsx'
+import { viewSettingsControlArgs } from './view-settings-controls.ts'
 import {
   ComposedViewSettings,
   FieldSettingsLayout,
@@ -9,13 +9,13 @@ import {
   PropertySubmenusLayout,
   StackedModeTabsLayout,
   SwitchOptionsLayout,
-} from './view-settings-menu-layouts.tsx'
+} from './view-settings-layouts.tsx'
 
 const meta = {
   decorators: [ViewSettingsCanvas],
   parameters: { layout: 'fullscreen' },
   tags: ['!autodocs'],
-  title: 'Patterns/ViewSettingsMenu/Layouts',
+  title: 'Patterns/ViewSettings/Layouts',
 } satisfies Meta
 
 export default meta

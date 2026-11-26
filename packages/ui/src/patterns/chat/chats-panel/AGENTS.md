@@ -1,6 +1,6 @@
 # Chats panel pattern
 
-A controlled list of conversations for an inbox: `ChatsPanel` (a titled `section` with an `actions` slot and a scrolling body, in a `plain`, `card` or `inset` shell), `ChatsPanelList` (the `ul`), `ChatsPanelItem` (one conversation: avatar with unread count and channel mark, name, time and preview) and `ChatsPanelSkeleton` with `ChatsPanelItemSkeleton` (the loading list, in the shape of the rows). The consumer passes the conversations already sorted and filtered, the avatars, the brand marks as `@thesvg/icons` modules, the selection and every label, and mounts the `ViewSettingsMenu` that drives the sort and filters in `actions`. The pattern never sorts, filters, selects, fetches or ships CSS, and has no state.
+A controlled list of conversations for an inbox: `ChatsPanel` (a titled `section` with an `actions` slot and a scrolling body, in a `plain`, `card` or `inset` shell), `ChatsPanelList` (the `ul`), `ChatsPanelItem` (one conversation: avatar with unread count and channel mark, name, time and preview) and `ChatsPanelSkeleton` with `ChatsPanelItemSkeleton` (the loading list, in the shape of the rows). The consumer passes the conversations already sorted and filtered, the avatars, the brand marks as `@thesvg/icons` modules, the selection and every label, and mounts the `ViewSettings` that drives the sort and filters in `actions`. The pattern never sorts, filters, selects, fetches or ships CSS, and has no state.
 
 ## Map
 
@@ -28,7 +28,7 @@ Import direction: `composition/` → `lib/`, `store/`, `core.ts`; `ChatsPanelLis
 Root and list:
 
 - The root is a `section` with `aria-labelledby` pointing at the `h2` title, so the region is named by the title. `ChatsPanelList` takes the same id from the context and is named by the title too; outside a `ChatsPanel` it has no name unless the consumer passes `aria-label`, and a consumer `aria-labelledby` wins over the context.
-- `actions` renders only when passed, after the title and never inside the `h2`. A `ViewSettingsMenu` there needs a `CollectionToolbar` around it, because its trigger is a Base UI `ToolbarButton`.
+- `actions` renders only when passed, after the title and never inside the `h2`. A `ViewSettings` there needs a `CollectionToolbar` around it, because its trigger is a Base UI `ToolbarButton`.
 - The body is always a `ScrollArea`; the root takes its height from the consumer (`className`), and the body takes what the header leaves.
 
 Items:
@@ -72,7 +72,7 @@ bun test packages/registry
 cd apps/storybook && bunx vitest run --project=storybook src/patterns/chat/chats-panel
 ```
 
-The stories are in `apps/storybook/src/patterns/chat/chats-panel/`, on the six component pages under `Patterns/Chat/Chats Panel` (`API Reference`, `Playground`, `Stories`, `Behavior`, `Usages`, `Layouts`). `Usages` holds the inbox (`chats-panel-inbox.tsx`, which owns the sort, filters and selection with the `ViewSettingsMenu` in `actions`) and the lead qualification page (`chats-panel-lead-qualification.tsx`, formerly `Patterns/Chat/Usages/Lead Qualification`). They read `fixtures/chats.tsx` (conversations, the `instagram`, `messenger` and `whatsapp` modules of `@thesvg/icons` and the avatar) and `fixtures/leads.tsx`. Interface tests are the `play` functions of `Patterns/Chat/Chats Panel/Behavior` (root, list name, variants, actions, avatar size, item name, avatar slot, channel mark, unread, selection, `render`, skeleton status, rows, widths and row box); the pattern has no bun test left. Both theme projects run axe with `test: 'error'`.
+The stories are in `apps/storybook/src/patterns/chat/chats-panel/`, on the six component pages under `Patterns/Chat/Chats Panel` (`API Reference`, `Playground`, `Stories`, `Behavior`, `Usages`, `Layouts`). `Usages` holds the inbox (`chats-panel-inbox.tsx`, which owns the sort, filters and selection with the `ViewSettings` in `actions`) and the lead qualification page (`chats-panel-lead-qualification.tsx`, formerly `Patterns/Chat/Usages/Lead Qualification`). They read `fixtures/chats.tsx` (conversations, the `instagram`, `messenger` and `whatsapp` modules of `@thesvg/icons` and the avatar) and `fixtures/leads.tsx`. Interface tests are the `play` functions of `Patterns/Chat/Chats Panel/Behavior` (root, list name, variants, actions, avatar size, item name, avatar slot, channel mark, unread, selection, `render`, skeleton status, rows, widths and row box); the pattern has no bun test left. Both theme projects run axe with `test: 'error'`.
 
 ## Pointers
 

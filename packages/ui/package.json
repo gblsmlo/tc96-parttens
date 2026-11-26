@@ -25,6 +25,7 @@
     "./patterns/data-table/data-table-types": "./src/patterns/data-table/data-table-types.ts",
     "./patterns/data-table/use-data-table": "./src/patterns/data-table/use-data-table.ts",
     "./patterns/rich-text-editor": "./src/patterns/rich-text-editor/index.ts",
+    "./patterns/view-settings/components": "./src/patterns/view-settings/components/index.ts",
     "./patterns/*": "./src/patterns/*.tsx",
     "./blocks/*": "./src/blocks/*/index.ts",
     "./helpers/*": "./src/helpers/*.ts"

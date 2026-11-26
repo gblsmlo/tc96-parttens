@@ -41,7 +41,7 @@ import {
   useCollectionPreferences,
   useDataGrid,
   useDataTable,
-  ViewSettingsMenu,
+  ViewSettings,
   type ViewSettingsMode,
   ViewSettingsSection,
 } from '@tc96/ui/patterns'
@@ -352,7 +352,7 @@ function CampaignsWorkspace({
           <CollectionToolbar
             aria-label="Controles da coleção de campanhas"
             right={
-              <ViewSettingsMenu
+              <ViewSettings
                 activeFilterCount={activeFilterCount}
                 mode={isCampaignLayout(layout) ? layout : 'datatable'}
                 modes={campaignLayouts}
@@ -465,7 +465,7 @@ function CampaignsWorkspace({
                     </MenuSubPopup>
                   </MenuSub>
                 </ViewSettingsSection>
-              </ViewSettingsMenu>
+              </ViewSettings>
             }
             left={
               <ViewSwitcherPicker

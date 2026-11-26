@@ -17,7 +17,7 @@ import {
   FilterRadioSubmenu,
 } from '@tc96/ui/patterns/collection/shared/components/collection-filter-submenu'
 import { CollectionSearchField } from '@tc96/ui/patterns/collection/shared/components/collection-search-field'
-import { ViewSettingsSection } from '@tc96/ui/patterns/view-settings-menu/components/view-settings-menu'
+import { ViewSettingsSection } from '@tc96/ui/patterns/view-settings/components'
 import type { ReactNode } from 'react'
 import { DataCollectionSettingsToolbar } from '../../shared/collection/data-collection-settings-toolbar'
 import { DataCollectionToolbarButton } from '../../shared/collection/data-collection-toolbar'

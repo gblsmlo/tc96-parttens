@@ -30,13 +30,13 @@ export const viewSettingsControlArgTypes: Partial<
   },
   clearLabel: {
     control: 'text',
-    description: 'The `clearLabel` of `ViewSettingsMenu`.',
+    description: 'The `clearLabel` of `ViewSettings`.',
     if: { arg: 'clear' },
   },
   label: {
     control: 'text',
     description:
-      'The `label` of `ViewSettingsMenu`, the trigger text; the active filter count follows it.',
+      'The `label` of `ViewSettings`, the trigger text; the active filter count follows it.',
   },
   reset: {
     control: 'boolean',
@@ -45,7 +45,7 @@ export const viewSettingsControlArgTypes: Partial<
   },
   resetLabel: {
     control: 'text',
-    description: 'The `resetLabel` of `ViewSettingsMenu`.',
+    description: 'The `resetLabel` of `ViewSettings`.',
     if: { arg: 'reset' },
   },
   savePreference: {
@@ -55,7 +55,7 @@ export const viewSettingsControlArgTypes: Partial<
   },
   savePreferenceLabel: {
     control: 'text',
-    description: 'The `savePreferenceLabel` of `ViewSettingsMenu`.',
+    description: 'The `savePreferenceLabel` of `ViewSettings`.',
     if: { arg: 'savePreference' },
   },
 }

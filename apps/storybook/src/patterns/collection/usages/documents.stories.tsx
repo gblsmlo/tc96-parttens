@@ -21,7 +21,7 @@ import {
   CollectionToolbar,
   GalleryView,
   useCollectionPreferences,
-  ViewSettingsMenu,
+  ViewSettings,
   type ViewSettingsMode,
   ViewSettingsSection,
 } from '@tc96/ui/patterns'
@@ -224,7 +224,7 @@ function DocumentsWorkspace({
             aria-label="Controles de notas e documentos"
             right={
               <>
-                <ViewSettingsMenu
+                <ViewSettings
                   activeFilterCount={kindFilter.length}
                   mode={isDocumentLayout(layout) ? layout : 'list'}
                   modes={documentLayouts}
@@ -263,7 +263,7 @@ function DocumentsWorkspace({
                       </MenuSubPopup>
                     </MenuSub>
                   </ViewSettingsSection>
-                </ViewSettingsMenu>
+                </ViewSettings>
                 <Action label="Nova nota" onClick={addNote} />
               </>
             }

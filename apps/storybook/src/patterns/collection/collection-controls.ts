@@ -95,6 +95,6 @@ export const collectionControlArgTypes: Partial<ArgTypes<CollectionControls>> =
     toolbar: {
       control: 'boolean',
       description:
-        'Adds the `CollectionFrameHeader` with the toolbar: view switcher, `ViewSettingsMenu` and the action.',
+        'Adds the `CollectionFrameHeader` with the toolbar: view switcher, `ViewSettings` and the action.',
     },
   }

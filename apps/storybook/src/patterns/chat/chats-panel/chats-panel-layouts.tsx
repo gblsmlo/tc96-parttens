@@ -7,7 +7,7 @@ import {
   ChatsPanelList,
   ChatsPanelSkeleton,
   CollectionToolbar,
-  ViewSettingsMenu,
+  ViewSettings,
   ViewSettingsSection,
 } from '@tc96/ui/patterns'
 import type { ChatsPanelControls } from './chats-panel-controls.ts'
@@ -17,14 +17,14 @@ export const SortActions = () => (
   <CollectionToolbar
     aria-label="Ajustes das conversas"
     right={
-      <ViewSettingsMenu onClearFilters={() => {}}>
+      <ViewSettings onClearFilters={() => {}}>
         <ViewSettingsSection label="Ordenar por">
           <MenuRadioGroup defaultValue="recent">
             <MenuRadioItem value="recent">Mais recentes</MenuRadioItem>
             <MenuRadioItem value="name">Nome</MenuRadioItem>
           </MenuRadioGroup>
         </ViewSettingsSection>
-      </ViewSettingsMenu>
+      </ViewSettings>
     }
   />
 )

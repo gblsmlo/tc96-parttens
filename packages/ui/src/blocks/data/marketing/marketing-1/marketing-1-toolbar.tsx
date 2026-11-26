@@ -14,9 +14,9 @@ import {
   CollectionToolbarTitle,
 } from '@tc96/ui/patterns/toolbar/components/collection-toolbar-heading'
 import {
-  ViewSettingsMenu,
+  ViewSettings,
   ViewSettingsSection,
-} from '@tc96/ui/patterns/view-settings-menu/components/view-settings-menu'
+} from '@tc96/ui/patterns/view-settings/components'
 import { GridToolbar, GridToolbarButton } from '../../shared/grid/grid-toolbar'
 import { marketing1Statuses } from './marketing-1-options'
 import type { Marketing1Campaign, Marketing1Labels } from './types'
@@ -57,7 +57,7 @@ export function Marketing1Toolbar({
             placeholder={labels.search}
             table={table}
           />
-          <ViewSettingsMenu
+          <ViewSettings
             activeFilterCount={table.store.state.columnFilters.length}
             clearLabel={labels.clearFilters}
             formatTriggerLabel={labels.settingsWithFilters}
@@ -97,7 +97,7 @@ export function Marketing1Toolbar({
                 value={String(statusColumn?.getFilterValue() ?? '')}
               />
             </ViewSettingsSection>
-          </ViewSettingsMenu>
+          </ViewSettings>
           {onExport ? (
             <GridToolbarButton onClick={onExport}>
               <DownloadSimpleIcon aria-hidden="true" />

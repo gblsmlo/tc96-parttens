@@ -3,11 +3,11 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 <Meta of={ApiReferenceStories} name="API Reference" />
 
-# ViewSettingsMenu
+# ViewSettings
 
 The display settings of a collection in one menu: tabs for the layouts, the sections the screen passes (grouping, sorting, density, columns, filters), then the clear, reset and save items. It owns the popover and the organization of the fields: a submenu that shows its current value, the field sections with a visibility switch per field, and the item that shows every field. It keeps no state: the consumer passes the active layout, the filter count and the sections, and handles every callback. Its trigger is a toolbar button, so it only mounts inside a [CollectionToolbar](?path=/docs/patterns-collectiontoolbar-api-reference--api-reference), usually in its `right` slot.
 
-The other pages of `Patterns/ViewSettingsMenu`: [Playground](?path=/story/patterns-viewsettingsmenu-playground--playground) to try the texts and the footer items, [Layouts](?path=/story/patterns-viewsettingsmenu-layouts--default) for the arrangements of the layout tabs, the field settings, the switch options and the property submenus, [Behavior](?path=/story/patterns-viewsettingsmenu-behavior--trigger-is-a-ghost-toolbar-button) for the tests, and [Usages](?path=/story/patterns-viewsettingsmenu-usages--task-list) for real settings menus.
+The other pages of `Patterns/ViewSettings`: [Playground](?path=/story/patterns-viewsettings-playground--playground) to try the texts and the footer items, [Layouts](?path=/story/patterns-viewsettings-layouts--default) for the arrangements of the layout tabs, the field settings, the switch options and the property submenus, [Behavior](?path=/story/patterns-viewsettings-behavior--trigger-is-a-ghost-toolbar-button) for the tests. Real settings menus are the blocks `ViewSettings1` to `ViewSettings4` under [Blocks/Application/ViewSettings](?path=/story/blocks-application-viewsettings-viewsettings1--view-settings-1).
 
 Used in: the toolbar of every [Collection](?path=/story/patterns-collection-usages--tasks) usage and of the table and data grid blocks. `FilterRadioSubmenu`, an item for the filter section, is documented in [Patterns/Collection](?path=/docs/patterns-collection-api-reference--api-reference).
 
@@ -16,7 +16,7 @@ Used in: the toolbar of every [Collection](?path=/story/patterns-collection-usag
 ```tsx
 import {
   ViewSettingsFieldSection,
-  ViewSettingsMenu,
+  ViewSettings,
   ViewSettingsSection,
   ViewSettingsShowAllFields,
   ViewSettingsSubmenu,
@@ -28,7 +28,7 @@ import {
 <Canvas of={ApiReferenceStories.Anatomy} />
 
 ```tsx
-<ViewSettingsMenu
+<ViewSettings
   modes={modes}
   mode={mode}
   onModeChange={setMode}
@@ -39,7 +39,7 @@ import {
   <ViewSettingsSection label="Exibição">{items}</ViewSettingsSection>
   <MenuSeparator />
   <ViewSettingsSection label="Filtros">{items}</ViewSettingsSection>
-</ViewSettingsMenu>
+</ViewSettings>
 ```
 
 The menu is closed in the canvas above, so the tree below lists what it holds once the trigger is pressed:
@@ -56,7 +56,7 @@ div[role=menu]                                  portaled, aligned to the end of 
 └── div[role=menuitem]                          Salvar preferência, only with onSavePreference
 ```
 
-## ViewSettingsMenu
+## ViewSettings
 
 The settings of the view in one menu: tabs for the layouts, the consumer's sections (grouping, sorting, columns, filters), then Limpar filtros, Redefinir and Salvar preferência. Renders a ghost toolbar button with a sliders icon that opens a menu aligned to its end.
 
@@ -136,11 +136,11 @@ The item that shows every hidden field. Keeps the menu open.
 
 ## Filter submenus
 
-A filter submenu opens with an option for every value, `Todos` or `Todas` to agree with the filter name, checked by default. It stays checked while no value of that filter is picked; picking a value unchecks it, and picking it clears the values of that filter only. A separator divides it from the values. The [Default](?path=/story/patterns-viewsettingsmenu-layouts--default) layout shows it.
+A filter submenu opens with an option for every value, `Todos` or `Todas` to agree with the filter name, checked by default. It stays checked while no value of that filter is picked; picking a value unchecks it, and picking it clears the values of that filter only. A separator divides it from the values. The [Default](?path=/story/patterns-viewsettings-layouts--default) layout shows it.
 
 ## Property submenus
 
-A screen that sets one value per property, as in [Property Submenus](?path=/story/patterns-viewsettingsmenu-layouts--property-submenus), gives each property a `ViewSettingsSubmenu`. The rules:
+A screen that sets one value per property, as in [Property Submenus](?path=/story/patterns-viewsettings-layouts--property-submenus), gives each property a `ViewSettingsSubmenu`. The rules:
 
 - The trigger shows the icon and the label of the current option, so `Status` with `Em andamento` shows the half circle in `purple-foreground` and the text `Em andamento`.
 - Status and priority icons come from the catalog in `@tc96/ui/property-meta`: `<PropertyMetaIcon meta={workflowStatusMeta.done} />`, `priorityMeta.urgent`. The catalog holds the icon and the tone only; the label is the consumer's.
@@ -150,7 +150,7 @@ A screen that sets one value per property, as in [Property Submenus](?path=/stor
 
 ## Field settings
 
-A collection that lets the user choose its fields composes the parts above, as in [Field Settings](?path=/story/patterns-viewsettingsmenu-layouts--field-settings) ([open](?path=/story/patterns-viewsettingsmenu-layouts--field-settings-open)). The parts render what they receive: the consumer groups, sorts and filters the fields and passes each group ready. The rules:
+A collection that lets the user choose its fields composes the parts above, as in [Field Settings](?path=/story/patterns-viewsettings-layouts--field-settings) ([open](?path=/story/patterns-viewsettings-layouts--field-settings-open)). The parts render what they receive: the consumer groups, sorts and filters the fields and passes each group ready. The rules:
 
 - Grouping and sorting are two submenus, never one list of combinations. `Agrupar por` offers `Nenhum`, `Tipo` and `Visibilidade`; `Ordenar por` offers `Manual`, `Nome A-Z` and `Nome Z-A`.
 - The name order applies inside each group. "By type, in alphabetical order" is `Tipo` plus `Nome A-Z`, not a fourth option.
@@ -169,8 +169,8 @@ A collection that lets the user choose its fields composes the parts above, as i
 | --- | --- | --- |
 | `ViewSettingsField` | `type` | One row of `ViewSettingsFieldSection`. |
 | `ViewSettingsFieldSectionProps` | `type` | The props of `ViewSettingsFieldSection`. |
-| `ViewSettingsMenuProps` | `type` | The props of `ViewSettingsMenu`. |
-| `ViewSettingsMode` | `type` | One tab of `ViewSettingsMenu`, `{ icon, label, value }`. |
+| `ViewSettingsProps` | `type` | The props of `ViewSettings`. |
+| `ViewSettingsMode` | `type` | One tab of `ViewSettings`, `{ icon, label, value }`. |
 | `ViewSettingsOption` | `type` | One choice of `ViewSettingsSubmenu`, `{ label, value, icon? }`. |
 | `ViewSettingsSectionProps` | `type` | The props of `ViewSettingsSection`. |
 | `ViewSettingsShowAllFieldsProps` | `type` | The props of `ViewSettingsShowAllFields`. |

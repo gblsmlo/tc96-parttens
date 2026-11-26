@@ -26,11 +26,13 @@ import {
 } from '@tc96/ui/menu'
 import { Action } from '@tc96/ui/patterns/collection/shared/components/collection-action'
 import { CollectionToolbar } from '@tc96/ui/patterns/toolbar/components/collection-toolbar'
-import { ViewSettingsSection } from '@tc96/ui/patterns/view-settings-menu/components/view-settings-menu'
 import {
+  ViewSettingsMenuButton,
   type ViewSettingsOption,
+  ViewSettingsRadioMenu,
+  ViewSettingsSection,
   ViewSettingsSubmenu,
-} from '@tc96/ui/patterns/view-settings-menu/components/view-settings-submenu'
+} from '@tc96/ui/patterns/view-settings/components'
 import {
   PropertyMetaIcon,
   priorityMeta,
@@ -114,79 +116,6 @@ const iconOption = <TValue extends string>(
   value,
 })
 
-interface Tasks4MenuProps {
-  children: ReactNode
-  icon: PhosphorIcon
-  label: string
-  trailing?: ReactNode
-}
-
-function Tasks4Menu({
-  children,
-  icon: Icon,
-  label,
-  trailing,
-}: Readonly<Tasks4MenuProps>) {
-  return (
-    <Menu>
-      <MenuTrigger
-        render={
-          <ToolbarButton
-            render={
-              <Button
-                aria-label={label}
-                size={trailing ? 'default' : 'icon'}
-                type="button"
-                variant="ghost"
-              />
-            }
-          />
-        }
-      >
-        <Icon aria-hidden="true" />
-        {trailing}
-      </MenuTrigger>
-      <MenuPopup align="end">{children}</MenuPopup>
-    </Menu>
-  )
-}
-
-interface Tasks4RadioMenuProps<TValue extends string> {
-  icon: PhosphorIcon
-  label: string
-  onValueChange: (value: TValue) => void
-  options: readonly ViewSettingsOption<TValue>[]
-  section: string
-  value: TValue
-}
-
-function Tasks4RadioMenu<TValue extends string>({
-  icon,
-  label,
-  onValueChange,
-  options,
-  section,
-  value,
-}: Readonly<Tasks4RadioMenuProps<TValue>>) {
-  return (
-    <Tasks4Menu icon={icon} label={label}>
-      <ViewSettingsSection label={section}>
-        <MenuRadioGroup
-          onValueChange={(next: TValue) => onValueChange(next)}
-          value={value}
-        >
-          {options.map((option) => (
-            <MenuRadioItem closeOnClick key={option.value} value={option.value}>
-              {option.icon}
-              {option.label}
-            </MenuRadioItem>
-          ))}
-        </MenuRadioGroup>
-      </ViewSettingsSection>
-    </Tasks4Menu>
-  )
-}
-
 export function Tasks4Toolbar({
   assigneeFilter,
   groupBy,
@@ -229,7 +158,7 @@ export function Tasks4Toolbar({
         loading ? undefined : (
           <>
             {hasFilters ? (
-              <Tasks4Menu
+              <ViewSettingsMenuButton
                 icon={FunnelSimpleIcon}
                 label={
                   activeFilterCount > 0
@@ -305,9 +234,9 @@ export function Tasks4Toolbar({
                 >
                   {labels.clearFilters}
                 </MenuItem>
-              </Tasks4Menu>
+              </ViewSettingsMenuButton>
             ) : null}
-            <Tasks4RadioMenu<Tasks4Mode>
+            <ViewSettingsRadioMenu<Tasks4Mode>
               icon={dataCollectionModeIcons[mode]}
               label={labels.layout}
               onValueChange={onModeChange}
@@ -322,7 +251,7 @@ export function Tasks4Toolbar({
               value={mode}
             />
             {onSortChange ? (
-              <Tasks4RadioMenu<Tasks4Sort>
+              <ViewSettingsRadioMenu<Tasks4Sort>
                 icon={SortAscendingIcon}
                 label={labels.sort}
                 onValueChange={onSortChange}
@@ -333,7 +262,7 @@ export function Tasks4Toolbar({
                 value={sort}
               />
             ) : null}
-            <Tasks4RadioMenu<Tasks4GroupOption>
+            <ViewSettingsRadioMenu<Tasks4GroupOption>
               icon={StackIcon}
               label={labels.group}
               onValueChange={(value) =>

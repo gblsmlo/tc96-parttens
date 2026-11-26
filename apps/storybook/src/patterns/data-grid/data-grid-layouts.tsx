@@ -19,7 +19,7 @@ import {
   DataGridSortSubmenu,
   type DataGridTable,
   useDataGrid,
-  ViewSettingsMenu,
+  ViewSettings,
   ViewSettingsSection,
 } from '@tc96/ui/patterns'
 import { type ReactElement, useCallback, useMemo, useState } from 'react'
@@ -173,13 +173,13 @@ const GridToolbar = <TData extends object>({
       <>
         <DataGridSelectionSummary table={table} />
         <DataGridFilterMenu table={table} />
-        <ViewSettingsMenu onClearFilters={() => table.resetColumnFilters()}>
+        <ViewSettings onClearFilters={() => table.resetColumnFilters()}>
           <ViewSettingsSection label="Exibição">
             <DataGridSortSubmenu table={table} />
             <DataGridDensitySubmenu table={table} />
             <DataGridColumnsSubmenu table={table} />
           </ViewSettingsSection>
-        </ViewSettingsMenu>
+        </ViewSettings>
       </>
     }
     left={

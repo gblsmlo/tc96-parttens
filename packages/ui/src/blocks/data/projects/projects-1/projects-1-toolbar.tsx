@@ -11,9 +11,9 @@ import {
   CollectionToolbarTitle,
 } from '@tc96/ui/patterns/toolbar/components/collection-toolbar-heading'
 import {
-  ViewSettingsMenu,
+  ViewSettings,
   ViewSettingsSection,
-} from '@tc96/ui/patterns/view-settings-menu/components/view-settings-menu'
+} from '@tc96/ui/patterns/view-settings/components'
 import { GridToolbar, GridToolbarButton } from '../../shared/grid/grid-toolbar'
 import { dataPriorities } from '../../shared/properties/data-priority'
 import type { Projects1Labels, Projects1Task } from './types'
@@ -65,7 +65,7 @@ export function Projects1Toolbar({
             placeholder={labels.search}
             table={table}
           />
-          <ViewSettingsMenu
+          <ViewSettings
             activeFilterCount={filters.length}
             clearLabel={labels.clearFilters}
             formatTriggerLabel={labels.filtersTrigger}
@@ -121,7 +121,7 @@ export function Projects1Toolbar({
                 value={filterValue('project')}
               />
             </ViewSettingsSection>
-          </ViewSettingsMenu>
+          </ViewSettings>
           {onCreate ? (
             <GridToolbarButton onClick={onCreate} variant="default">
               {labels.create}

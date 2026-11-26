@@ -8,9 +8,9 @@ import {
   CollectionToolbarTitle,
 } from '@tc96/ui/patterns/toolbar/components/collection-toolbar-heading'
 import {
-  ViewSettingsMenu,
+  ViewSettings,
   ViewSettingsSection,
-} from '@tc96/ui/patterns/view-settings-menu/components/view-settings-menu'
+} from '@tc96/ui/patterns/view-settings/components'
 import { GridToolbar, GridToolbarButton } from '../../shared/grid/grid-toolbar'
 import type { Inventory1Row } from './inventory-1-cells'
 import { inventory1Statuses } from './inventory-1-options'
@@ -53,7 +53,7 @@ export function Inventory1Toolbar({
             placeholder={labels.search}
             table={table}
           />
-          <ViewSettingsMenu
+          <ViewSettings
             activeFilterCount={statusFilter ? 1 : 0}
             clearLabel={labels.clearFilters}
             formatTriggerLabel={labels.viewWithFilters}
@@ -73,7 +73,7 @@ export function Inventory1Toolbar({
                 value={statusFilter}
               />
             </ViewSettingsSection>
-          </ViewSettingsMenu>
+          </ViewSettings>
           {onAdd ? (
             <GridToolbarButton onClick={onAdd}>
               <PlusIcon aria-hidden="true" />

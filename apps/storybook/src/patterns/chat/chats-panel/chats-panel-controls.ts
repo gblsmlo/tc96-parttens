@@ -37,7 +37,7 @@ export const chatsPanelControlArgTypes: Partial<ArgTypes<ChatsPanelControls>> =
     actions: {
       control: 'boolean',
       description:
-        'Adds a `ViewSettingsMenu` in a `CollectionToolbar` to `actions`.',
+        'Adds a `ViewSettings` in a `CollectionToolbar` to `actions`.',
     },
     channel: {
       control: 'boolean',

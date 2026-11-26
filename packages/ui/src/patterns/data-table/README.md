@@ -32,7 +32,7 @@ With `onCellValueChange` on `useDataTable`, a column with `meta.editable` (text,
 
 ## Density
 
-`density` (`short`, `medium`, `tall`, `extra-tall`) on `useDataTable` or `DataTable` sets the body row height; `onDensityChange` makes it controlled. `DataGridDensitySubmenu` inside a `ViewSettingsMenu` changes it. Without a density the rows keep the COSS height.
+`density` (`short`, `medium`, `tall`, `extra-tall`) on `useDataTable` or `DataTable` sets the body row height; `onDensityChange` makes it controlled. `DataGridDensitySubmenu` inside a `ViewSettings` changes it. Without a density the rows keep the COSS height.
 
 ## Cell renderers
 
@@ -48,7 +48,7 @@ A column declares `meta.aggregations` (`count`, `sum`) with `DataTableColumnMeta
 
 ## Columns submenu
 
-`DataTableColumnsSubmenu` is the `DataGridColumnsSubmenu` of the Table: a `ViewSettingsMenu` section that lists `getAllLeafColumns()` with `getCanHide()` and toggles each one's visibility. Each option reads `meta.label` (`DataTableColumnMeta`) and falls back to the column id, so give a column such as `select` `enableHiding: false` to keep it out. The submenu renders nothing when no column can hide, and `label` replaces the pt-BR "Colunas".
+`DataTableColumnsSubmenu` is the `DataGridColumnsSubmenu` of the Table: a `ViewSettings` section that lists `getAllLeafColumns()` with `getCanHide()` and toggles each one's visibility. Each option reads `meta.label` (`DataTableColumnMeta`) and falls back to the column id, so give a column such as `select` `enableHiding: false` to keep it out. The submenu renders nothing when no column can hide, and `label` replaces the pt-BR "Colunas".
 
 ## Horizontal overflow
 

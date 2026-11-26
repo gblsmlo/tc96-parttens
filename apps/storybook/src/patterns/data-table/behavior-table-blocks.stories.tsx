@@ -18,7 +18,7 @@ import {
   type DataTableFeatures,
   type DataTableTable,
   useDataTable,
-  ViewSettingsMenu,
+  ViewSettings,
   ViewSettingsSection,
 } from '@tc96/ui/patterns'
 import { useCallback, useMemo, useState } from 'react'
@@ -77,13 +77,13 @@ function MembersToolbar({
   return (
     <CollectionToolbar
       right={
-        <ViewSettingsMenu onClearFilters={() => undefined}>
+        <ViewSettings onClearFilters={() => undefined}>
           <ViewSettingsSection label="Exibição">
             <DataGridSortSubmenu table={table} />
             <DataGridDensitySubmenu table={table} />
             <DataTableColumnsSubmenu table={table} />
           </ViewSettingsSection>
-        </ViewSettingsMenu>
+        </ViewSettings>
       }
     />
   )

@@ -3,7 +3,7 @@
 import type { Icon as PhosphorIcon } from '@phosphor-icons/react'
 import { MenuCheckboxItem } from '@tc96/ui/menu'
 import type { ReactElement, ReactNode } from 'react'
-import { ViewSettingsSection } from './view-settings-menu'
+import { ViewSettingsSection } from './view-settings'
 
 export interface ViewSettingsField {
   icon?: PhosphorIcon

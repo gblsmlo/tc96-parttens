@@ -12,7 +12,7 @@ import { CollectionSearchField } from '@tc96/ui/patterns/collection/shared/compo
 import { SortRadioSubmenu } from '@tc96/ui/patterns/collection/shared/components/collection-sort-submenu'
 import { DataTableColumnsSubmenu } from '@tc96/ui/patterns/data-table/data-table-columns-submenu'
 import type { DataTableTable } from '@tc96/ui/patterns/data-table/data-table-features'
-import { ViewSettingsSection } from '@tc96/ui/patterns/view-settings-menu/components/view-settings-menu'
+import { ViewSettingsSection } from '@tc96/ui/patterns/view-settings/components'
 import { DataCollectionSettingsToolbar } from '../../shared/collection/data-collection-settings-toolbar'
 import { DataCollectionToolbarButton } from '../../shared/collection/data-collection-toolbar'
 import { dataPriorities } from '../../shared/properties/data-priority'

@@ -11,9 +11,9 @@ import {
   CollectionToolbarTitle,
 } from '@tc96/ui/patterns/toolbar/components/collection-toolbar-heading'
 import {
-  ViewSettingsMenu,
+  ViewSettings,
   ViewSettingsSection,
-} from '@tc96/ui/patterns/view-settings-menu/components/view-settings-menu'
+} from '@tc96/ui/patterns/view-settings/components'
 import { dataPriorities } from '../../shared/properties/data-priority'
 import {
   TableToolbar,
@@ -68,7 +68,7 @@ export function Projects2Toolbar({
             placeholder={labels.search}
             table={table}
           />
-          <ViewSettingsMenu
+          <ViewSettings
             activeFilterCount={filters.length}
             clearLabel={labels.clearFilters}
             formatTriggerLabel={labels.filtersTrigger}
@@ -124,7 +124,7 @@ export function Projects2Toolbar({
                 value={filterValue('project')}
               />
             </ViewSettingsSection>
-          </ViewSettingsMenu>
+          </ViewSettings>
           {onCreate ? (
             <TableToolbarButton onClick={onCreate} variant="default">
               {labels.create}
