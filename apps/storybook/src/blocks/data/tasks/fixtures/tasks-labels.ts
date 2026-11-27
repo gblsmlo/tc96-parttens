@@ -118,6 +118,7 @@ export const tasksLabelsPtBR: TasksLabels = {
   },
   status: 'Status',
   statuses: {
+    canceled: 'Cancelada',
     done: 'Concluída',
     'in-progress': 'Em andamento',
     todo: 'A fazer',

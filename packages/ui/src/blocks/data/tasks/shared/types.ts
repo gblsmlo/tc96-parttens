@@ -19,7 +19,7 @@ export type TasksMode = Extract<
   'datatable' | 'kanban' | 'list'
 >
 
-export type TasksStatus = 'done' | 'in-progress' | 'todo'
+export type TasksStatus = 'canceled' | 'done' | 'in-progress' | 'todo'
 
 export type TasksPriority = DataPriority
 
