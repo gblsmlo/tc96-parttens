@@ -138,7 +138,7 @@ export const ViewSettings5: Story = {
     docs: {
       description: {
         story:
-          'The view settings of `Tasks4` as one menu per setting: the filter with its count, the layout showing the current layout icon, the sort and the grouping.',
+          'The view settings as one menu per setting: the filter with its count, the layout showing the current layout icon, the sort and the grouping.',
       },
     },
   },

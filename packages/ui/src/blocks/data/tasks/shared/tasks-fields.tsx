@@ -17,6 +17,7 @@ import { DateProperty } from '@tc96/ui/patterns/properties/display/date/date-pro
 import { IconLabelProperty } from '@tc96/ui/patterns/properties/display/icon-label/icon-label-property'
 import { PeopleProperty } from '@tc96/ui/patterns/properties/display/people/people-property'
 import { SelectProperty } from '@tc96/ui/patterns/properties/display/select/select-property'
+import { TagsProperty } from '@tc96/ui/patterns/properties/display/tags/tags-property'
 import {
   PropertyMetaIcon,
   priorityMeta,
@@ -24,37 +25,51 @@ import {
   workflowStatusMeta,
 } from '@tc96/ui/property-meta'
 import { cn } from '@tc96/utils'
-import { dataPriorities } from '../../shared/properties/data-priority'
-import { tasks2Statuses, tasks2VisibleTags } from './tasks-2-options'
+import {
+  dataPriorities,
+  dataPriorityAppearance,
+} from '../../shared/properties/data-priority'
+import {
+  DataOwner,
+  dataSelectOptions,
+} from '../../shared/properties/data-properties'
+import { tasksStatuses } from './options'
 import type {
-  Tasks2Labels,
-  Tasks2Option,
-  Tasks2Person,
-  Tasks2Status,
-  Tasks2Tag,
-  Tasks2Task,
+  TasksColumnId,
+  TasksLabels,
+  TasksOption,
+  TasksPerson,
+  TasksPriority,
+  TasksStatus,
+  TasksTag,
+  TasksTask,
 } from './types'
 
-export interface Tasks2FieldContext {
-  labels: Tasks2Labels
+const tasksVisibleTags = 1
+
+export interface TasksFieldContext {
+  labels: TasksLabels
   locale: string
   now: Date
   onAssigneesChange?: (taskId: string, assigneeIds: string[]) => void
   onDueChange?: (taskId: string, dueAt: string | null) => void
   onOpen?: (taskId: string) => void
-  onProjectChange?: (taskId: string, projectId: string | null) => void
+  onKindChange?: (taskId: string, kindId: string | null) => void
+  onPriorityChange?: (taskId: string, priority: TasksPriority | null) => void
+  onTagsChange?: (taskId: string, tagIds: string[]) => void
   onSelectedChange?: (taskId: string, selected: boolean) => void
-  onStatusChange?: (taskId: string, status: Tasks2Status) => void
-  people: readonly Tasks2Person[]
-  projects: readonly Tasks2Option[]
+  onStatusChange?: (taskId: string, status: TasksStatus) => void
+  people: readonly TasksPerson[]
+  kinds: readonly TasksOption[]
   selectedIds: ReadonlySet<string>
-  tagById: ReadonlyMap<string, Tasks2Tag>
+  tagById: ReadonlyMap<string, TasksTag>
   timeZone: string
+  visibleColumns: ReadonlySet<TasksColumnId>
 }
 
-interface FieldProps {
-  context: Tasks2FieldContext
-  item: Tasks2Task
+export interface TasksFieldProps {
+  context: TasksFieldContext
+  item: TasksTask
 }
 
 const serializeDay = (date: Date) => calendarDateKey(calendarDateFromDate(date))
@@ -66,13 +81,13 @@ const dateDisplayOf = (value: string | null, timeZone: string) =>
     ? { timeZone: 'UTC', value: `${value}T12:00:00.000Z` }
     : { timeZone, value }
 
-export const findTasks2Priority = (value: string | null) =>
+export const findTasksPriority = (value: string | null): TasksPriority | null =>
   dataPriorities.find((priority) => priority === value) ?? null
 
-export function Tasks2PriorityMark({ context, item }: FieldProps) {
+export function TasksPriorityMark({ context, item }: TasksFieldProps) {
   const { labels } = context
   return (
-    <span className="flex size-4 items-center" data-slot="tasks-2-priority">
+    <span className="flex size-4 items-center" data-slot="tasks-priority">
       <PropertyMetaIcon
         className="size-4"
         meta={priorityMeta[item.priority ?? 'none']}
@@ -84,22 +99,22 @@ export function Tasks2PriorityMark({ context, item }: FieldProps) {
   )
 }
 
-const findTasks2Status = (value: unknown): Tasks2Status | null =>
-  tasks2Statuses.find((status) => status === value) ?? null
+const findTasksStatus = (value: unknown): TasksStatus | null =>
+  tasksStatuses.find((status) => status === value) ?? null
 
-function Tasks2StatusIcon({ status }: Readonly<{ status: Tasks2Status }>) {
+function TasksStatusIcon({ status }: Readonly<{ status: TasksStatus }>) {
   return (
     <PropertyMetaIcon className="size-4" meta={workflowStatusMeta[status]} />
   )
 }
 
-export function Tasks2StatusMark({ context, item }: FieldProps) {
+export function TasksStatusMark({ context, item }: TasksFieldProps) {
   const { labels, onStatusChange } = context
   const statusLabel = labels.statuses[item.status]
   if (!onStatusChange)
     return (
-      <span className="flex size-4 items-center" data-slot="tasks-2-status">
-        <Tasks2StatusIcon status={item.status} />
+      <span className="flex size-4 items-center" data-slot="tasks-status">
+        <TasksStatusIcon status={item.status} />
         <span className="sr-only">{statusLabel}</span>
       </span>
     )
@@ -108,24 +123,24 @@ export function Tasks2StatusMark({ context, item }: FieldProps) {
       <MenuTrigger
         aria-label={labels.changeStatus(statusLabel)}
         className="relative z-10"
-        data-slot="tasks-2-status"
+        data-slot="tasks-status"
         render={<Button size="icon-sm" type="button" variant="ghost" />}
       >
-        <Tasks2StatusIcon status={item.status} />
+        <TasksStatusIcon status={item.status} />
       </MenuTrigger>
       <MenuPopup align="start">
         <MenuRadioGroup
           aria-label={labels.status}
           onValueChange={(value) => {
-            const status = findTasks2Status(value)
+            const status = findTasksStatus(value)
             if (status && status !== item.status)
               onStatusChange(item.id, status)
           }}
           value={item.status}
         >
-          {tasks2Statuses.map((status) => (
+          {tasksStatuses.map((status) => (
             <MenuRadioItem key={status} value={status}>
-              <Tasks2StatusIcon status={status} />
+              <TasksStatusIcon status={status} />
               {labels.statuses[status]}
             </MenuRadioItem>
           ))}
@@ -135,17 +150,20 @@ export function Tasks2StatusMark({ context, item }: FieldProps) {
   )
 }
 
-export function Tasks2Tags({ context, item }: FieldProps) {
+export function TasksTags({ context, item }: TasksFieldProps) {
   const { labels, tagById } = context
   const resolved = item.tagIds.flatMap((id) => {
     const tag = tagById.get(id)
     return tag ? [tag] : []
   })
   if (resolved.length === 0) return null
-  const hidden = resolved.length - tasks2VisibleTags
+  const hidden = resolved.length - tasksVisibleTags
   return (
-    <span className="flex min-w-0 items-center gap-1" data-slot="tasks-2-tags">
-      {resolved.slice(0, tasks2VisibleTags).map((tag) => (
+    <span
+      className="flex min-w-0 items-center gap-1 overflow-hidden"
+      data-slot="tasks-tags"
+    >
+      {resolved.slice(0, tasksVisibleTags).map((tag) => (
         <IconLabelProperty
           key={tag.id}
           label={tag.label}
@@ -165,7 +183,47 @@ export function Tasks2Tags({ context, item }: FieldProps) {
   )
 }
 
-export function Tasks2DueField({ context, item }: FieldProps) {
+export function TasksTagsField({ context, item }: TasksFieldProps) {
+  const { labels, onTagsChange, tagById } = context
+  if (!onTagsChange) return <TasksTags context={context} item={item} />
+  const first = item.tagIds
+    .slice(0, tasksVisibleTags)
+    .flatMap((id) => tagById.get(id) ?? [])
+  return (
+    <span
+      className="flex min-w-0 items-center gap-1 overflow-hidden"
+      data-slot="tasks-tags"
+    >
+      {first.map((tag) => (
+        <IconLabelProperty
+          key={tag.id}
+          label={tag.label}
+          leading={
+            <CircleIcon
+              aria-hidden="true"
+              className={cn('size-2 shrink-0', propertyToneClassName[tag.tone])}
+              weight="fill"
+            />
+          }
+        />
+      ))}
+      <TagsProperty
+        ariaLabel={labels.columns.tags}
+        display="count"
+        labels={labels.tagPicker}
+        onValueChange={(tagIds) => onTagsChange(item.id, [...tagIds])}
+        options={[...tagById.values()].map((tag) => ({
+          label: tag.label,
+          value: tag.id,
+        }))}
+        value={item.tagIds}
+        variant="badge"
+      />
+    </span>
+  )
+}
+
+export function TasksDueField({ context, item }: TasksFieldProps) {
   const { labels, locale, onDueChange, timeZone } = context
   return (
     <DateProperty
@@ -186,35 +244,34 @@ export function Tasks2DueField({ context, item }: FieldProps) {
   )
 }
 
-export function Tasks2ProjectField({ context, item }: FieldProps) {
-  const { labels, onProjectChange, projects } = context
+export function TasksKindField({ context, item }: TasksFieldProps) {
+  const { kinds, labels, onKindChange } = context
   return (
     <SelectProperty
-      allowEmpty={Boolean(onProjectChange)}
-      ariaLabel={labels.columns.project}
-      labels={{ emptyOption: labels.noProject }}
+      allowEmpty={Boolean(onKindChange)}
+      ariaLabel={labels.columns.kind}
+      labels={{ emptyOption: labels.noKind }}
       onValueChange={
-        onProjectChange
-          ? (projectId) => {
-              if (projectId !== item.projectId)
-                onProjectChange(item.id, projectId)
+        onKindChange
+          ? (kindId) => {
+              if (kindId !== item.kindId) onKindChange(item.id, kindId)
             }
           : undefined
       }
-      options={projects.map((project) => ({
+      options={kinds.map((kind) => ({
         icon: CubeIcon,
-        label: project.label,
+        label: kind.label,
         tone: 'neutral',
-        value: project.id,
+        value: kind.id,
       }))}
-      placeholder={labels.noProject}
-      value={item.projectId}
+      placeholder={labels.noKind}
+      value={item.kindId}
       variant="plain"
     />
   )
 }
 
-export function Tasks2AssigneesField({ context, item }: FieldProps) {
+export function TasksAssigneesField({ context, item }: TasksFieldProps) {
   const { labels, onAssigneesChange, people } = context
   return (
     <PeopleProperty
@@ -255,7 +312,7 @@ function formatTime(date: Date, locale: string, timeZone: string) {
   return formatter.format(date)
 }
 
-export function formatTasks2Updated(
+export function formatTasksUpdated(
   value: string,
   now: Date,
   locale: string,
@@ -268,16 +325,67 @@ export function formatTasks2Updated(
     : formatShortDate(date, locale, timeZone)
 }
 
-export function Tasks2UpdatedField({ context, item }: FieldProps) {
+export function TasksUpdatedField({ context, item }: TasksFieldProps) {
   const { locale, now, timeZone } = context
   return (
     <IconLabelProperty
       className="text-muted-foreground tabular-nums"
       label={
         <time dateTime={item.updatedAt}>
-          {formatTasks2Updated(item.updatedAt, now, locale, timeZone)}
+          {formatTasksUpdated(item.updatedAt, now, locale, timeZone)}
         </time>
       }
+      variant="plain"
+    />
+  )
+}
+
+export function TasksPriorityField({ context, item }: TasksFieldProps) {
+  const { labels, onPriorityChange } = context
+  return (
+    <SelectProperty
+      allowEmpty={Boolean(onPriorityChange)}
+      ariaLabel={labels.columns.priority}
+      labels={{ emptyOption: labels.noPriority }}
+      onValueChange={
+        onPriorityChange
+          ? (value) => {
+              const priority = findTasksPriority(value)
+              if (priority !== item.priority)
+                onPriorityChange(item.id, priority)
+            }
+          : undefined
+      }
+      options={dataSelectOptions(
+        dataPriorities,
+        labels.priorities,
+        dataPriorityAppearance,
+      )}
+      placeholder={labels.noPriority}
+      value={item.priority}
+    />
+  )
+}
+
+export function TasksStatusField({ context, item }: TasksFieldProps) {
+  return (
+    <IconLabelProperty
+      className="gap-2"
+      label={context.labels.statuses[item.status]}
+      leading={<TasksStatusMark context={context} item={item} />}
+      variant="plain"
+    />
+  )
+}
+
+export function TasksCreatorField({ context, item }: TasksFieldProps) {
+  const { labels, people } = context
+  return (
+    <DataOwner
+      ariaLabel={labels.columns.creator}
+      owners={people}
+      placeholder={labels.noCreator}
+      value={item.creatorId}
       variant="plain"
     />
   )

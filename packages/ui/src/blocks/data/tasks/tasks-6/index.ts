@@ -1,35 +1,3 @@
-export {
-  Tasks6,
-  tasks6GroupBys,
-  tasks6Modes,
-  tasks6PriorityFilters,
-  tasks6Sorts,
-  tasks6Statuses,
-} from './tasks-6'
-export type {
-  Tasks6ChangeResult,
-  Tasks6ColumnId,
-  Tasks6DefaultSort,
-  Tasks6DefaultStatus,
-  Tasks6FieldId,
-  Tasks6FilterId,
-  Tasks6GroupBy,
-  Tasks6KanbanGroupBy,
-  Tasks6Labels,
-  Tasks6LabelsOverride,
-  Tasks6Mode,
-  Tasks6Option,
-  Tasks6Person,
-  Tasks6Priority,
-  Tasks6PriorityFilter,
-  Tasks6Props,
-  Tasks6SavedView,
-  Tasks6Sort,
-  Tasks6SortColumn,
-  Tasks6SortDirection,
-  Tasks6SortOption,
-  Tasks6Status,
-  Tasks6StatusOption,
-  Tasks6Tag,
-  Tasks6Task,
-} from './types'
+export * from '../shared'
+export { Tasks6 } from './tasks-6'
+export type { Tasks6Labels, Tasks6LabelsOverride, Tasks6Props } from './types'

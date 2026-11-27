@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect, screen, userEvent, within } from 'storybook/test'
+import { expectEveryTasksLayout } from '../tasks-story.ts'
 import {
   type Tasks2Controls,
   tasks2ControlArgs,
@@ -40,5 +41,36 @@ export const Tasks2: Story = {
     await expect(
       (await canvas.findAllByRole('button', { name: /Alterar status/ }))[0],
     ).toHaveAccessibleName('Status: Concluída. Alterar status')
+  },
+}
+
+export const OnlyChosenSorts: Story = {
+  args: { sorts: ['due', 'title'] },
+  tags: ['!dev'],
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await userEvent.click(
+      await canvas.findByRole('button', { name: 'Visualização' }),
+    )
+    await userEvent.click(
+      await screen.findByRole('menuitem', { name: /Ordenar por/ }),
+    )
+    await expect(
+      await screen.findByRole('menuitemradio', { name: 'Prazo' }),
+    ).toBeVisible()
+    await expect(
+      screen.getByRole('menuitemradio', { name: 'Título' }),
+    ).toBeVisible()
+    for (const name of ['Prioridade', 'Projeto', 'Atualização'])
+      await expect(
+        screen.queryByRole('menuitemradio', { name }),
+      ).not.toBeInTheDocument()
+  },
+}
+
+export const EveryLayout: Story = {
+  tags: ['!dev'],
+  play: async ({ canvasElement }) => {
+    await expectEveryTasksLayout(canvasElement)
   },
 }

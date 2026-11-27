@@ -6,7 +6,7 @@ export function Tasks3Skeleton({ label }: Readonly<{ label: string }>) {
       cells={[
         ['title', 'title'],
         ['due', 'text'],
-        ['project', 'text'],
+        ['kind', 'text'],
         ['assignees', 'avatar'],
         ['updated', 'text'],
       ]}

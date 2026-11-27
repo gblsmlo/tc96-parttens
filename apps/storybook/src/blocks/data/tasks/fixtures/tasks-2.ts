@@ -1,40 +1,9 @@
 import type {
   Tasks2CreateOption,
-  Tasks2Option,
-  Tasks2Person,
-  Tasks2Tag,
-  Tasks2Task,
+  TasksTask,
 } from '@tc96/ui/blocks/data/tasks/tasks-2'
 
-export const now = '2026-11-25T18:00:00.000Z'
-
-export const people: Tasks2Person[] = [
-  { id: 'ana', label: 'Ana Ferraz' },
-  { id: 'bruno', label: 'Bruno Lacerda' },
-  { id: 'carla', label: 'Carla Mendes' },
-  { id: 'diego', label: 'Diego Sato' },
-]
-
-export const projects: Tasks2Option[] = [
-  { id: 'launch', label: 'Lançamento Q1' },
-  { id: 'platform', label: 'Plataforma' },
-  { id: 'website', label: 'Site' },
-  { id: 'offsite', label: 'Offsite 2026' },
-]
-
-export const tags: Tasks2Tag[] = [
-  { id: 'launch', label: 'Lançamento', tone: 'purple' },
-  { id: 'customer', label: 'Cliente', tone: 'teal' },
-  { id: 'external', label: 'Externo', tone: 'neutral' },
-  { id: 'bug', label: 'Bug', tone: 'danger' },
-  { id: 'billing', label: 'Cobrança', tone: 'warning' },
-  { id: 'copy', label: 'Conteúdo', tone: 'info' },
-  { id: 'review', label: 'Revisão', tone: 'info' },
-  { id: 'press', label: 'Imprensa', tone: 'purple' },
-  { id: 'design', label: 'Design', tone: 'success' },
-  { id: 'infra', label: 'Infra', tone: 'neutral' },
-  { id: 'offsite', label: 'Offsite', tone: 'teal' },
-]
+export { kinds, now, people, tags } from './tasks-shared.ts'
 
 export const createOptions: Tasks2CreateOption[] = [
   { id: 'task', label: 'Tarefa' },
@@ -42,7 +11,7 @@ export const createOptions: Tasks2CreateOption[] = [
   { id: 'from-template', label: 'A partir de um modelo' },
 ]
 
-export const tasks: Tasks2Task[] = [
+export const tasks: TasksTask[] = [
   {
     assigneeIds: ['ana'],
     creatorId: 'bruno',
@@ -50,7 +19,7 @@ export const tasks: Tasks2Task[] = [
     id: 'task-201',
     overdue: true,
     priority: 'urgent',
-    projectId: 'launch',
+    kindId: 'launch',
     status: 'in-progress',
     tagIds: ['launch', 'customer', 'external'],
     title: 'Send Dana the revised launch timeline',
@@ -62,7 +31,7 @@ export const tasks: Tasks2Task[] = [
     dueAt: '2026-11-26',
     id: 'task-202',
     priority: 'urgent',
-    projectId: 'platform',
+    kindId: 'platform',
     status: 'todo',
     tagIds: ['bug'],
     title: 'Fix calendar sync for shared inboxes',
@@ -75,7 +44,7 @@ export const tasks: Tasks2Task[] = [
     id: 'task-203',
     overdue: true,
     priority: 'high',
-    projectId: 'website',
+    kindId: 'website',
     status: 'in-progress',
     tagIds: ['bug', 'billing'],
     title: 'Fix the checkout bug on the pricing page',
@@ -87,7 +56,7 @@ export const tasks: Tasks2Task[] = [
     dueAt: '2026-11-28',
     id: 'task-204',
     priority: 'high',
-    projectId: 'website',
+    kindId: 'website',
     status: 'todo',
     tagIds: ['copy'],
     title: 'Update pricing page copy',
@@ -99,7 +68,7 @@ export const tasks: Tasks2Task[] = [
     dueAt: '2026-12-01',
     id: 'task-205',
     priority: 'medium',
-    projectId: 'launch',
+    kindId: 'launch',
     status: 'in-progress',
     tagIds: ['launch', 'review', 'press'],
     title: 'Press kit final review',
@@ -111,7 +80,7 @@ export const tasks: Tasks2Task[] = [
     dueAt: '2026-12-03',
     id: 'task-206',
     priority: 'medium',
-    projectId: 'launch',
+    kindId: 'launch',
     status: 'todo',
     tagIds: ['design'],
     title: 'Launch video end card',
@@ -123,7 +92,7 @@ export const tasks: Tasks2Task[] = [
     dueAt: '2026-11-21',
     id: 'task-207',
     priority: 'medium',
-    projectId: 'platform',
+    kindId: 'platform',
     status: 'done',
     tagIds: ['infra'],
     title: 'Raise sync worker rate limits',
@@ -135,7 +104,7 @@ export const tasks: Tasks2Task[] = [
     dueAt: null,
     id: 'task-208',
     priority: 'low',
-    projectId: 'offsite',
+    kindId: 'offsite',
     status: 'todo',
     tagIds: [],
     title: 'Offsite agenda',
@@ -147,7 +116,7 @@ export const tasks: Tasks2Task[] = [
     dueAt: '2026-12-05',
     id: 'task-209',
     priority: 'low',
-    projectId: 'offsite',
+    kindId: 'offsite',
     status: 'todo',
     tagIds: ['customer', 'offsite'],
     title: 'Invite two customers to the offsite',

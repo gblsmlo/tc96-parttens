@@ -3,27 +3,16 @@ import {
   CellSignalHighIcon,
   ClockCounterClockwiseIcon,
   CubeIcon,
-  FunnelSimpleIcon,
   type Icon as PhosphorIcon,
   RadioButtonIcon,
   RowsIcon,
   SortAscendingIcon,
   StackIcon,
+  TagIcon,
   TextTIcon,
   UserCircleIcon,
   UserIcon,
 } from '@phosphor-icons/react'
-import { Badge } from '@tc96/ui/badge'
-import { Button } from '@tc96/ui/button'
-import {
-  Menu,
-  MenuItem,
-  MenuPopup,
-  MenuRadioGroup,
-  MenuRadioItem,
-  MenuSeparator,
-  MenuTrigger,
-} from '@tc96/ui/menu'
 import { Action } from '@tc96/ui/patterns/collection/shared/components/collection-action'
 import { CollectionToolbar } from '@tc96/ui/patterns/toolbar/components/collection-toolbar'
 import {
@@ -32,9 +21,10 @@ import {
   CollectionToolbarTitle,
 } from '@tc96/ui/patterns/toolbar/components/collection-toolbar-heading'
 import {
-  ViewSettingsMenuButton,
+  ViewSettings,
+  ViewSettingsFieldSection,
+  type ViewSettingsMode,
   type ViewSettingsOption,
-  ViewSettingsRadioMenu,
   ViewSettingsSection,
   ViewSettingsSubmenu,
 } from '@tc96/ui/patterns/view-settings/components'
@@ -43,65 +33,91 @@ import {
   priorityMeta,
   workflowStatusMeta,
 } from '@tc96/ui/property-meta'
-import { ToolbarButton } from '@tc96/ui/toolbar'
-import type { ReactNode } from 'react'
 import { dataCollectionModeIcons } from '../../shared/collection/data-collection-toolbar'
 import {
-  tasks3GroupBys,
-  tasks3KanbanGroupBys,
-  tasks3Modes,
-  tasks3NoGroup,
-  tasks3PriorityFilters,
-  tasks3Sorts,
-  tasks3Statuses,
-} from './tasks-3-options'
-import type {
-  Tasks3GroupBy,
-  Tasks3KanbanGroupBy,
-  Tasks3Labels,
-  Tasks3Mode,
-  Tasks3Person,
-  Tasks3PriorityFilter,
-  Tasks3Sort,
-  Tasks3Status,
-} from './types'
+  type TasksColumnId,
+  type TasksFilterId,
+  type TasksGroupBy,
+  type TasksKanbanGroupBy,
+  type TasksMode,
+  type TasksOption,
+  type TasksPerson,
+  type TasksPriorityFilter,
+  type TasksSort,
+  type TasksStatus,
+  tasksColumnIds,
+  tasksKanbanGroupBys,
+  tasksNoGroup,
+  tasksPriorityFilters,
+  tasksStatuses,
+} from '../shared'
+import { tasksTableToggleableColumns } from '../shared/tasks-columns'
+import { tasks3ToggleableColumns } from './tasks-3-options'
+import type { Tasks3Labels } from './types'
 
 export interface Tasks3ToolbarProps {
   assigneeFilter: string | null
-  groupBy: Tasks3GroupBy | null
-  kanbanGroupBy: Tasks3KanbanGroupBy
+  filters: readonly TasksFilterId[]
+  groupBy: TasksGroupBy | null
+  groupBys: readonly TasksGroupBy[]
+  kanbanGroupBy: TasksKanbanGroupBy
+  kindFilter: string | null
+  kinds: readonly TasksOption[]
   labels: Tasks3Labels
   loading: boolean
-  mode: Tasks3Mode
+  mode: TasksMode
+  modes: readonly TasksMode[]
   onAssigneeFilterChange?: (assigneeId: string | null) => void
   onCreate?: () => void
-  onGroupByChange: (groupBy: Tasks3GroupBy | null) => void
-  onModeChange: (mode: Tasks3Mode) => void
-  onPriorityFilterChange?: (priority: Tasks3PriorityFilter | null) => void
-  onSortChange?: (sort: Tasks3Sort) => void
-  onStatusFilterChange?: (status: Tasks3Status | null) => void
-  people: readonly Tasks3Person[]
-  priorityFilter: Tasks3PriorityFilter | null
-  sort: Tasks3Sort
-  statusFilter: Tasks3Status | null
+  onGroupByChange: (groupBy: TasksGroupBy | null) => void
+  onKindFilterChange?: (kindId: string | null) => void
+  onModeChange: (mode: TasksMode) => void
+  onPriorityFilterChange?: (priority: TasksPriorityFilter | null) => void
+  onSortChange?: (sort: TasksSort) => void
+  onStatusFilterChange?: (status: TasksStatus | null) => void
+  onVisibleColumnsChange?: (columns: TasksColumnId[]) => void
+  people: readonly TasksPerson[]
+  priorityFilter: TasksPriorityFilter | null
+  sort: TasksSort
+  sorts: readonly TasksSort[]
+  statusFilter: TasksStatus | null
+  visibleColumns: ReadonlySet<TasksColumnId>
 }
 
-type Tasks3GroupOption = Tasks3GroupBy | typeof tasks3NoGroup
+type Tasks3GroupOption = TasksGroupBy | typeof tasksNoGroup
 
 const optionIcon = 'size-4'
 
+const modeIcons = {
+  datatable: dataCollectionModeIcons.table,
+  kanban: dataCollectionModeIcons.kanban,
+  list: dataCollectionModeIcons.list,
+} as const satisfies Record<TasksMode, ViewSettingsMode['icon']>
+
 const sortIcons = {
   due: CalendarDotsIcon,
+  kind: CubeIcon,
   priority: CellSignalHighIcon,
-  project: CubeIcon,
   title: TextTIcon,
   updated: ClockCounterClockwiseIcon,
-} as const satisfies Record<Tasks3Sort, PhosphorIcon>
+} as const satisfies Record<TasksSort, PhosphorIcon>
+
+const columnIcons = {
+  assignees: UserIcon,
+  creator: UserIcon,
+  due: CalendarDotsIcon,
+  kind: CubeIcon,
+  priority: CellSignalHighIcon,
+  status: RadioButtonIcon,
+  tags: TagIcon,
+  title: TextTIcon,
+  updated: ClockCounterClockwiseIcon,
+} as const satisfies Record<TasksColumnId, PhosphorIcon>
 
 const groupIcons = {
+  kind: CubeIcon,
   none: RowsIcon,
   priority: CellSignalHighIcon,
-  project: CubeIcon,
   status: RadioButtonIcon,
 } as const satisfies Record<Tasks3GroupOption, PhosphorIcon>
 
@@ -122,35 +138,68 @@ const iconOption = <TValue extends string>(
 
 export function Tasks3Toolbar({
   assigneeFilter,
+  filters,
   groupBy,
+  groupBys,
   kanbanGroupBy,
+  kindFilter,
+  kinds,
   labels,
   loading,
   mode,
+  modes,
   onAssigneeFilterChange,
   onCreate,
   onGroupByChange,
+  onKindFilterChange,
   onModeChange,
   onPriorityFilterChange,
   onSortChange,
   onStatusFilterChange,
+  onVisibleColumnsChange,
   people,
   priorityFilter,
   sort,
+  sorts,
   statusFilter,
+  visibleColumns,
 }: Readonly<Tasks3ToolbarProps>) {
-  const showStatus = Boolean(onStatusFilterChange)
-  const showPriority = Boolean(onPriorityFilterChange)
-  const showAssignee = Boolean(onAssigneeFilterChange) && people.length > 0
-  const hasFilters = showStatus || showPriority || showAssignee
+  const showStatus = filters.includes('status') && Boolean(onStatusFilterChange)
+  const showPriority =
+    filters.includes('priority') && Boolean(onPriorityFilterChange)
+  const showAssignee =
+    filters.includes('assignee') &&
+    Boolean(onAssigneeFilterChange) &&
+    people.length > 0
+  const showKind =
+    filters.includes('kind') && Boolean(onKindFilterChange) && kinds.length > 0
+  const hasFilters = showStatus || showPriority || showAssignee || showKind
   const activeFilterCount =
     (showStatus && statusFilter ? 1 : 0) +
     (showPriority && priorityFilter ? 1 : 0) +
-    (showAssignee && assigneeFilter ? 1 : 0)
+    (showAssignee && assigneeFilter ? 1 : 0) +
+    (showKind && kindFilter ? 1 : 0)
   const groupValues: readonly Tasks3GroupOption[] =
     mode === 'kanban'
-      ? tasks3KanbanGroupBys
-      : [tasks3NoGroup, ...tasks3GroupBys]
+      ? tasksKanbanGroupBys.filter((item) => groupBys.includes(item))
+      : [tasksNoGroup, ...groupBys]
+  const showGroup = groupBys.length > 0
+  const showSort = Boolean(onSortChange) && sorts.length > 0
+  const viewModes = modes.map(
+    (value): ViewSettingsMode<TasksMode> => ({
+      icon: modeIcons[value],
+      label: labels.modes[value],
+      value,
+    }),
+  )
+  const fields = (
+    mode === 'datatable' ? tasksTableToggleableColumns : tasks3ToggleableColumns
+  ).map((id) => ({
+    icon: columnIcons[id],
+    id,
+    label: labels.columns[id],
+    visible: visibleColumns.has(id),
+  }))
 
   return (
     <CollectionToolbar
@@ -169,27 +218,68 @@ export function Tasks3Toolbar({
       right={
         loading ? undefined : (
           <>
-            {hasFilters ? (
-              <ViewSettingsMenuButton
-                icon={FunnelSimpleIcon}
-                label={
-                  activeFilterCount > 0
-                    ? labels.activeFilters(activeFilterCount)
-                    : labels.filter
-                }
-                trailing={
-                  activeFilterCount > 0 ? (
-                    <Badge aria-hidden="true">{activeFilterCount}</Badge>
-                  ) : undefined
-                }
-              >
-                <ViewSettingsSection label={labels.filterProperties}>
+            <ViewSettings
+              activeFilterCount={activeFilterCount}
+              clearLabel={labels.clearFilters}
+              label={labels.layout}
+              mode={mode}
+              modes={viewModes}
+              onClearFilters={
+                hasFilters
+                  ? () => {
+                      if (showStatus) onStatusFilterChange?.(null)
+                      if (showPriority) onPriorityFilterChange?.(null)
+                      if (showAssignee) onAssigneeFilterChange?.(null)
+                      if (showKind) onKindFilterChange?.(null)
+                    }
+                  : undefined
+              }
+              onModeChange={onModeChange}
+            >
+              {showGroup || showSort ? (
+                <ViewSettingsSection label={labels.layoutBy}>
+                  {showGroup ? (
+                    <ViewSettingsSubmenu<Tasks3GroupOption>
+                      icon={StackIcon}
+                      label={labels.groupBy}
+                      onValueChange={(value) =>
+                        onGroupByChange(pick(groupBys, value))
+                      }
+                      options={groupValues.map((item) =>
+                        iconOption(
+                          item,
+                          labels.groupings[item],
+                          groupIcons[item],
+                        ),
+                      )}
+                      value={
+                        mode === 'kanban'
+                          ? kanbanGroupBy
+                          : (groupBy ?? tasksNoGroup)
+                      }
+                    />
+                  ) : null}
+                  {showSort ? (
+                    <ViewSettingsSubmenu<TasksSort>
+                      icon={SortAscendingIcon}
+                      label={labels.sortBy}
+                      onValueChange={(value) => onSortChange?.(value)}
+                      options={sorts.map((item) =>
+                        iconOption(item, labels.sorts[item], sortIcons[item]),
+                      )}
+                      value={sort}
+                    />
+                  ) : null}
+                </ViewSettingsSection>
+              ) : null}
+              {hasFilters ? (
+                <ViewSettingsSection label={labels.filter}>
                   {showStatus ? (
-                    <ViewSettingsSubmenu<Tasks3Status>
+                    <ViewSettingsSubmenu<TasksStatus>
                       icon={RadioButtonIcon}
                       label={labels.filterBy.status}
                       onValueChange={(value) => onStatusFilterChange?.(value)}
-                      options={tasks3Statuses.map((status) => ({
+                      options={tasksStatuses.map((status) => ({
                         icon: (
                           <PropertyMetaIcon
                             className={optionIcon}
@@ -203,11 +293,11 @@ export function Tasks3Toolbar({
                     />
                   ) : null}
                   {showPriority ? (
-                    <ViewSettingsSubmenu<Tasks3PriorityFilter>
+                    <ViewSettingsSubmenu<TasksPriorityFilter>
                       icon={CellSignalHighIcon}
                       label={labels.filterBy.priority}
                       onValueChange={(value) => onPriorityFilterChange?.(value)}
-                      options={tasks3PriorityFilters.map((priority) => ({
+                      options={tasksPriorityFilters.map((priority) => ({
                         icon: (
                           <PropertyMetaIcon
                             className={optionIcon}
@@ -234,60 +324,33 @@ export function Tasks3Toolbar({
                       value={assigneeFilter ?? undefined}
                     />
                   ) : null}
+                  {showKind ? (
+                    <ViewSettingsSubmenu
+                      icon={CubeIcon}
+                      label={labels.filterBy.kind}
+                      onValueChange={(value) => onKindFilterChange?.(value)}
+                      options={kinds.map((kind) =>
+                        iconOption(kind.id, kind.label, CubeIcon),
+                      )}
+                      value={kindFilter ?? undefined}
+                    />
+                  ) : null}
                 </ViewSettingsSection>
-                <MenuSeparator />
-                <MenuItem
-                  disabled={activeFilterCount === 0}
-                  onClick={() => {
-                    if (showStatus) onStatusFilterChange?.(null)
-                    if (showPriority) onPriorityFilterChange?.(null)
-                    if (showAssignee) onAssigneeFilterChange?.(null)
-                  }}
-                >
-                  {labels.clearFilters}
-                </MenuItem>
-              </ViewSettingsMenuButton>
-            ) : null}
-            <ViewSettingsRadioMenu<Tasks3Mode>
-              icon={dataCollectionModeIcons[mode]}
-              label={labels.layout}
-              onValueChange={onModeChange}
-              options={tasks3Modes.map((item) =>
-                iconOption(
-                  item,
-                  labels.modes[item],
-                  dataCollectionModeIcons[item],
-                ),
-              )}
-              section={labels.layoutBy}
-              value={mode}
-            />
-            {onSortChange ? (
-              <ViewSettingsRadioMenu<Tasks3Sort>
-                icon={SortAscendingIcon}
-                label={labels.sort}
-                onValueChange={onSortChange}
-                options={tasks3Sorts.map((item) =>
-                  iconOption(item, labels.sorts[item], sortIcons[item]),
-                )}
-                section={labels.sortBy}
-                value={sort}
-              />
-            ) : null}
-            <ViewSettingsRadioMenu<Tasks3GroupOption>
-              icon={StackIcon}
-              label={labels.group}
-              onValueChange={(value) =>
-                onGroupByChange(pick(tasks3GroupBys, value))
-              }
-              options={groupValues.map((item) =>
-                iconOption(item, labels.groupings[item], groupIcons[item]),
-              )}
-              section={labels.groupBy}
-              value={
-                mode === 'kanban' ? kanbanGroupBy : (groupBy ?? tasks3NoGroup)
-              }
-            />
+              ) : null}
+              {onVisibleColumnsChange ? (
+                <ViewSettingsFieldSection
+                  fields={fields}
+                  label={labels.filterProperties}
+                  onVisibleChange={(id, visible) =>
+                    onVisibleColumnsChange(
+                      tasksColumnIds.filter((column) =>
+                        column === id ? visible : visibleColumns.has(column),
+                      ),
+                    )
+                  }
+                />
+              ) : null}
+            </ViewSettings>
             {onCreate ? (
               <Action label={labels.create} onClick={onCreate} />
             ) : null}

@@ -26,64 +26,65 @@ import {
   useStableHandler,
 } from '../../shared/collection/use-controllable'
 import { dataPriorities } from '../../shared/properties/data-priority'
+import {
+  type TasksColumnId,
+  type TasksGroupBy,
+  type TasksKanbanGroupBy,
+  type TasksMode,
+  type TasksOption,
+  type TasksPriorityFilter,
+  type TasksSort,
+  type TasksSortColumn,
+  type TasksSortDirection,
+  type TasksStatus,
+  type TasksTask,
+  tasksColumnIds,
+  tasksDefaultSortDirection,
+  tasksFilterIds,
+  tasksGroupBys,
+  tasksModes,
+  tasksNoGroup,
+  tasksSorts,
+  tasksStatuses,
+} from '../shared'
+import {
+  orderTasksByGrouping,
+  tasksCollectionMode,
+} from '../shared/tasks-collection'
+import { createTasksCells, createTasksColumns } from '../shared/tasks-columns'
+import {
+  findTasksPriority,
+  type TasksFieldContext,
+} from '../shared/tasks-fields'
+import {
+  renderTasksKanbanCard,
+  renderTasksListRow,
+  TasksListHeader,
+} from '../shared/tasks-records'
+import { createTasksSelectionActions } from '../shared/tasks-selection-actions'
 import { resolveTasks5Labels } from './labels'
-import { findTasks5Priority, type Tasks5FieldContext } from './tasks-5-fields'
-import {
-  tasks5DefaultSortDirection,
-  tasks5GroupBys,
-  tasks5NoGroup,
-  tasks5Statuses,
-} from './tasks-5-options'
-import {
-  renderTasks5KanbanCard,
-  renderTasks5ListRow,
-  Tasks5ListHeader,
-} from './tasks-5-records'
-import { createTasks5SelectionActions } from './tasks-5-selection-actions'
 import { Tasks5Skeleton } from './tasks-5-skeleton'
 import { Tasks5Toolbar } from './tasks-5-toolbar'
-import type {
-  Tasks5GroupBy,
-  Tasks5KanbanGroupBy,
-  Tasks5Labels,
-  Tasks5Mode,
-  Tasks5Option,
-  Tasks5PriorityFilter,
-  Tasks5Props,
-  Tasks5Sort,
-  Tasks5SortColumn,
-  Tasks5SortDirection,
-  Tasks5Status,
-  Tasks5Task,
-} from './types'
+import type { Tasks5Labels, Tasks5Props } from './types'
 
-export {
-  tasks5GroupBys,
-  tasks5Modes,
-  tasks5PriorityFilters,
-  tasks5Sorts,
-  tasks5Statuses,
-} from './tasks-5-options'
-
-type Tasks5Grouping = DataCollectionDefinition<Tasks5Task>['groupings'][number]
+type Tasks5Grouping = DataCollectionDefinition<TasksTask>['groupings'][number]
 
 const tasks5AllView = 'all'
 const tasks5Views = [tasks5AllView] as const
 
 const noPeople: NonNullable<Tasks5Props['people']> = []
-const noOptions: NonNullable<Tasks5Props['projects']> = []
+const noOptions: NonNullable<Tasks5Props['kinds']> = []
 const noTags: NonNullable<Tasks5Props['tags']> = []
 const noIds: string[] = []
-const noColumns: [] = []
 const groupIcon = 'size-4'
 
 function createTasks5Groupings(
   labels: Tasks5Labels,
-  projects: readonly Tasks5Option[],
+  kinds: readonly TasksOption[],
 ): Tasks5Grouping[] {
   return [
     {
-      getGroupId: (task) => task.priority ?? tasks5NoGroup,
+      getGroupId: (task) => task.priority ?? tasksNoGroup,
       id: 'priority',
       label: labels.groupings.priority,
       options: [
@@ -101,7 +102,7 @@ function createTasks5Groupings(
           icon: (
             <PropertyMetaIcon className={groupIcon} meta={priorityMeta.none} />
           ),
-          id: tasks5NoGroup,
+          id: tasksNoGroup,
           label: labels.noPriority,
         },
       ],
@@ -110,7 +111,7 @@ function createTasks5Groupings(
       getGroupId: (task) => task.status,
       id: 'status',
       label: labels.groupings.status,
-      options: tasks5Statuses.map((status) => ({
+      options: tasksStatuses.map((status) => ({
         icon: (
           <PropertyMetaIcon
             className={groupIcon}
@@ -122,23 +123,23 @@ function createTasks5Groupings(
       })),
     },
     {
-      getGroupId: (task) => task.projectId ?? tasks5NoGroup,
-      id: 'project',
-      label: labels.groupings.project,
+      getGroupId: (task) => task.kindId ?? tasksNoGroup,
+      id: 'kind',
+      label: labels.groupings.kind,
       options: [
-        ...projects.map((project) => ({
+        ...kinds.map((kind) => ({
           icon: <CubeIcon aria-hidden="true" />,
-          id: project.id,
-          label: project.label,
+          id: kind.id,
+          label: kind.label,
         })),
-        { id: tasks5NoGroup, label: labels.noProject },
+        { id: tasksNoGroup, label: labels.noKind },
       ],
     },
   ]
 }
 
-const pickGroupBy = (value: string | null): Tasks5GroupBy | null =>
-  tasks5GroupBys.find((item) => item === value) ?? null
+const pickGroupBy = (value: string | null): TasksGroupBy | null =>
+  tasksGroupBys.find((item) => item === value) ?? null
 
 export function Tasks5({
   assigneeFilter: assigneeFilterProp,
@@ -146,17 +147,22 @@ export function Tasks5({
   collapsedGroupIds: collapsedGroupIdsProp,
   error,
   filtered = false,
+  filters = tasksFilterIds,
   groupBy: groupByProp,
+  groupBys = tasksGroupBys,
   labels: labelsProp,
   locale = defaultDataCollectionLocale,
+  kindFilter: kindFilterProp,
+  kinds = noOptions,
   mode: modeProp,
+  modes = tasksModes,
   now: nowProp,
   onAssigneeFilterChange,
   onAssigneesChange,
   onBulkAssigneesChange,
   onBulkDelete,
   onBulkPriorityChange,
-  onBulkProjectChange,
+  onBulkKindChange,
   onBulkStatusChange,
   onCollapsedGroupIdsChange,
   onCreate,
@@ -166,7 +172,8 @@ export function Tasks5({
   onOpen,
   onPriorityChange,
   onPriorityFilterChange,
-  onProjectChange,
+  onKindChange,
+  onKindFilterChange,
   onTagsChange,
   onRetry,
   onSavedViewCreate,
@@ -175,14 +182,15 @@ export function Tasks5({
   onSavedViewRename,
   onSavedViewSelect,
   onSavedViewUpdate,
+  onSavePreference,
   onSelectedIdsChange,
   onSortChange,
   onStatusChange,
   onStatusFilterChange,
+  onVisibleColumnsChange,
   pending,
   people = noPeople,
   priorityFilter: priorityFilterProp,
-  projects = noOptions,
   savedViewId,
   savedViewModified,
   savedViews,
@@ -191,10 +199,12 @@ export function Tasks5({
   selectedIds: selectedIdsProp,
   sort: sortProp,
   sortDirection: sortDirectionProp,
+  sorts = tasksSorts,
   statusFilter: statusFilterProp,
   tags = noTags,
   tasks,
   timeZone = defaultDataCollectionTimeZone,
+  visibleColumns: visibleColumnsProp,
 }: Readonly<Tasks5Props>) {
   const labels = useMemo(() => resolveTasks5Labels(labelsProp), [labelsProp])
   const [mountedAt] = useState(() => new Date())
@@ -202,35 +212,41 @@ export function Tasks5({
     () => (nowProp ? new Date(nowProp) : mountedAt),
     [mountedAt, nowProp],
   )
-  const [mode, setMode] = useControllable<Tasks5Mode>(
+  const [modeState, setMode] = useControllable<TasksMode>(
     modeProp,
     'list',
     onModeChange,
   )
+  const offeredModes = tasksModes.filter((item) => modes.includes(item))
+  const mode =
+    offeredModes.find((item) => item === modeState) ??
+    offeredModes[0] ??
+    modeState
   const [sortState, setSortState] = useControllable<{
-    direction: Tasks5SortDirection
-    sort: Tasks5Sort
+    direction: TasksSortDirection
+    sort: TasksSort
   }>(
     sortProp
       ? {
-          direction: sortDirectionProp ?? tasks5DefaultSortDirection[sortProp],
+          direction: sortDirectionProp ?? tasksDefaultSortDirection[sortProp],
           sort: sortProp,
         }
       : undefined,
-    { direction: tasks5DefaultSortDirection.due, sort: 'due' },
+    { direction: tasksDefaultSortDirection.due, sort: 'due' },
     onSortChange
       ? (next) => onSortChange(next.sort, next.direction)
       : undefined,
   )
   const { direction: sortDirection, sort } = sortState
-  const setSort = (next: Tasks5Sort) =>
-    setSortState({ direction: tasks5DefaultSortDirection[next], sort: next })
-  const sortByColumn = (column: Tasks5SortColumn) =>
+  const setSort = (next: TasksSort) =>
+    setSortState({ direction: tasksDefaultSortDirection[next], sort: next })
+  const sortByColumn = (column: TasksSortColumn) =>
     setSortState(
       column === sort
         ? { direction: sortDirection === 'asc' ? 'desc' : 'asc', sort }
-        : { direction: tasks5DefaultSortDirection[column], sort: column },
+        : { direction: tasksDefaultSortDirection[column], sort: column },
     )
+  const sortColumn = useStableHandler(onSortChange ? sortByColumn : undefined)
   const [selectedIds, setSelectedIds] = useControllable<string[]>(
     selectedIdsProp,
     noIds,
@@ -240,7 +256,7 @@ export function Tasks5({
     onBulkAssigneesChange ||
       onBulkDelete ||
       onBulkPriorityChange ||
-      onBulkProjectChange ||
+      onBulkKindChange ||
       onBulkStatusChange,
   )
   const selectedSet = useMemo(() => new Set(selectedIds), [selectedIds])
@@ -254,33 +270,51 @@ export function Tasks5({
           )
       : undefined,
   )
-  const [groupBy, setGroupBy] = useControllable<Tasks5GroupBy | null>(
+  const [groupBy, setGroupBy] = useControllable<TasksGroupBy | null>(
     groupByProp,
     'priority',
     onGroupByChange,
   )
-  const [statusFilter, setStatusFilter] = useControllable<Tasks5Status | null>(
+  const [statusFilter, setStatusFilter] = useControllable<TasksStatus | null>(
     statusFilterProp,
     null,
     onStatusFilterChange,
   )
   const [priorityFilter, setPriorityFilter] =
-    useControllable<Tasks5PriorityFilter | null>(
+    useControllable<TasksPriorityFilter | null>(
       priorityFilterProp,
       null,
       onPriorityFilterChange,
     )
+  const [visibleColumnList, setVisibleColumnList] = useControllable<
+    readonly TasksColumnId[]
+  >(
+    visibleColumnsProp,
+    tasksColumnIds,
+    onVisibleColumnsChange
+      ? (next) => onVisibleColumnsChange([...next])
+      : undefined,
+  )
+  const visibleColumns = useMemo<ReadonlySet<TasksColumnId>>(
+    () => new Set<TasksColumnId>([...visibleColumnList, 'title']),
+    [visibleColumnList],
+  )
   const [assigneeFilter, setAssigneeFilter] = useControllable<string | null>(
     assigneeFilterProp,
     null,
     onAssigneeFilterChange,
+  )
+  const [kindFilter, setKindFilter] = useControllable<string | null>(
+    kindFilterProp,
+    null,
+    onKindFilterChange,
   )
 
   const openTask = useStableHandler(onOpen)
   const changeAssignees = useStableHandler(onAssigneesChange)
   const changeDue = useStableHandler(onDueChange)
   const changePriority = useStableHandler(onPriorityChange)
-  const changeProject = useStableHandler(onProjectChange)
+  const changeKind = useStableHandler(onKindChange)
   const changeTags = useStableHandler(onTagsChange)
   const changeStatus = useStableHandler(onStatusChange)
 
@@ -288,7 +322,7 @@ export function Tasks5({
     () => new Map(tags.map((tag) => [tag.id, tag])),
     [tags],
   )
-  const context = useMemo<Tasks5FieldContext>(
+  const context = useMemo<TasksFieldContext>(
     () => ({
       labels,
       locale,
@@ -296,59 +330,101 @@ export function Tasks5({
       onAssigneesChange: changeAssignees,
       onDueChange: changeDue,
       onOpen: openTask,
-      onProjectChange: changeProject,
+      onKindChange: changeKind,
+      onPriorityChange: changePriority,
       onSelectedChange: toggleSelected,
       onStatusChange: changeStatus,
       onTagsChange: changeTags,
+      kinds,
       people,
-      projects,
       selectedIds: selectedSet,
       tagById,
       timeZone,
+      visibleColumns,
     }),
     [
       changeAssignees,
       changeDue,
-      changeProject,
+      changeKind,
+      changePriority,
       changeStatus,
       changeTags,
       labels,
       locale,
       now,
       openTask,
+      kinds,
       people,
-      projects,
       selectedSet,
       tagById,
       timeZone,
       toggleSelected,
+      visibleColumns,
     ],
   )
 
-  const kanbanGroupBy: Tasks5KanbanGroupBy =
+  const kanbanGroupBy: TasksKanbanGroupBy =
     groupBy === 'status' ? 'status' : 'priority'
   const activeGroupBy = mode === 'kanban' ? kanbanGroupBy : groupBy
 
   const groupings = useMemo(
-    () => createTasks5Groupings(labels, projects),
-    [labels, projects],
+    () => createTasks5Groupings(labels, kinds),
+    [kinds, labels],
   )
-  const collection = useMemo<DataCollectionDefinition<Tasks5Task>>(
+  const records = useMemo(
+    () =>
+      mode === 'datatable'
+        ? orderTasksByGrouping(
+            tasks,
+            groupings.find(({ id }) => id === activeGroupBy),
+          )
+        : tasks,
+    [activeGroupBy, groupings, mode, tasks],
+  )
+  const collection = useMemo<DataCollectionDefinition<TasksTask>>(
     () => ({
       getKey: (task) => task.id,
       getLabel: (task) => task.title,
       groupings,
-      records: tasks,
+      records,
     }),
-    [groupings, tasks],
+    [groupings, records],
   )
-  const { table } = useDataTable<Tasks5Task>({
-    columns: noColumns,
-    data: tasks,
+  const columns = useMemo(
+    () =>
+      createTasksColumns({
+        cells: createTasksCells(context),
+        labels,
+        onSort: sortColumn,
+        selectable,
+        sort,
+        sortDirection,
+      }),
+    [context, labels, selectable, sort, sortColumn, sortDirection],
+  )
+  const rowSelection = useMemo(
+    () => Object.fromEntries(selectedIds.map((id) => [id, true as const])),
+    [selectedIds],
+  )
+  const columnVisibility = useMemo(
+    () =>
+      Object.fromEntries(
+        tasksColumnIds.map((id) => [id, visibleColumns.has(id)]),
+      ),
+    [visibleColumns],
+  )
+  const { table } = useDataTable<TasksTask>({
+    columnVisibility,
+    columns,
+    data: records,
+    enableRowSelection: selectable,
     getRowId: (task) => task.id,
+    onRowSelectionChange: (selection) =>
+      setSelectedIds(Object.keys(selection).filter((id) => selection[id])),
+    rowSelection,
   })
 
-  const kanban = useMemo<CollectionKanbanViewProps<Tasks5Task>>(
+  const kanban = useMemo<CollectionKanbanViewProps<TasksTask>>(
     () => ({
       emptyGroupLabel: labels.emptyColumn,
       onRecordMove:
@@ -357,14 +433,14 @@ export function Tasks5({
           ? ({ card, sourceGroup, targetGroup }) => {
               if (sourceGroup.id === targetGroup.id) return false
               if (targetGroup.grouping === 'status') {
-                const status = tasks5Statuses.find(
+                const status = tasksStatuses.find(
                   (item) => item === targetGroup.value,
                 )
                 if (status && status !== card.status)
                   changeStatus?.(card.id, status)
               }
               if (targetGroup.grouping === 'priority') {
-                const priority = findTasks5Priority(targetGroup.value)
+                const priority = findTasksPriority(targetGroup.value)
                 if (priority !== card.priority)
                   changePriority?.(card.id, priority)
               }
@@ -396,28 +472,40 @@ export function Tasks5({
       toolbar={
         <Tasks5Toolbar
           assigneeFilter={assigneeFilter}
+          filters={filters}
           groupBy={groupBy}
+          groupBys={groupBys}
           kanbanGroupBy={kanbanGroupBy}
+          kindFilter={kindFilter}
+          kinds={kinds}
           labels={labels}
           loading={Boolean(loadState)}
           mode={mode}
+          modes={offeredModes}
           onAssigneeFilterChange={
             onAssigneeFilterChange ? setAssigneeFilter : undefined
           }
           onCreate={onCreate}
           onGroupByChange={setGroupBy}
+          onKindFilterChange={onKindFilterChange ? setKindFilter : undefined}
           onModeChange={setMode}
           onPriorityFilterChange={
             onPriorityFilterChange ? setPriorityFilter : undefined
           }
+          onSavePreference={onSavePreference}
           onSortChange={onSortChange ? setSort : undefined}
           onStatusFilterChange={
             onStatusFilterChange ? setStatusFilter : undefined
           }
+          onVisibleColumnsChange={
+            onVisibleColumnsChange ? setVisibleColumnList : undefined
+          }
           people={people}
           priorityFilter={priorityFilter}
           sort={sort}
+          sorts={sorts}
           statusFilter={statusFilter}
+          visibleColumns={visibleColumns}
           viewSwitcher={
             <DataCollectionViewSwitcher<typeof tasks5AllView>
               label={labels.viewList}
@@ -443,18 +531,20 @@ export function Tasks5({
       }
     >
       {loadState ?? (
-        <DataCollection<Tasks5Task>
+        <DataCollection<TasksTask>
           collapseEmptyGroups
           collapsedGroupIds={collapsedGroupIdsProp}
           collection={collection}
           emptyMessage={filtered ? labels.noResult : labels.empty}
           getGroupToggleLabel={labels.groupToggle}
+          getRowOpenLabel={(task) => labels.openTask(task.title)}
           groupBy={activeGroupBy}
           kanban={kanban}
           label={labels.title}
           listHeader={
-            <Tasks5ListHeader
+            <TasksListHeader
               labels={labels}
+              visibleColumns={visibleColumns}
               selection={
                 selectable && tasks.length > 0
                   ? {
@@ -474,7 +564,7 @@ export function Tasks5({
               sortDirection={sortDirection}
             />
           }
-          mode={mode}
+          mode={tasksCollectionMode[mode]}
           onCollapsedGroupIdsChange={
             onCollapsedGroupIdsChange
               ? (groupIds) => onCollapsedGroupIdsChange([...groupIds])
@@ -482,24 +572,50 @@ export function Tasks5({
           }
           onGroupByChange={(next) => setGroupBy(pickGroupBy(next))}
           onOpen={openTask ? (task) => openTask(task.id) : undefined}
-          renderKanbanRecord={renderTasks5KanbanCard(context)}
-          renderListRecord={renderTasks5ListRow(context)}
+          renderKanbanRecord={renderTasksKanbanCard(context)}
+          renderListRecord={renderTasksListRow(context)}
+          selectionActions={
+            selectable
+              ? ({ clearSelection, selectedCount, selectedRows }) => (
+                  <ActionBar
+                    actions={createTasksSelectionActions({
+                      kinds,
+                      labels,
+                      onBulkAssigneesChange,
+                      onBulkDelete,
+                      onBulkKindChange,
+                      onBulkPriorityChange,
+                      onBulkStatusChange,
+                      onDone: clearSelection,
+                      people,
+                      selectedRows,
+                    })}
+                    clearSelectionLabel={labels.clearSelection}
+                    formatSelection={labels.selectedCount}
+                    label={labels.selectionActions}
+                    onClearSelection={clearSelection}
+                    selectedCount={selectedCount}
+                    selectedRows={selectedRows}
+                  />
+                )
+              : undefined
+          }
           table={table}
         />
       )}
       {!loadState && mode === 'list' && selectable ? (
         <div className="pointer-events-none sticky bottom-3 flex justify-center">
           <ActionBar
-            actions={createTasks5SelectionActions({
+            actions={createTasksSelectionActions({
               labels,
               onBulkAssigneesChange,
               onBulkDelete,
               onBulkPriorityChange,
-              onBulkProjectChange,
+              onBulkKindChange,
               onBulkStatusChange,
               onDone: () => setSelectedIds(noIds),
+              kinds,
               people,
-              projects,
               selectedRows,
             })}
             className="pointer-events-auto"
