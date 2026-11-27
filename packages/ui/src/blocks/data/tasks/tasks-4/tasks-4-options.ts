@@ -6,12 +6,14 @@ export const tasks4FieldWidth = {
   assignees: 'w-40',
   due: 'w-32',
   kind: 'w-40',
+  priority: 'w-32',
   updated: 'w-20',
 } as const satisfies Partial<Record<TasksColumnId, string>>
 
 export const tasks4ToggleableColumns: readonly TasksColumnId[] = [
   'tags',
   'due',
+  'priority',
   'kind',
   'assignees',
   'updated',

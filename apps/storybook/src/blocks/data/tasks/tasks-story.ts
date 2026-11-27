@@ -421,6 +421,128 @@ export async function expectEveryTasksLayout(canvasElement: HTMLElement) {
   ).toBeNull()
 }
 
+type TasksCallbackSpy = ((...args: never[]) => void) | undefined
+
+const priorityTrigger = /^Prioridade: /
+
+const otherPriority = (trigger: HTMLElement) =>
+  trigger.getAttribute('aria-label') === 'Prioridade: Baixa'
+    ? { label: 'Alta', value: 'high' }
+    : { label: 'Baixa', value: 'low' }
+
+async function choosePriority(trigger: HTMLElement, next: { label: string }) {
+  await userEvent.click(trigger)
+  await userEvent.click(await screen.findByRole('option', { name: next.label }))
+}
+
+const rowTitle = (row: Element | null) =>
+  row?.querySelector('[data-slot="list-row-open-trigger"]')?.textContent ?? ''
+
+export async function expectRowPriorityChange(
+  canvasElement: HTMLElement,
+  onPriorityChange: TasksCallbackSpy,
+) {
+  const canvas = within(canvasElement)
+  const [trigger] = await canvas.findAllByRole('combobox', {
+    name: priorityTrigger,
+  })
+  const title = rowTitle(trigger.closest('[data-slot="list-row"], article'))
+  await expect(title).not.toBe('')
+  const next = otherPriority(trigger)
+  await choosePriority(trigger, next)
+  await waitFor(() => {
+    const row = [...canvasElement.querySelectorAll('article')].find(
+      (item) => rowTitle(item) === title,
+    )
+    expect(row).toBeDefined()
+    expect(
+      within(row as HTMLElement).getByRole('combobox', {
+        name: `Prioridade: ${next.label}`,
+      }),
+    ).toBeVisible()
+  })
+  await expect(onPriorityChange).toHaveBeenCalledWith(
+    expect.any(String),
+    next.value,
+  )
+}
+
+const cardOf = (element: Element) =>
+  element.closest<HTMLElement>('[data-pattern="kanban-card"]')
+
+const cardTitle = (card: Element | null) =>
+  card?.querySelector('[data-slot="card-title"]')?.textContent ?? ''
+
+export async function expectCardPriorityChange(
+  canvasElement: HTMLElement,
+  onPriorityChange: TasksCallbackSpy,
+) {
+  const canvas = within(canvasElement)
+  const [trigger] = await canvas.findAllByRole('combobox', {
+    name: priorityTrigger,
+  })
+  const card = cardOf(trigger)
+  await expect(card).not.toBeNull()
+  const title = cardTitle(card)
+  await expect(title).not.toBe('')
+  const next = otherPriority(trigger)
+  await choosePriority(trigger, next)
+  await waitFor(() => {
+    const moved = within(canvasElement)
+      .getAllByRole('combobox', { name: `Prioridade: ${next.label}` })
+      .map(cardOf)
+      .find((item) => cardTitle(item) === title)
+    expect(moved).toBeDefined()
+  })
+  await expect(onPriorityChange).toHaveBeenCalledWith(
+    expect.any(String),
+    next.value,
+  )
+}
+
+const kanbanColumn = (canvasElement: HTMLElement, name: string) =>
+  within(canvasElement).getByRole('region', { name: new RegExp(`^${name}`) })
+
+const moveHandle = /^Mover card /
+
+export interface TasksCardMove {
+  from: string
+  onChange: TasksCallbackSpy
+  to: string
+  value: string
+}
+
+export async function expectCardMove(
+  canvasElement: HTMLElement,
+  { from, onChange, to, value }: TasksCardMove,
+) {
+  await within(canvasElement).findAllByRole('button', { name: moveHandle })
+  const [handle] = within(kanbanColumn(canvasElement, from)).getAllByRole(
+    'button',
+    { name: moveHandle },
+  )
+  const name = handle.getAttribute('aria-label') ?? ''
+  handle.focus()
+  await userEvent.keyboard('[Space]')
+  await waitFor(() =>
+    expect(
+      document.querySelector('[data-dnd-overlay]'),
+    ).not.toBeEmptyDOMElement(),
+  )
+  await userEvent.keyboard('[ArrowRight]')
+  await userEvent.keyboard('[Space]')
+  await waitFor(() =>
+    expect(
+      within(kanbanColumn(canvasElement, to)).getByRole('button', { name }),
+    ).toBeInTheDocument(),
+  )
+  await expect(
+    within(kanbanColumn(canvasElement, from)).queryByRole('button', { name }),
+  ).toBeNull()
+  await expect(onChange).toHaveBeenCalledOnce()
+  await expect(onChange).toHaveBeenCalledWith(expect.any(String), value)
+}
+
 export async function expectColumnsSectionLabel(canvasElement: HTMLElement) {
   const canvas = within(canvasElement)
   await userEvent.click(
