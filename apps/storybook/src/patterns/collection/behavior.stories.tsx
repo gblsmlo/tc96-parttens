@@ -151,7 +151,7 @@ function Frame({ height }: Readonly<{ height?: CollectionFrameHeight }>) {
 }
 
 export const FillScrollsTheBody: Story = {
-  render: () => <Frame />,
+  render: () => <Frame height="fill" />,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     const body = canvas.getByRole('region', { name: 'Tarefas' })
@@ -163,15 +163,18 @@ export const FillScrollsTheBody: Story = {
   },
 }
 
-export const ContentKeepsTheFooterSticky: Story = {
-  render: () => <Frame height="content" />,
+export const ContentKeepsTheFooterUnderTheRecords: Story = {
+  render: () => <Frame />,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     const body = canvas.getByRole('region', { name: 'Tarefas' })
+    const footer = canvas.getByText('Paginação')
+    const box = body.parentElement?.parentElement?.getBoundingClientRect()
 
-    await expect(getComputedStyle(body).overflowY).toBe('visible')
-    await expect(getComputedStyle(canvas.getByText('Paginação')).position).toBe(
-      'sticky',
+    await expect(getComputedStyle(body).overflowY).toBe('auto')
+    await expect(getComputedStyle(footer).position).toBe('sticky')
+    await expect(footer.getBoundingClientRect().bottom).toBeLessThan(
+      (box?.bottom ?? 0) - 64,
     )
   },
 }

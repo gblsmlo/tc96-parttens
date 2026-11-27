@@ -27,17 +27,13 @@ export type CollectionFrameOverlayProps = ComponentProps<'div'>
 
 export function CollectionFrame({
   className,
-  height = 'fill',
+  height = 'content',
   ...props
 }: Readonly<CollectionFrameProps>): ReactElement {
   return (
     <CollectionFrameHeightContext.Provider value={height}>
       <div
-        className={cn(
-          'flex min-w-0 flex-col gap-3',
-          height === 'fill' && 'min-h-0 flex-1',
-          className,
-        )}
+        className={cn('flex min-h-0 min-w-0 flex-1 flex-col gap-3', className)}
         data-height={height}
         data-slot="collection-frame"
         {...props}
@@ -68,8 +64,8 @@ export function CollectionFrameBody({
   return (
     <section
       className={cn(
-        'flex min-w-0 flex-col gap-2',
-        height === 'fill' && 'min-h-0 flex-1 overflow-auto',
+        'flex min-h-0 min-w-0 flex-col gap-2 overflow-auto',
+        height === 'fill' && 'flex-1',
         className,
       )}
       data-slot="collection-frame-body"

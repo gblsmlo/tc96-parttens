@@ -116,7 +116,7 @@ Hover-only affordances pair `group-hover` with `group-focus-within` and `pointer
 
 ## Usabilidade
 
-`height="fill"` bounds the frame (`min-h-0 flex-1`) and scrolls the body. It holds only inside a flex column of bounded height. Anywhere else the frame grows like `"content"`. A layout that scrolls itself (Data Table, Data Grid, `ListView`) is `min-h-0 flex-1`, so inside a `fill` body only its rows move. The body keeps `overflow-auto` for content placed beside the layout. `height="content"` lets the body grow with the records and makes the footer `sticky bottom-0`.
+`height="fill"` bounds the frame (`min-h-0 flex-1`) and scrolls the body. It holds only inside a flex column of bounded height. Anywhere else the frame grows like `"content"`. A layout that scrolls itself (Data Table, Data Grid, `ListView`) is `min-h-0 flex-1`, so inside a `fill` body only its rows move. The body keeps `overflow-auto` for content placed beside the layout. `height="content"`, the default, sizes the body to the records: a short list keeps its pagination under the last record instead of at the bottom of the page, and inside a bounded flex column the body scrolls once the records overflow (`min-h-0 overflow-auto`, no `flex-1`), so the collection owns the scroll without a scrolling parent. The footer is `sticky bottom-0`. `"fill"` stretches the body to the free height, which pins the footer to the bottom of the frame.
 
 `CollectionFrameOverlay` sits inside `CollectionFrameFooter` (`absolute bottom-full`). Inside the scrolling body an absolute child would scroll with the records. It centers on the frame, not the viewport, like `DataGridSelectionActions`.
 
