@@ -1,8 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { expect, screen, userEvent, within } from 'storybook/test'
+import { expect, fn, screen, userEvent, within } from 'storybook/test'
 import {
+  expectCardMove,
+  expectCardPriorityChange,
   expectColumnsSectionLabel,
   expectEveryTasksLayout,
+  expectRowPriorityChange,
+  type TasksStoryCallbacks,
 } from '../tasks-story.ts'
 import {
   type Tasks6Controls,
@@ -30,6 +34,8 @@ const meta = {
 export default meta
 
 type Story = StoryObj<Tasks6Controls>
+
+type CallbackStory = StoryObj<Tasks6Controls & TasksStoryCallbacks>
 
 export const Tasks6: Story = {
   play: async ({ canvasElement }) => {
@@ -116,5 +122,47 @@ export const ColumnsSectionLabel: Story = {
   tags: ['!dev'],
   play: async ({ canvasElement }) => {
     await expectColumnsSectionLabel(canvasElement)
+  },
+}
+
+export const PriorityInRow: CallbackStory = {
+  args: { mode: 'list', onPriorityChange: fn() },
+  tags: ['!dev'],
+  play: async ({ args, canvasElement }) => {
+    await expectRowPriorityChange(canvasElement, args.onPriorityChange)
+  },
+}
+
+export const PriorityInCard: CallbackStory = {
+  args: { mode: 'kanban', onPriorityChange: fn() },
+  tags: ['!dev'],
+  play: async ({ args, canvasElement }) => {
+    await expectCardPriorityChange(canvasElement, args.onPriorityChange)
+  },
+}
+
+export const MoveCardByStatus: CallbackStory = {
+  args: { groupBy: 'status', mode: 'kanban', onStatusChange: fn() },
+  tags: ['!dev'],
+  play: async ({ args, canvasElement }) => {
+    await expectCardMove(canvasElement, {
+      from: 'A fazer',
+      onChange: args.onStatusChange,
+      to: 'Em andamento',
+      value: 'in-progress',
+    })
+  },
+}
+
+export const MoveCardByPriority: CallbackStory = {
+  args: { groupBy: 'priority', mode: 'kanban', onPriorityChange: fn() },
+  tags: ['!dev'],
+  play: async ({ args, canvasElement }) => {
+    await expectCardMove(canvasElement, {
+      from: 'Urgente',
+      onChange: args.onPriorityChange,
+      to: 'Alta',
+      value: 'high',
+    })
   },
 }

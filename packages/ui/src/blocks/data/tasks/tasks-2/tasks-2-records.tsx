@@ -29,6 +29,7 @@ import {
   TasksDueField,
   type TasksFieldContext,
   TasksKindField,
+  TasksPriorityField,
   TasksPriorityMark,
   TasksStatusMark,
   TasksTags,
@@ -97,6 +98,14 @@ export function Tasks2ListHeader({
           {...sortable('due')}
         >
           {labels.columns.due}
+        </ListViewHeaderCell>
+      ) : null}
+      {visibleColumns.has('priority') ? (
+        <ListViewHeaderCell
+          className={tasks2FieldWidth.priority}
+          {...sortable('priority')}
+        >
+          {labels.columns.priority}
         </ListViewHeaderCell>
       ) : null}
       {visibleColumns.has('kind') ? (
@@ -183,6 +192,11 @@ export const renderTasks2ListRow =
               <TasksDueField context={context} item={task} />
             </ListRowField>
           ) : null}
+          {visibleColumns.has('priority') ? (
+            <ListRowField className={tasks2FieldWidth.priority}>
+              <TasksPriorityField context={context} item={task} />
+            </ListRowField>
+          ) : null}
           {visibleColumns.has('kind') ? (
             <ListRowField className={tasks2FieldWidth.kind}>
               <TasksKindField context={context} item={task} />
@@ -210,6 +224,7 @@ export const renderTasks2KanbanCard =
       onAssigneesChange,
       onDueChange,
       onOpen,
+      onPriorityChange,
       kinds,
       visibleColumns,
     } = context
@@ -227,6 +242,16 @@ export const renderTasks2KanbanCard =
                   interactive: Boolean(onDueChange),
                   label: labels.columns.due,
                   value: <TasksDueField context={context} item={task} />,
+                },
+              ]
+            : []),
+          ...(visibleColumns.has('priority')
+            ? [
+                {
+                  id: 'priority',
+                  interactive: Boolean(onPriorityChange),
+                  label: labels.columns.priority,
+                  value: <TasksPriorityField context={context} item={task} />,
                 },
               ]
             : []),

@@ -22,6 +22,7 @@ import {
   TasksDueField,
   type TasksFieldContext,
   TasksKindField,
+  TasksPriorityField,
   TasksPriorityMark,
   TasksStatusMark,
   TasksTags,
@@ -43,6 +44,7 @@ const tasksFieldWidth = {
   assignees: 'w-40',
   due: 'w-32',
   kind: 'w-40',
+  priority: 'w-32',
   tags: 'w-48',
   updated: 'w-20',
 } as const satisfies Partial<Record<TasksColumnId, string>>
@@ -50,6 +52,7 @@ const tasksFieldWidth = {
 export const tasksListToggleableColumns: readonly TasksColumnId[] = [
   'tags',
   'due',
+  'priority',
   'kind',
   'assignees',
   'updated',
@@ -119,6 +122,14 @@ export function TasksListHeader({
           {...sortable('due')}
         >
           {labels.columns.due}
+        </ListViewHeaderCell>
+      ) : null}
+      {visibleColumns.has('priority') ? (
+        <ListViewHeaderCell
+          className={tasksFieldWidth.priority}
+          {...sortable('priority')}
+        >
+          {labels.columns.priority}
         </ListViewHeaderCell>
       ) : null}
       {visibleColumns.has('kind') ? (
@@ -205,6 +216,11 @@ export const renderTasksListRow =
               <TasksDueField context={context} item={task} />
             </ListRowField>
           ) : null}
+          {visibleColumns.has('priority') ? (
+            <ListRowField className={tasksFieldWidth.priority}>
+              <TasksPriorityField context={context} item={task} />
+            </ListRowField>
+          ) : null}
           {visibleColumns.has('kind') ? (
             <ListRowField className={tasksFieldWidth.kind}>
               <TasksKindField context={context} item={task} />
@@ -232,6 +248,7 @@ export const renderTasksKanbanCard =
       onAssigneesChange,
       onDueChange,
       onOpen,
+      onPriorityChange,
       kinds,
       visibleColumns,
     } = context
@@ -249,6 +266,16 @@ export const renderTasksKanbanCard =
                   interactive: Boolean(onDueChange),
                   label: labels.columns.due,
                   value: <TasksDueField context={context} item={task} />,
+                },
+              ]
+            : []),
+          ...(visibleColumns.has('priority')
+            ? [
+                {
+                  id: 'priority',
+                  interactive: Boolean(onPriorityChange),
+                  label: labels.columns.priority,
+                  value: <TasksPriorityField context={context} item={task} />,
                 },
               ]
             : []),
