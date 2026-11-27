@@ -1,6 +1,6 @@
 import {
   Tasks6,
-  type Tasks6GroupBy,
+  type Tasks6KanbanGroupBy,
   type Tasks6Mode,
   type Tasks6PriorityFilter,
   type Tasks6Props,
@@ -19,7 +19,6 @@ import {
   statuses,
   tags,
   tasks,
-  types,
 } from '../fixtures/tasks-6.ts'
 import type { Tasks6Controls } from './tasks-6-controls.ts'
 
@@ -28,10 +27,9 @@ type Callbacks = Pick<
   | 'onAssigneeFilterChange'
   | 'onAssigneesChange'
   | 'onBulkDelete'
-  | 'onCollapsedGroupIdsChange'
   | 'onCreate'
   | 'onDueChange'
-  | 'onGroupByChange'
+  | 'onKanbanGroupByChange'
   | 'onModeChange'
   | 'onOpen'
   | 'onPriorityChange'
@@ -42,7 +40,6 @@ type Callbacks = Pick<
   | 'onSortChange'
   | 'onStatusChange'
   | 'onStatusFilterChange'
-  | 'onTypeChange'
 >
 
 export interface ComposedTasks6Props extends Tasks6Controls, Callbacks {
@@ -84,16 +81,15 @@ export const ComposedTasks6 = ({
   empty,
   error = false,
   filters,
-  groupBy: groupByControl,
+  kanbanGroupBy: kanbanGroupByControl,
   headerActions,
   mode: modeControl,
   onAssigneeFilterChange,
   onAssigneesChange,
   onBulkDelete,
-  onCollapsedGroupIdsChange,
   onCreate,
   onDueChange,
-  onGroupByChange,
+  onKanbanGroupByChange,
   onModeChange,
   onOpen,
   onPriorityChange,
@@ -104,16 +100,14 @@ export const ComposedTasks6 = ({
   onSortChange,
   onStatusChange,
   onStatusFilterChange,
-  onTypeChange,
   openable,
   pending = false,
   title,
 }: Readonly<ComposedTasks6Props>) => {
   const [items, setItems] = useState<Tasks6Task[]>(tasks)
   const [mode, setMode] = useState<Tasks6Mode>(modeControl)
-  const [groupBy, setGroupBy] = useState<Tasks6GroupBy | null>(
-    groupByControl === 'none' ? null : groupByControl,
-  )
+  const [kanbanGroupBy, setKanbanGroupBy] =
+    useState<Tasks6KanbanGroupBy>(kanbanGroupByControl)
   const [sort, setSort] = useState<Tasks6Sort>('due')
   const [sortDirection, setSortDirection] = useState<Tasks6SortDirection>('asc')
   const [selectedIds, setSelectedIds] = useState<string[]>([])
@@ -129,8 +123,8 @@ export const ComposedTasks6 = ({
   }, [modeControl])
 
   useEffect(() => {
-    setGroupBy(groupByControl === 'none' ? null : groupByControl)
-  }, [groupByControl])
+    setKanbanGroupBy(kanbanGroupByControl)
+  }, [kanbanGroupByControl])
 
   const update = (id: string, change: Partial<Tasks6Task>) =>
     setItems((current) =>
@@ -181,7 +175,7 @@ export const ComposedTasks6 = ({
       assigneeFilter={assigneeFilter}
       error={error}
       filtered={Boolean(statusFilter || priorityFilter || assigneeFilter)}
-      groupBy={groupBy}
+      kanbanGroupBy={kanbanGroupBy}
       labels={labels}
       mode={mode}
       now={now}
@@ -203,16 +197,15 @@ export const ComposedTasks6 = ({
         (ids: string[], status: Tasks6Status) => updateMany(ids, { status }),
         undefined,
       )}
-      onCollapsedGroupIdsChange={onCollapsedGroupIdsChange}
       onCreate={headerActions ? (onCreate ?? noop) : undefined}
       onDueChange={edit(
         (id: string, dueAt: string | null) =>
           update(id, { dueAt, overdue: false }),
         onDueChange,
       )}
-      onGroupByChange={(next) => {
-        setGroupBy(next)
-        onGroupByChange?.(next)
+      onKanbanGroupByChange={(next) => {
+        setKanbanGroupBy(next)
+        onKanbanGroupByChange?.(next)
       }}
       onModeChange={(next) => {
         setMode(next)
@@ -248,10 +241,6 @@ export const ComposedTasks6 = ({
         onStatusChange,
       )}
       onStatusFilterChange={filter(setStatusFilter, onStatusFilterChange)}
-      onTypeChange={edit(
-        (id: string, typeId: string) => update(id, { typeId }),
-        onTypeChange,
-      )}
       pending={pending}
       people={people}
       priorityFilter={priorityFilter}
@@ -266,7 +255,6 @@ export const ComposedTasks6 = ({
       statusFilter={statusFilter}
       tags={tags}
       tasks={visible}
-      types={types}
     />
   )
 }

@@ -19,8 +19,6 @@ import type {
 } from './types'
 
 export interface Tasks6SelectionActionsOptions {
-  completeStatus: Tasks6Status
-  disabled?: boolean
   labels: Tasks6Labels
   onBulkAssigneesChange?: (taskIds: string[], assigneeIds: string[]) => void
   onBulkDelete?: (taskIds: string[]) => void
@@ -38,8 +36,6 @@ export interface Tasks6SelectionActionsOptions {
 }
 
 export function createTasks6SelectionActions({
-  completeStatus,
-  disabled = false,
   labels,
   onBulkAssigneesChange,
   onBulkDelete,
@@ -127,15 +123,13 @@ export function createTasks6SelectionActions({
   const items: ActionBarItem<Tasks6Task>[] = []
   if (onBulkStatusChange)
     items.push({
-      disabled,
       icon: <CheckCircleIcon aria-hidden="true" />,
       id: 'complete',
       label: labels.complete,
-      onSelect: apply(() => onBulkStatusChange(ids, completeStatus)),
+      onSelect: apply(() => onBulkStatusChange(ids, 'done')),
     })
   if (more.length)
     items.push({
-      disabled,
       icon: <DotsThreeIcon aria-hidden="true" />,
       id: 'more',
       label: labels.moreOptions,
@@ -143,7 +137,6 @@ export function createTasks6SelectionActions({
     })
   if (onBulkDelete)
     items.push({
-      disabled,
       icon: <TrashIcon aria-hidden="true" />,
       id: 'delete',
       label: labels.delete,

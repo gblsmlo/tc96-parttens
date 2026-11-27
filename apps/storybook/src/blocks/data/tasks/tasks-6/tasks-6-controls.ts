@@ -1,6 +1,6 @@
 import type { ArgTypes } from '@storybook/react-vite'
 import type {
-  Tasks6GroupBy,
+  Tasks6KanbanGroupBy,
   Tasks6Mode,
 } from '@tc96/ui/blocks/data/tasks/tasks-6'
 
@@ -9,7 +9,7 @@ export interface Tasks6Controls {
   editable: boolean
   empty: boolean
   filters: boolean
-  groupBy: Tasks6GroupBy | 'none'
+  kanbanGroupBy: Tasks6KanbanGroupBy
   headerActions: boolean
   mode: Tasks6Mode
   openable: boolean
@@ -21,7 +21,7 @@ export const tasks6ControlArgs: Tasks6Controls = {
   editable: true,
   empty: false,
   filters: true,
-  groupBy: 'priority',
+  kanbanGroupBy: 'status',
   headerActions: true,
   mode: 'list',
   openable: true,
@@ -37,7 +37,7 @@ export const tasks6ControlArgTypes: Partial<ArgTypes<Tasks6Controls>> = {
   editable: {
     control: 'boolean',
     description:
-      'Passes `onDueChange`, `onProjectChange`, `onAssigneesChange`, `onStatusChange`, `onPriorityChange`, `onTypeChange` and the bulk callbacks; off, every field is read-only, the Kanban takes no drop and nothing can be selected.',
+      'Passes `onDueChange`, `onProjectChange`, `onAssigneesChange`, `onStatusChange`, `onPriorityChange` and the bulk callbacks; off, every field is read-only, the Kanban takes no drop and nothing can be selected.',
   },
   empty: {
     control: 'boolean',
@@ -46,13 +46,13 @@ export const tasks6ControlArgTypes: Partial<ArgTypes<Tasks6Controls>> = {
   filters: {
     control: 'boolean',
     description:
-      'Passes `onStatusFilterChange`, `onPriorityFilterChange` and `onAssigneeFilterChange`; on, the filter menu opens the right slot with one submenu per property and a count badge.',
+      'Passes `onStatusFilterChange`, `onPriorityFilterChange` and `onAssigneeFilterChange`; on, the Exibição menu lists one submenu per property under Propriedades and its trigger counts the active filters.',
   },
-  groupBy: {
+  kanbanGroupBy: {
     control: 'inline-radio',
     description:
-      'The initial `groupBy`; the group menu changes it too. The Kanban reads Prioridade unless it is Status.',
-    options: ['none', 'priority', 'status', 'project'],
+      'The initial `kanbanGroupBy`; the Exibição menu changes it in the Quadro. The list is never grouped.',
+    options: ['status', 'priority'],
   },
   headerActions: {
     control: 'boolean',

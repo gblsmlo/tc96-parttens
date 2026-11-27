@@ -1,19 +1,16 @@
 export {
   Tasks6,
-  tasks6GroupBys,
+  tasks6KanbanGroupBys,
   tasks6Modes,
   tasks6PriorityFilters,
   tasks6Sorts,
   tasks6Statuses,
 } from './tasks-6'
 export type {
-  Tasks6ChangeResult,
   Tasks6ColumnId,
   Tasks6DefaultSort,
   Tasks6DefaultStatus,
-  Tasks6FieldId,
   Tasks6FilterId,
-  Tasks6GroupBy,
   Tasks6KanbanGroupBy,
   Tasks6Labels,
   Tasks6LabelsOverride,

@@ -2,7 +2,6 @@ import { Checkbox } from '@tc96/ui/checkbox'
 import {
   ListRow,
   ListRowBody,
-  ListRowDescription,
   ListRowField,
   ListRowHeader,
   ListRowLeading,
@@ -19,21 +18,18 @@ import { IconLabelProperty } from '@tc96/ui/patterns/properties/display/icon-lab
 import { cn } from '@tc96/utils'
 import { DataCollectionKanbanCard } from '../../shared/collection/data-collection-record-parts'
 import {
-  isTasks6FieldEditable,
-  Tasks6Field,
+  Tasks6AssigneesField,
+  Tasks6DueField,
   type Tasks6FieldContext,
   Tasks6PriorityMark,
+  Tasks6ProjectField,
   Tasks6StatusMark,
   Tasks6Tags,
+  Tasks6TagsField,
+  Tasks6UpdatedField,
 } from './tasks-6-fields'
-import {
-  tasks6AlwaysVisibleFields,
-  tasks6FieldWidth,
-  tasks6LeadingWidth,
-  tasks6Sorts,
-} from './tasks-6-options'
+import { tasks6FieldWidth, tasks6LeadingWidth } from './tasks-6-options'
 import type {
-  Tasks6FieldId,
   Tasks6Labels,
   Tasks6Sort,
   Tasks6SortColumn,
@@ -48,7 +44,6 @@ export interface Tasks6ListHeaderSelection {
 }
 
 export interface Tasks6ListHeaderProps {
-  fields: readonly Tasks6FieldId[]
   labels: Tasks6Labels
   selection?: Tasks6ListHeaderSelection
   onSort?: (column: Tasks6SortColumn) => void
@@ -56,24 +51,19 @@ export interface Tasks6ListHeaderProps {
   sortDirection: Tasks6SortDirection
 }
 
-const isSortColumn = (value: string): value is Tasks6SortColumn =>
-  tasks6Sorts.some((sort) => sort === value)
-
 export function Tasks6ListHeader({
-  fields,
   labels,
   onSort,
   selection,
   sort,
   sortDirection,
 }: Readonly<Tasks6ListHeaderProps>) {
-  const sortable = (column: string) => {
-    if (!onSort || !isSortColumn(column)) return {}
+  const sortable = (column: Tasks6SortColumn) => {
     const direction = sort === column ? sortDirection : null
     return {
-      onSort: () => onSort(column),
+      onSort: onSort ? () => onSort(column) : undefined,
       sortDirection: direction,
-      sortLabel: labels.sortColumn(column, direction),
+      sortLabel: onSort ? labels.sortColumn(column, direction) : undefined,
     }
   }
 
@@ -97,51 +87,42 @@ export function Tasks6ListHeader({
       <ListViewHeaderCell always className="flex-1" {...sortable('title')}>
         {labels.columns.title}
       </ListViewHeaderCell>
-      {fields.map((field) => (
-        <ListViewHeaderCell
-          always={tasks6AlwaysVisibleFields.includes(field)}
-          className={tasks6FieldWidth[field]}
-          key={field}
-          {...sortable(field)}
-        >
-          {labels.columns[field]}
-        </ListViewHeaderCell>
-      ))}
+      <ListViewHeaderCell className={tasks6FieldWidth.tags}>
+        {labels.columns.tags}
+      </ListViewHeaderCell>
+      <ListViewHeaderCell
+        always
+        className={tasks6FieldWidth.due}
+        {...sortable('due')}
+      >
+        {labels.columns.due}
+      </ListViewHeaderCell>
+      <ListViewHeaderCell
+        className={tasks6FieldWidth.project}
+        {...sortable('project')}
+      >
+        {labels.columns.project}
+      </ListViewHeaderCell>
+      <ListViewHeaderCell className={tasks6FieldWidth.assignees}>
+        {labels.columns.assignees}
+      </ListViewHeaderCell>
+      <ListViewHeaderCell
+        className={tasks6FieldWidth.updated}
+        {...sortable('updated')}
+      >
+        {labels.columns.updated}
+      </ListViewHeaderCell>
     </ListViewHeader>
   )
 }
 
-function Tasks6ListMark({
-  context,
-  fields,
-  task,
-}: Readonly<{
-  context: Tasks6FieldContext
-  fields: readonly Tasks6FieldId[]
-  task: Tasks6Task
-}>) {
-  if (!fields.includes('priority'))
-    return <Tasks6PriorityMark context={context} item={task} />
-  if (!fields.includes('status'))
-    return <Tasks6StatusMark context={context} item={task} />
-  return null
-}
-
 export const renderTasks6ListRow =
-  (context: Tasks6FieldContext, fields: readonly Tasks6FieldId[]) =>
-  (task: Tasks6Task) => {
+  (context: Tasks6FieldContext) => (task: Tasks6Task) => {
     const { labels, onOpen, onSelectedChange, selectedIds } = context
     const selected = selectedIds.has(task.id)
-    const mark = (
-      <Tasks6ListMark context={context} fields={fields} task={task} />
-    )
-    const showsMark = !(
-      fields.includes('priority') && fields.includes('status')
-    )
     return (
       <ListRow
         data-slot="tasks-6-row"
-        data-task-id={task.id}
         interactive={Boolean(onOpen)}
         selected={selected}
       >
@@ -150,15 +131,13 @@ export const renderTasks6ListRow =
             <ListRowSelect
               aria-label={labels.selectTask(task.title)}
               checked={selected}
-              className={showsMark ? undefined : 'me-0'}
+              className="me-0"
               onCheckedChange={(checked) =>
                 onSelectedChange(task.id, checked === true)
               }
-            >
-              {showsMark ? mark : null}
-            </ListRowSelect>
+            />
           ) : (
-            mark
+            <Tasks6PriorityMark context={context} item={task} />
           )}
         </ListRowLeading>
         <ListRowBody>
@@ -178,55 +157,54 @@ export const renderTasks6ListRow =
                     task.title
                   )
                 }
-                leading={
-                  fields.includes('status') ? undefined : (
-                    <Tasks6StatusMark context={context} item={task} />
-                  )
-                }
+                leading={<Tasks6StatusMark context={context} item={task} />}
                 variant="plain"
               />
             </ListRowTitle>
-            <span className="hidden shrink-0 md:flex">
-              <Tasks6Tags context={context} item={task} />
-            </span>
           </ListRowHeader>
-          {task.description ? (
-            <ListRowDescription className="truncate">
-              {task.description}
-            </ListRowDescription>
-          ) : null}
         </ListRowBody>
         <ListRowTrailing className="gap-3">
-          {fields.map((field) => (
-            <ListRowField
-              always={tasks6AlwaysVisibleFields.includes(field)}
-              className={tasks6FieldWidth[field]}
-              key={field}
-            >
-              <Tasks6Field context={context} field={field} item={task} />
-            </ListRowField>
-          ))}
+          <ListRowField className={tasks6FieldWidth.tags}>
+            <Tasks6TagsField context={context} item={task} />
+          </ListRowField>
+          <ListRowField always className={tasks6FieldWidth.due}>
+            <Tasks6DueField context={context} item={task} />
+          </ListRowField>
+          <ListRowField className={tasks6FieldWidth.project}>
+            <Tasks6ProjectField context={context} item={task} />
+          </ListRowField>
+          <ListRowField className={tasks6FieldWidth.assignees}>
+            <Tasks6AssigneesField context={context} item={task} />
+          </ListRowField>
+          <ListRowField className={tasks6FieldWidth.updated}>
+            <Tasks6UpdatedField context={context} item={task} />
+          </ListRowField>
         </ListRowTrailing>
       </ListRow>
     )
   }
 
 export const renderTasks6KanbanCard =
-  (context: Tasks6FieldContext, fields: readonly Tasks6FieldId[]) =>
-  (task: Tasks6Task) => {
-    const { labels, onOpen, projects } = context
+  (context: Tasks6FieldContext) => (task: Tasks6Task) => {
+    const { labels, onAssigneesChange, onDueChange, onOpen, projects } = context
     const project = projects.find((item) => item.id === task.projectId)
     return (
       <DataCollectionKanbanCard
-        caption={[task.description, project?.label].flatMap((part) =>
-          part ? [part] : [],
-        )}
-        fields={fields.map((field) => ({
-          id: field,
-          interactive: isTasks6FieldEditable(context, field, task),
-          label: labels.columns[field],
-          value: <Tasks6Field context={context} field={field} item={task} />,
-        }))}
+        caption={project ? [project.label] : []}
+        fields={[
+          {
+            id: 'due',
+            interactive: Boolean(onDueChange),
+            label: labels.columns.due,
+            value: <Tasks6DueField context={context} item={task} />,
+          },
+          {
+            id: 'assignees',
+            interactive: Boolean(onAssigneesChange),
+            label: labels.columns.assignees,
+            value: <Tasks6AssigneesField context={context} item={task} />,
+          },
+        ]}
         footer={
           task.tagIds.length > 0 ? (
             <Tasks6Tags context={context} item={task} />

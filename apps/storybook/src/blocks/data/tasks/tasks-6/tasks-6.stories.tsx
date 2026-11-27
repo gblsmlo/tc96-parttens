@@ -28,11 +28,27 @@ export default meta
 type Story = StoryObj<Tasks6Controls>
 
 export const Tasks6: Story = {
-  args: { groupBy: 'status' },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    await expect((await canvas.findAllByText('Cancelada'))[0]).toBeVisible()
-    await userEvent.click(canvas.getByRole('button', { name: 'Ordenar' }))
+    const toolbar = await canvas.findByRole('toolbar', {
+      name: 'Controles das tarefas',
+    })
+    await expect(
+      canvas.getByRole('button', { name: 'Status: Cancelada. Alterar status' }),
+    ).toBeVisible()
+    await expect(canvas.queryByRole('button', { name: /^Recolher/ })).toBeNull()
+    await expect(
+      within(toolbar).queryByRole('button', { name: 'Ordenar' }),
+    ).toBeNull()
+    await expect(
+      within(toolbar).queryByRole('button', { name: 'Filtrar' }),
+    ).toBeNull()
+    await userEvent.click(
+      within(toolbar).getByRole('button', { name: 'Exibição' }),
+    )
+    await userEvent.click(
+      await screen.findByRole('menuitem', { name: /Ordenar por/ }),
+    )
     const newest = await screen.findByRole('menuitemradio', {
       name: 'Mais recentes',
     })
