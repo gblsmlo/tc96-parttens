@@ -27,7 +27,7 @@ export type CollectionFrameOverlayProps = ComponentProps<'div'>
 
 export function CollectionFrame({
   className,
-  height = 'fill',
+  height = 'content',
   ...props
 }: Readonly<CollectionFrameProps>): ReactElement {
   return (

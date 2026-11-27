@@ -27,7 +27,7 @@ export const collectionControlArgs: CollectionControls = {
   emptyMessage: 'Nenhuma tarefa com esses filtros.',
   filterClear: false,
   filterLoading: false,
-  height: 'fill',
+  height: 'content',
   layout: 'datatable',
   loading: false,
   pagination: true,

@@ -151,7 +151,7 @@ function Frame({ height }: Readonly<{ height?: CollectionFrameHeight }>) {
 }
 
 export const FillScrollsTheBody: Story = {
-  render: () => <Frame />,
+  render: () => <Frame height="fill" />,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     const body = canvas.getByRole('region', { name: 'Tarefas' })
@@ -164,7 +164,7 @@ export const FillScrollsTheBody: Story = {
 }
 
 export const ContentKeepsTheFooterSticky: Story = {
-  render: () => <Frame height="content" />,
+  render: () => <Frame />,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
     const body = canvas.getByRole('region', { name: 'Tarefas' })
