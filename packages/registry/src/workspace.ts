@@ -83,6 +83,35 @@ export function exportedAliasPath(
 }
 
 /**
+ * Lists the folders under alias that sources import by folder
+ * ("<alias>/view-settings/components"), which the "/*" entry of package
+ * exports cannot reach because it maps to single files.
+ */
+export function importedFolders(
+  root: string,
+  alias: string,
+  sources: readonly string[],
+): string[] {
+  const directory = exportedAliasPath(root, alias)
+  if (!directory) return []
+  const prefix = `${alias}/`
+  const folders = new Set<string>()
+  for (const source of sources)
+    for (const [, specifier] of source.matchAll(/from\s+['"]([^'"]+)['"]/g)) {
+      if (!specifier?.startsWith(prefix)) continue
+      const name = specifier.slice(prefix.length)
+      const base = join(root, directory, name)
+      if (
+        !existsSync(`${base}.tsx`) &&
+        !existsSync(`${base}.ts`) &&
+        existsSync(join(base, 'index.ts'))
+      )
+        folders.add(name)
+    }
+  return [...folders].sort()
+}
+
+/**
  * Adds "<alias subpath>/<name>" for each folder component (<name>/index.ts)
  * when the alias resolves through package exports, whose "/*" entry only
  * reaches single files. Returns the keys it added.

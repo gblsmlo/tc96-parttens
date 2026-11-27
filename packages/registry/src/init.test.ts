@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { readInstallConfig } from './config'
 import { init, layerExports } from './init'
-import { addFolderExports } from './workspace'
+import { addFolderExports, importedFolders } from './workspace'
 
 const roots: string[] = []
 afterEach(async () => {
@@ -119,4 +119,23 @@ test('exports the folder components the CLI installs into the ui package', async
     (await readJson(root, 'packages/ui/package.json')).exports['./text'],
   ).toBe('./src/components/text/index.ts')
   expect(addFolderExports(root, '@tc96/ui', ['text'])).toEqual([])
+})
+
+test('lists the pattern folders installed files import by folder', async () => {
+  const root = await monorepo(layerExports)
+  const patterns = join(root, 'packages/ui/src/patterns')
+  await mkdir(join(patterns, 'view-settings/components'), { recursive: true })
+  await writeFile(join(patterns, 'view-settings/components/index.ts'), '')
+  await mkdir(join(patterns, 'toolbar'), { recursive: true })
+  await writeFile(join(patterns, 'toolbar/toolbar.tsx'), '')
+  expect(
+    importedFolders(root, '@tc96/ui/patterns', [
+      "import { ViewSettings } from '@tc96/ui/patterns/view-settings/components'",
+      "import { Toolbar } from '@tc96/ui/patterns/toolbar/toolbar'",
+      "import { cn } from '@tc96/utils'",
+    ]),
+  ).toEqual(['view-settings/components'])
+  expect(
+    addFolderExports(root, '@tc96/ui/patterns', ['view-settings/components']),
+  ).toEqual(['./patterns/view-settings/components'])
 })
