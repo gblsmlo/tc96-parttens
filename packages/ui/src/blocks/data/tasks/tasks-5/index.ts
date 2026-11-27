@@ -1,29 +1,3 @@
-export {
-  Tasks5,
-  tasks5GroupBys,
-  tasks5Modes,
-  tasks5PriorityFilters,
-  tasks5Sorts,
-  tasks5Statuses,
-} from './tasks-5'
-export type {
-  Tasks5ColumnId,
-  Tasks5FilterId,
-  Tasks5GroupBy,
-  Tasks5KanbanGroupBy,
-  Tasks5Labels,
-  Tasks5LabelsOverride,
-  Tasks5Mode,
-  Tasks5Option,
-  Tasks5Person,
-  Tasks5Priority,
-  Tasks5PriorityFilter,
-  Tasks5Props,
-  Tasks5SavedView,
-  Tasks5Sort,
-  Tasks5SortColumn,
-  Tasks5SortDirection,
-  Tasks5Status,
-  Tasks5Tag,
-  Tasks5Task,
-} from './types'
+export * from '../shared'
+export { Tasks5 } from './tasks-5'
+export type { Tasks5Labels, Tasks5LabelsOverride, Tasks5Props } from './types'

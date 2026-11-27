@@ -440,6 +440,7 @@ test('lists every block folder in blockSources', () => {
       ...new Bun.Glob(pattern).scanSync(join(root, 'packages/ui/src/blocks')),
     ])
     .map((path) => path.replace(/\/index\.ts$/, ''))
+    .filter((path) => !path.endsWith('/shared'))
     .sort()
   expect(folders).toEqual(Object.values(blockSources).sort())
   expect(Object.keys(blockSources).sort()).toEqual([...blockNames].sort())
@@ -513,6 +514,27 @@ test('builds the app-shell-1 item with the shell shared files and the sidebar fr
   ).toBe(true)
   expect(paths.some((path) => path.startsWith('patterns/'))).toBe(false)
   expect(paths.some((path) => /\.test\.(ts|tsx)$/.test(path))).toBe(false)
+})
+
+test('builds every tasks item with the tasks shared contract', () => {
+  const root = resolve(import.meta.dir, '../../..')
+  expect(build.status).toBe(0)
+  for (const name of [
+    'tasks-1',
+    'tasks-2',
+    'tasks-3',
+    'tasks-4',
+    'tasks-5',
+    'tasks-6',
+  ]) {
+    const item: RegistryItem = JSON.parse(
+      readFileSync(join(root, `dist/registry/${name}.json`), 'utf8'),
+    )
+    const paths = item.files.map((file) => file.path)
+    expect(paths).toContain(`blocks/data/tasks/${name}/index.ts`)
+    expect(paths).toContain('blocks/data/tasks/shared/index.ts')
+    expect(paths).toContain('blocks/data/tasks/shared/labels.ts')
+  }
 })
 
 test('builds the login-1 item with the auth shared files and the form parts from COSS', () => {

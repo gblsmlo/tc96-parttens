@@ -1,11 +1,14 @@
 'use client'
 
-import { ScalesIcon } from '@phosphor-icons/react'
+import { CubeIcon } from '@phosphor-icons/react'
 import { ActionBar } from '@tc96/ui/patterns/action-bar/components/action-bar'
 import type { CollectionKanbanViewProps } from '@tc96/ui/patterns/collection/composition/collection-layout-outlet'
 import { useDataTable } from '@tc96/ui/patterns/data-table/use-data-table'
-import { PropertyMetaIcon, priorityMeta } from '@tc96/ui/property-meta'
-import { cn } from '@tc96/utils'
+import {
+  PropertyMetaIcon,
+  priorityMeta,
+  workflowStatusMeta,
+} from '@tc96/ui/property-meta'
 import { useMemo, useState } from 'react'
 import {
   DataCollection,
@@ -23,77 +26,65 @@ import {
   useStableHandler,
 } from '../../shared/collection/use-controllable'
 import { dataPriorities } from '../../shared/properties/data-priority'
+import {
+  type TasksColumnId,
+  type TasksGroupBy,
+  type TasksKanbanGroupBy,
+  type TasksMode,
+  type TasksOption,
+  type TasksPriorityFilter,
+  type TasksSort,
+  type TasksSortColumn,
+  type TasksSortDirection,
+  type TasksStatus,
+  type TasksTask,
+  tasksColumnIds,
+  tasksDefaultSortDirection,
+  tasksFilterIds,
+  tasksGroupBys,
+  tasksModes,
+  tasksNoGroup,
+  tasksSorts,
+  tasksStatuses,
+} from '../shared'
+import {
+  orderTasksByGrouping,
+  tasksCollectionMode,
+} from '../shared/tasks-collection'
+import { createTasksCells, createTasksColumns } from '../shared/tasks-columns'
+import {
+  findTasksPriority,
+  type TasksFieldContext,
+} from '../shared/tasks-fields'
+import {
+  renderTasksKanbanCard,
+  renderTasksListRow,
+  TasksListHeader,
+} from '../shared/tasks-records'
+import { createTasksSelectionActions } from '../shared/tasks-selection-actions'
 import { resolveTasks6Labels } from './labels'
-import { findTasks6Priority, type Tasks6FieldContext } from './tasks-6-fields'
-import {
-  createTasks6StatusOptions,
-  isTasks6FieldId,
-  tasks6ColumnFields,
-  tasks6DefaultCompleteStatus,
-  tasks6DefaultSortDirection,
-  tasks6Fields,
-  tasks6GroupBys,
-  tasks6KanbanFields,
-  tasks6KanbanGroupBys,
-  tasks6NoGroup,
-  tasks6Sorts,
-} from './tasks-6-options'
-import {
-  renderTasks6KanbanCard,
-  renderTasks6ListRow,
-  Tasks6ListHeader,
-} from './tasks-6-records'
-import { createTasks6SelectionActions } from './tasks-6-selection-actions'
 import { Tasks6Skeleton } from './tasks-6-skeleton'
 import { Tasks6Toolbar } from './tasks-6-toolbar'
-import type {
-  Tasks6ChangeResult,
-  Tasks6FieldId,
-  Tasks6GroupBy,
-  Tasks6KanbanGroupBy,
-  Tasks6Labels,
-  Tasks6Mode,
-  Tasks6Option,
-  Tasks6PriorityFilter,
-  Tasks6Props,
-  Tasks6Sort,
-  Tasks6SortColumn,
-  Tasks6SortDirection,
-  Tasks6SortOption,
-  Tasks6Status,
-  Tasks6StatusOption,
-  Tasks6Task,
-} from './types'
+import type { Tasks6Labels, Tasks6Props } from './types'
 
-export {
-  tasks6GroupBys,
-  tasks6Modes,
-  tasks6PriorityFilters,
-  tasks6Sorts,
-  tasks6Statuses,
-} from './tasks-6-options'
-
-type Tasks6Grouping = DataCollectionDefinition<Tasks6Task>['groupings'][number]
+type Tasks6Grouping = DataCollectionDefinition<TasksTask>['groupings'][number]
 
 const tasks6AllView = 'all'
 const tasks6Views = [tasks6AllView] as const
 
 const noPeople: NonNullable<Tasks6Props['people']> = []
-const noOptions: NonNullable<Tasks6Props['projects']> = []
+const noOptions: NonNullable<Tasks6Props['kinds']> = []
 const noTags: NonNullable<Tasks6Props['tags']> = []
-const noTypes: NonNullable<Tasks6Props['types']> = []
 const noIds: string[] = []
-const noColumns: [] = []
 const groupIcon = 'size-4'
 
 function createTasks6Groupings(
   labels: Tasks6Labels,
-  projects: readonly Tasks6Option[],
-  statuses: readonly Tasks6StatusOption[],
+  kinds: readonly TasksOption[],
 ): Tasks6Grouping[] {
   return [
     {
-      getGroupId: (task) => task.priority ?? tasks6NoGroup,
+      getGroupId: (task) => task.priority ?? tasksNoGroup,
       id: 'priority',
       label: labels.groupings.priority,
       options: [
@@ -111,7 +102,7 @@ function createTasks6Groupings(
           icon: (
             <PropertyMetaIcon className={groupIcon} meta={priorityMeta.none} />
           ),
-          id: tasks6NoGroup,
+          id: tasksNoGroup,
           label: labels.noPriority,
         },
       ],
@@ -120,63 +111,59 @@ function createTasks6Groupings(
       getGroupId: (task) => task.status,
       id: 'status',
       label: labels.groupings.status,
-      options: statuses.map((status) => ({
-        icon: <PropertyMetaIcon className={groupIcon} meta={status.meta} />,
-        id: status.id,
-        label: status.label,
+      options: tasksStatuses.map((status) => ({
+        icon: (
+          <PropertyMetaIcon
+            className={groupIcon}
+            meta={workflowStatusMeta[status]}
+          />
+        ),
+        id: status,
+        label: labels.statuses[status],
       })),
     },
     {
-      getGroupId: (task) => task.projectId ?? tasks6NoGroup,
-      id: 'project',
-      label: labels.groupings.project,
+      getGroupId: (task) => task.kindId ?? tasksNoGroup,
+      id: 'kind',
+      label: labels.groupings.kind,
       options: [
-        ...projects.map((project) => ({
-          icon: <ScalesIcon aria-hidden="true" />,
-          id: project.id,
-          label: project.label,
+        ...kinds.map((kind) => ({
+          icon: <CubeIcon aria-hidden="true" />,
+          id: kind.id,
+          label: kind.label,
         })),
-        { id: tasks6NoGroup, label: labels.noProject },
+        { id: tasksNoGroup, label: labels.noKind },
       ],
     },
   ]
 }
 
-const pickGroupBy = (value: string | null): Tasks6GroupBy | null =>
-  tasks6GroupBys.find((item) => item === value) ?? null
-
-const acceptedMove = (result: Tasks6ChangeResult) =>
-  typeof result === 'boolean' || result instanceof Promise ? result : false
+const pickGroupBy = (value: string | null): TasksGroupBy | null =>
+  tasksGroupBys.find((item) => item === value) ?? null
 
 export function Tasks6({
-  actionBar,
-  activeFilterCount,
   assigneeFilter: assigneeFilterProp,
   className,
   collapsedGroupIds: collapsedGroupIdsProp,
-  completeStatus = tasks6DefaultCompleteStatus,
   error,
-  fields = tasks6Fields,
   filtered = false,
-  filters,
-  footer,
+  filters = tasksFilterIds,
   groupBy: groupByProp,
-  groupBys = tasks6GroupBys,
-  kanbanFields = tasks6KanbanFields,
-  kanbanGroupBys = tasks6KanbanGroupBys,
-  kanbanMoveGroupBys = tasks6KanbanGroupBys,
+  groupBys = tasksGroupBys,
   labels: labelsProp,
   locale = defaultDataCollectionLocale,
+  kindFilter: kindFilterProp,
+  kinds = noOptions,
   mode: modeProp,
+  modes = tasksModes,
   now: nowProp,
   onAssigneeFilterChange,
   onAssigneesChange,
   onBulkAssigneesChange,
   onBulkDelete,
   onBulkPriorityChange,
-  onBulkProjectChange,
+  onBulkKindChange,
   onBulkStatusChange,
-  onClearFilters,
   onCollapsedGroupIdsChange,
   onCreate,
   onDueChange,
@@ -185,7 +172,9 @@ export function Tasks6({
   onOpen,
   onPriorityChange,
   onPriorityFilterChange,
-  onProjectChange,
+  onKindChange,
+  onKindFilterChange,
+  onTagsChange,
   onRetry,
   onSavedViewCreate,
   onSavedViewDelete,
@@ -193,16 +182,15 @@ export function Tasks6({
   onSavedViewRename,
   onSavedViewSelect,
   onSavedViewUpdate,
+  onSavePreference,
   onSelectedIdsChange,
   onSortChange,
-  onStartChange,
   onStatusChange,
   onStatusFilterChange,
-  onTypeChange,
+  onVisibleColumnsChange,
   pending,
   people = noPeople,
   priorityFilter: priorityFilterProp,
-  projects = noOptions,
   savedViewId,
   savedViewModified,
   savedViews,
@@ -211,94 +199,64 @@ export function Tasks6({
   selectedIds: selectedIdsProp,
   sort: sortProp,
   sortDirection: sortDirectionProp,
-  sortOptions: sortOptionsProp,
-  statuses: statusesProp,
+  sorts = tasksSorts,
   statusFilter: statusFilterProp,
   tags = noTags,
   tasks,
   timeZone = defaultDataCollectionTimeZone,
-  types = noTypes,
+  visibleColumns: visibleColumnsProp,
 }: Readonly<Tasks6Props>) {
   const labels = useMemo(() => resolveTasks6Labels(labelsProp), [labelsProp])
-  const statuses = useMemo(
-    () => statusesProp ?? createTasks6StatusOptions(labels),
-    [labels, statusesProp],
-  )
-  const statusById = useMemo(
-    () => new Map(statuses.map((status) => [status.id, status])),
-    [statuses],
-  )
-  const sortOptions = useMemo<readonly Tasks6SortOption[]>(
-    () =>
-      sortOptionsProp ??
-      tasks6Sorts.map((sort) => ({ id: sort, label: labels.sorts[sort] })),
-    [labels, sortOptionsProp],
-  )
   const [mountedAt] = useState(() => new Date())
   const now = useMemo(
     () => (nowProp ? new Date(nowProp) : mountedAt),
     [mountedAt, nowProp],
   )
-  const [mode, setMode] = useControllable<Tasks6Mode>(
+  const [modeState, setMode] = useControllable<TasksMode>(
     modeProp,
     'list',
     onModeChange,
   )
-  const [shownFields, setShownFields] = useState(fields)
-  const [shownKanbanFields, setShownKanbanFields] = useState(kanbanFields)
-  const showField = (id: string, visible: boolean) => {
-    if (!isTasks6FieldId(id)) return
-    const toggle = (current: readonly Tasks6FieldId[]) => {
-      const next = new Set(
-        visible ? [...current, id] : current.filter((field) => field !== id),
-      )
-      return tasks6ColumnFields.filter((field) => next.has(field))
-    }
-    if (mode === 'kanban') setShownKanbanFields(toggle)
-    else setShownFields(toggle)
-  }
-  const directionOf = (sort: Tasks6Sort): Tasks6SortDirection => {
-    const known = tasks6Sorts.find((item) => item === sort)
-    return known ? tasks6DefaultSortDirection[known] : 'desc'
-  }
+  const offeredModes = tasksModes.filter((item) => modes.includes(item))
+  const mode =
+    offeredModes.find((item) => item === modeState) ??
+    offeredModes[0] ??
+    modeState
   const [sortState, setSortState] = useControllable<{
-    direction: Tasks6SortDirection
-    sort: Tasks6Sort
+    direction: TasksSortDirection
+    sort: TasksSort
   }>(
     sortProp
       ? {
-          direction: sortDirectionProp ?? directionOf(sortProp),
+          direction: sortDirectionProp ?? tasksDefaultSortDirection[sortProp],
           sort: sortProp,
         }
       : undefined,
-    {
-      direction: sortOptions[0] ? directionOf(sortOptions[0].id) : 'asc',
-      sort: sortOptions[0]?.id ?? 'due',
-    },
+    { direction: tasksDefaultSortDirection.due, sort: 'due' },
     onSortChange
       ? (next) => onSortChange(next.sort, next.direction)
       : undefined,
   )
   const { direction: sortDirection, sort } = sortState
-  const setSort = (next: Tasks6Sort) =>
-    setSortState({ direction: directionOf(next), sort: next })
-  const sortByColumn = (column: Tasks6SortColumn) =>
+  const setSort = (next: TasksSort) =>
+    setSortState({ direction: tasksDefaultSortDirection[next], sort: next })
+  const sortByColumn = (column: TasksSortColumn) =>
     setSortState(
       column === sort
         ? { direction: sortDirection === 'asc' ? 'desc' : 'asc', sort }
-        : { direction: tasks6DefaultSortDirection[column], sort: column },
+        : { direction: tasksDefaultSortDirection[column], sort: column },
     )
+  const sortColumn = useStableHandler(onSortChange ? sortByColumn : undefined)
   const [selectedIds, setSelectedIds] = useControllable<string[]>(
     selectedIdsProp,
     noIds,
     onSelectedIdsChange,
   )
   const selectable = Boolean(
-    actionBar ||
-      onBulkAssigneesChange ||
+    onBulkAssigneesChange ||
       onBulkDelete ||
       onBulkPriorityChange ||
-      onBulkProjectChange ||
+      onBulkKindChange ||
       onBulkStatusChange,
   )
   const selectedSet = useMemo(() => new Set(selectedIds), [selectedIds])
@@ -312,42 +270,59 @@ export function Tasks6({
           )
       : undefined,
   )
-  const [groupBy, setGroupBy] = useControllable<Tasks6GroupBy | null>(
+  const [groupBy, setGroupBy] = useControllable<TasksGroupBy | null>(
     groupByProp,
     'priority',
     onGroupByChange,
   )
-  const [statusFilter, setStatusFilter] = useControllable<Tasks6Status | null>(
+  const [statusFilter, setStatusFilter] = useControllable<TasksStatus | null>(
     statusFilterProp,
     null,
     onStatusFilterChange,
   )
   const [priorityFilter, setPriorityFilter] =
-    useControllable<Tasks6PriorityFilter | null>(
+    useControllable<TasksPriorityFilter | null>(
       priorityFilterProp,
       null,
       onPriorityFilterChange,
     )
+  const [visibleColumnList, setVisibleColumnList] = useControllable<
+    readonly TasksColumnId[]
+  >(
+    visibleColumnsProp,
+    tasksColumnIds,
+    onVisibleColumnsChange
+      ? (next) => onVisibleColumnsChange([...next])
+      : undefined,
+  )
+  const visibleColumns = useMemo<ReadonlySet<TasksColumnId>>(
+    () => new Set<TasksColumnId>([...visibleColumnList, 'title']),
+    [visibleColumnList],
+  )
   const [assigneeFilter, setAssigneeFilter] = useControllable<string | null>(
     assigneeFilterProp,
     null,
     onAssigneeFilterChange,
+  )
+  const [kindFilter, setKindFilter] = useControllable<string | null>(
+    kindFilterProp,
+    null,
+    onKindFilterChange,
   )
 
   const openTask = useStableHandler(onOpen)
   const changeAssignees = useStableHandler(onAssigneesChange)
   const changeDue = useStableHandler(onDueChange)
   const changePriority = useStableHandler(onPriorityChange)
-  const changeProject = useStableHandler(onProjectChange)
-  const changeStart = useStableHandler(onStartChange)
+  const changeKind = useStableHandler(onKindChange)
+  const changeTags = useStableHandler(onTagsChange)
   const changeStatus = useStableHandler(onStatusChange)
-  const changeType = useStableHandler(onTypeChange)
 
   const tagById = useMemo(
     () => new Map(tags.map((tag) => [tag.id, tag])),
     [tags],
   )
-  const context = useMemo<Tasks6FieldContext>(
+  const context = useMemo<TasksFieldContext>(
     () => ({
       labels,
       locale,
@@ -355,96 +330,125 @@ export function Tasks6({
       onAssigneesChange: changeAssignees,
       onDueChange: changeDue,
       onOpen: openTask,
+      onKindChange: changeKind,
       onPriorityChange: changePriority,
-      onProjectChange: changeProject,
       onSelectedChange: toggleSelected,
-      onStartChange: changeStart,
       onStatusChange: changeStatus,
-      onTypeChange: changeType,
+      onTagsChange: changeTags,
+      kinds,
       people,
-      projects,
       selectedIds: selectedSet,
-      statusById,
-      statuses,
       tagById,
       timeZone,
-      types,
+      visibleColumns,
     }),
     [
       changeAssignees,
       changeDue,
+      changeKind,
       changePriority,
-      changeProject,
-      changeStart,
       changeStatus,
-      changeType,
+      changeTags,
       labels,
       locale,
       now,
       openTask,
+      kinds,
       people,
-      projects,
       selectedSet,
-      statusById,
-      statuses,
       tagById,
       timeZone,
       toggleSelected,
-      types,
+      visibleColumns,
     ],
   )
 
-  const kanbanGroupBy: Tasks6KanbanGroupBy =
-    kanbanGroupBys.find((item) => item === groupBy) ??
-    kanbanGroupBys[0] ??
-    'priority'
-  const listGroupBy = groupBy && groupBys.includes(groupBy) ? groupBy : null
-  const activeGroupBy = mode === 'kanban' ? kanbanGroupBy : listGroupBy
+  const kanbanGroupBy: TasksKanbanGroupBy =
+    groupBy === 'status' ? 'status' : 'priority'
+  const activeGroupBy = mode === 'kanban' ? kanbanGroupBy : groupBy
 
   const groupings = useMemo(
-    () => createTasks6Groupings(labels, projects, statuses),
-    [labels, projects, statuses],
+    () => createTasks6Groupings(labels, kinds),
+    [kinds, labels],
   )
-  const collection = useMemo<DataCollectionDefinition<Tasks6Task>>(
+  const records = useMemo(
+    () =>
+      mode === 'datatable'
+        ? orderTasksByGrouping(
+            tasks,
+            groupings.find(({ id }) => id === activeGroupBy),
+          )
+        : tasks,
+    [activeGroupBy, groupings, mode, tasks],
+  )
+  const collection = useMemo<DataCollectionDefinition<TasksTask>>(
     () => ({
       getKey: (task) => task.id,
       getLabel: (task) => task.title,
       groupings,
-      records: tasks,
+      records,
     }),
-    [groupings, tasks],
+    [groupings, records],
   )
-  const { table } = useDataTable<Tasks6Task>({
-    columns: noColumns,
-    data: tasks,
+  const columns = useMemo(
+    () =>
+      createTasksColumns({
+        cells: createTasksCells(context),
+        labels,
+        onSort: sortColumn,
+        selectable,
+        sort,
+        sortDirection,
+      }),
+    [context, labels, selectable, sort, sortColumn, sortDirection],
+  )
+  const rowSelection = useMemo(
+    () => Object.fromEntries(selectedIds.map((id) => [id, true as const])),
+    [selectedIds],
+  )
+  const columnVisibility = useMemo(
+    () =>
+      Object.fromEntries(
+        tasksColumnIds.map((id) => [id, visibleColumns.has(id)]),
+      ),
+    [visibleColumns],
+  )
+  const { table } = useDataTable<TasksTask>({
+    columnVisibility,
+    columns,
+    data: records,
+    enableRowSelection: selectable,
     getRowId: (task) => task.id,
+    onRowSelectionChange: (selection) =>
+      setSelectedIds(Object.keys(selection).filter((id) => selection[id])),
+    rowSelection,
   })
 
-  const movable =
-    kanbanMoveGroupBys.includes(kanbanGroupBy) &&
-    ((kanbanGroupBy === 'status' && onStatusChange) ||
-      (kanbanGroupBy === 'priority' && onPriorityChange))
-  const kanban = useMemo<CollectionKanbanViewProps<Tasks6Task>>(
+  const kanban = useMemo<CollectionKanbanViewProps<TasksTask>>(
     () => ({
       emptyGroupLabel: labels.emptyColumn,
-      onRecordMove: movable
-        ? ({ card, sourceGroup, targetGroup }) => {
-            if (card.readOnly || sourceGroup.id === targetGroup.id) return false
-            if (targetGroup.grouping === 'status') {
-              const status = statusById.get(targetGroup.value ?? '')
-              if (status && status.id !== card.status)
-                return acceptedMove(onStatusChange?.(card.id, status.id))
+      onRecordMove:
+        (kanbanGroupBy === 'status' && changeStatus) ||
+        (kanbanGroupBy === 'priority' && changePriority)
+          ? ({ card, sourceGroup, targetGroup }) => {
+              if (sourceGroup.id === targetGroup.id) return false
+              if (targetGroup.grouping === 'status') {
+                const status = tasksStatuses.find(
+                  (item) => item === targetGroup.value,
+                )
+                if (status && status !== card.status)
+                  changeStatus?.(card.id, status)
+              }
+              if (targetGroup.grouping === 'priority') {
+                const priority = findTasksPriority(targetGroup.value)
+                if (priority !== card.priority)
+                  changePriority?.(card.id, priority)
+              }
+              return false
             }
-            if (targetGroup.grouping === 'priority') {
-              const priority = findTasks6Priority(targetGroup.value)
-              if (priority !== card.priority)
-                return acceptedMove(onPriorityChange?.(card.id, priority))
-            }
-            return false
-          }
-        : undefined,
+          : undefined,
     }),
-    [labels.emptyColumn, movable, onPriorityChange, onStatusChange, statusById],
+    [changePriority, changeStatus, kanbanGroupBy, labels.emptyColumn],
   )
 
   const selectedRows = useMemo(
@@ -456,50 +460,52 @@ export function Tasks6({
     error,
     labels,
     onRetry,
-    pending: pending && tasks.length === 0,
+    pending,
     skeleton: <Tasks6Skeleton label={labels.loading} />,
   })
 
   return (
     <DataCollectionFrame
-      aria-busy={pending || undefined}
-      className={cn('flex h-full min-h-0 flex-col', className)}
+      className={className}
       data-block="tasks-6"
       title={labels.title}
       toolbar={
         <Tasks6Toolbar
-          activeFilterCount={activeFilterCount}
           assigneeFilter={assigneeFilter}
           filters={filters}
           groupBy={groupBy}
           groupBys={groupBys}
           kanbanGroupBy={kanbanGroupBy}
-          kanbanGroupBys={kanbanGroupBys}
+          kindFilter={kindFilter}
+          kinds={kinds}
           labels={labels}
           loading={Boolean(loadState)}
           mode={mode}
+          modes={offeredModes}
           onAssigneeFilterChange={
             onAssigneeFilterChange ? setAssigneeFilter : undefined
           }
-          onClearFilters={onClearFilters}
           onCreate={onCreate}
           onGroupByChange={setGroupBy}
-          fields={mode === 'kanban' ? shownKanbanFields : shownFields}
-          onFieldVisibleChange={showField}
+          onKindFilterChange={onKindFilterChange ? setKindFilter : undefined}
           onModeChange={setMode}
           onPriorityFilterChange={
             onPriorityFilterChange ? setPriorityFilter : undefined
           }
+          onSavePreference={onSavePreference}
           onSortChange={onSortChange ? setSort : undefined}
           onStatusFilterChange={
             onStatusFilterChange ? setStatusFilter : undefined
           }
+          onVisibleColumnsChange={
+            onVisibleColumnsChange ? setVisibleColumnList : undefined
+          }
           people={people}
           priorityFilter={priorityFilter}
           sort={sort}
-          sortOptions={sortOptions}
-          statuses={statuses}
+          sorts={sorts}
           statusFilter={statusFilter}
+          visibleColumns={visibleColumns}
           viewSwitcher={
             <DataCollectionViewSwitcher<typeof tasks6AllView>
               label={labels.viewList}
@@ -517,104 +523,111 @@ export function Tasks6({
               savedViewsLoading={savedViewsLoading}
               savedViewsPending={savedViewsPending}
               view={tasks6AllView}
-              viewLabels={{ [tasks6AllView]: labels.defaultView }}
+              viewLabels={{ [tasks6AllView]: labels.title }}
               views={tasks6Views}
             />
           }
         />
       }
     >
-      <div
-        className={cn(
-          'min-h-0 flex-1 overflow-auto transition-opacity',
-          pending && 'pointer-events-none opacity-60',
-        )}
-        data-slot="tasks-6-body"
-      >
-        {loadState ?? (
-          <DataCollection<Tasks6Task>
-            collapseEmptyGroups
-            collapsedGroupIds={collapsedGroupIdsProp}
-            collection={collection}
-            emptyMessage={filtered ? labels.noResult : labels.empty}
-            getGroupToggleLabel={labels.groupToggle}
-            groupBy={activeGroupBy}
-            kanban={kanban}
-            label={labels.title}
-            listHeader={
-              <Tasks6ListHeader
-                fields={shownFields}
-                labels={labels}
-                selection={
-                  selectable && tasks.length > 0
-                    ? {
-                        checked: tasks.every((task) =>
-                          selectedSet.has(task.id),
+      {loadState ?? (
+        <DataCollection<TasksTask>
+          collapseEmptyGroups
+          collapsedGroupIds={collapsedGroupIdsProp}
+          collection={collection}
+          emptyMessage={filtered ? labels.noResult : labels.empty}
+          getGroupToggleLabel={labels.groupToggle}
+          getRowOpenLabel={(task) => labels.openTask(task.title)}
+          groupBy={activeGroupBy}
+          kanban={kanban}
+          label={labels.title}
+          listHeader={
+            <TasksListHeader
+              labels={labels}
+              visibleColumns={visibleColumns}
+              selection={
+                selectable && tasks.length > 0
+                  ? {
+                      checked: tasks.every((task) => selectedSet.has(task.id)),
+                      indeterminate:
+                        selectedSet.size > 0 &&
+                        !tasks.every((task) => selectedSet.has(task.id)),
+                      onCheckedChange: (checked) =>
+                        setSelectedIds(
+                          checked ? tasks.map((task) => task.id) : noIds,
                         ),
-                        indeterminate:
-                          selectedSet.size > 0 &&
-                          !tasks.every((task) => selectedSet.has(task.id)),
-                        onCheckedChange: (checked) =>
-                          setSelectedIds(
-                            checked ? tasks.map((task) => task.id) : noIds,
-                          ),
-                      }
-                    : undefined
-                }
-                onSort={
-                  onSortChange && !sortOptionsProp ? sortByColumn : undefined
-                }
-                sort={sort}
-                sortDirection={sortDirection}
-              />
-            }
-            mode={mode}
-            onCollapsedGroupIdsChange={
-              onCollapsedGroupIdsChange
-                ? (groupIds) => onCollapsedGroupIdsChange([...groupIds])
-                : undefined
-            }
-            onGroupByChange={(next) => setGroupBy(pickGroupBy(next))}
-            onOpen={openTask ? (task) => openTask(task.id) : undefined}
-            renderKanbanRecord={renderTasks6KanbanCard(
-              context,
-              shownKanbanFields,
-            )}
-            renderListRecord={renderTasks6ListRow(context, shownFields)}
-            table={table}
+                    }
+                  : undefined
+              }
+              onSort={onSortChange ? sortByColumn : undefined}
+              sort={sort}
+              sortDirection={sortDirection}
+            />
+          }
+          mode={tasksCollectionMode[mode]}
+          onCollapsedGroupIdsChange={
+            onCollapsedGroupIdsChange
+              ? (groupIds) => onCollapsedGroupIdsChange([...groupIds])
+              : undefined
+          }
+          onGroupByChange={(next) => setGroupBy(pickGroupBy(next))}
+          onOpen={openTask ? (task) => openTask(task.id) : undefined}
+          renderKanbanRecord={renderTasksKanbanCard(context)}
+          renderListRecord={renderTasksListRow(context)}
+          selectionActions={
+            selectable
+              ? ({ clearSelection, selectedCount, selectedRows }) => (
+                  <ActionBar
+                    actions={createTasksSelectionActions({
+                      kinds,
+                      labels,
+                      onBulkAssigneesChange,
+                      onBulkDelete,
+                      onBulkKindChange,
+                      onBulkPriorityChange,
+                      onBulkStatusChange,
+                      onDone: clearSelection,
+                      people,
+                      selectedRows,
+                    })}
+                    clearSelectionLabel={labels.clearSelection}
+                    formatSelection={labels.selectedCount}
+                    label={labels.selectionActions}
+                    onClearSelection={clearSelection}
+                    selectedCount={selectedCount}
+                    selectedRows={selectedRows}
+                  />
+                )
+              : undefined
+          }
+          table={table}
+        />
+      )}
+      {!loadState && mode === 'list' && selectable ? (
+        <div className="pointer-events-none sticky bottom-3 flex justify-center">
+          <ActionBar
+            actions={createTasksSelectionActions({
+              labels,
+              onBulkAssigneesChange,
+              onBulkDelete,
+              onBulkPriorityChange,
+              onBulkKindChange,
+              onBulkStatusChange,
+              onDone: () => setSelectedIds(noIds),
+              kinds,
+              people,
+              selectedRows,
+            })}
+            className="pointer-events-auto"
+            clearSelectionLabel={labels.clearSelection}
+            formatSelection={labels.selectedCount}
+            label={labels.selectionActions}
+            onClearSelection={() => setSelectedIds(noIds)}
+            selectedCount={selectedRows.length}
+            selectedRows={selectedRows}
           />
-        )}
-        {mode === 'list' && selectable ? (
-          <div className="pointer-events-none sticky bottom-3 flex justify-center *:pointer-events-auto">
-            {actionBar ?? (
-              <ActionBar
-                actions={createTasks6SelectionActions({
-                  completeStatus,
-                  disabled: Boolean(pending),
-                  labels,
-                  onBulkAssigneesChange,
-                  onBulkDelete,
-                  onBulkPriorityChange,
-                  onBulkProjectChange,
-                  onBulkStatusChange,
-                  onDone: () => setSelectedIds(noIds),
-                  people,
-                  projects,
-                  selectedRows,
-                  statuses,
-                })}
-                clearSelectionLabel={labels.clearSelection}
-                formatSelection={labels.selectedCount}
-                label={labels.selectionActions}
-                onClearSelection={() => setSelectedIds(noIds)}
-                selectedCount={selectedRows.length}
-                selectedRows={selectedRows}
-              />
-            )}
-          </div>
-        ) : null}
-      </div>
-      {footer}
+        </div>
+      ) : null}
     </DataCollectionFrame>
   )
 }

@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect, screen, userEvent, within } from 'storybook/test'
+import { expectEveryTasksLayout } from '../tasks-story.ts'
 import {
   type Tasks6Controls,
   tasks6ControlArgs,
@@ -28,15 +29,65 @@ export default meta
 type Story = StoryObj<Tasks6Controls>
 
 export const Tasks6: Story = {
-  args: { groupBy: 'status' },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement)
-    await expect((await canvas.findAllByText('Cancelada'))[0]).toBeVisible()
-    await userEvent.click(canvas.getByRole('button', { name: 'Ordenar' }))
-    const newest = await screen.findByRole('menuitemradio', {
-      name: 'Mais recentes',
+    const [trigger] = await canvas.findAllByRole('button', {
+      name: /Alterar status/,
     })
-    await userEvent.click(newest)
-    await expect(newest).toHaveAttribute('aria-checked', 'true')
+    await userEvent.click(trigger)
+    await userEvent.click(
+      await screen.findByRole('menuitemradio', { name: 'Concluída' }),
+    )
+    await expect(
+      (await canvas.findAllByRole('button', { name: /Alterar status/ }))[0],
+    ).toHaveAccessibleName('Status: Concluída. Alterar status')
+  },
+}
+
+export const OnlyChosenSorts: Story = {
+  args: { sorts: ['due', 'title'] },
+  tags: ['!dev'],
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await userEvent.click(
+      await canvas.findByRole('button', { name: 'Visualização' }),
+    )
+    await userEvent.click(
+      await screen.findByRole('menuitem', { name: /Ordenar por/ }),
+    )
+    await expect(
+      await screen.findByRole('menuitemradio', { name: 'Prazo' }),
+    ).toBeVisible()
+    await expect(
+      screen.getByRole('menuitemradio', { name: 'Título' }),
+    ).toBeVisible()
+    for (const name of ['Prioridade', 'Projeto', 'Atualização'])
+      await expect(
+        screen.queryByRole('menuitemradio', { name }),
+      ).not.toBeInTheDocument()
+  },
+}
+
+export const HiddenKindColumn: Story = {
+  args: { visibleColumns: ['title', 'tags', 'due', 'assignees', 'updated'] },
+  tags: ['!dev'],
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    await canvas.findAllByRole('button', { name: /Alterar status/ })
+    const header = canvasElement.querySelector<HTMLElement>(
+      '[data-slot="tasks-list-header"]',
+    )
+    await expect(header).not.toBeNull()
+    await expect(
+      within(header as HTMLElement).queryByText('Projeto'),
+    ).toBeNull()
+    await expect(within(header as HTMLElement).getByText('Prazo')).toBeVisible()
+  },
+}
+
+export const EveryLayout: Story = {
+  tags: ['!dev'],
+  play: async ({ canvasElement }) => {
+    await expectEveryTasksLayout(canvasElement)
   },
 }

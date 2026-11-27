@@ -4,10 +4,10 @@ export function Tasks1Skeleton({ label }: Readonly<{ label: string }>) {
   return (
     <DataCollectionRowsSkeleton
       cells={[
-        ['task', 'title'],
+        ['title', 'title'],
         ['tags', 'badge'],
         ['due', 'text'],
-        ['project', 'text'],
+        ['kind', 'text'],
         ['assignees', 'avatar'],
         ['priority', 'badge'],
         ['updated', 'text'],

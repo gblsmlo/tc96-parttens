@@ -1,76 +1,40 @@
 import type { ArgTypes } from '@storybook/react-vite'
-import type {
-  Tasks5GroupBy,
-  Tasks5Mode,
-} from '@tc96/ui/blocks/data/tasks/tasks-5'
+import { tasksModes } from '@tc96/ui/blocks/data/tasks/tasks-5'
+import {
+  type TasksStoryControls,
+  tasksControlArgs,
+  tasksControlArgTypes,
+} from '../tasks-story.ts'
 
-export interface Tasks5Controls {
+export interface Tasks5Controls extends TasksStoryControls {
   create: string
-  editable: boolean
-  empty: boolean
-  filters: boolean
-  groupBy: Tasks5GroupBy | 'none'
   headerActions: boolean
-  mode: Tasks5Mode
-  openable: boolean
   title: string
 }
 
 export const tasks5ControlArgs: Tasks5Controls = {
+  ...tasksControlArgs('list', tasksModes),
   create: 'Nova tarefa',
-  editable: true,
-  empty: false,
-  filters: true,
   groupBy: 'priority',
   headerActions: true,
-  mode: 'list',
-  openable: true,
   title: 'Todas as tarefas',
 }
 
 export const tasks5ControlArgTypes: Partial<ArgTypes<Tasks5Controls>> = {
+  ...tasksControlArgTypes(tasksModes),
   create: {
     control: 'text',
     description:
-      'Text of `labels.create`, the primary `Action`, last in the toolbar.',
-  },
-  editable: {
-    control: 'boolean',
-    description:
-      'Passes `onDueChange`, `onProjectChange`, `onAssigneesChange`, `onStatusChange`, `onPriorityChange` and the bulk callbacks; off, every field is read-only, the Kanban takes no drop and nothing can be selected.',
-  },
-  empty: {
-    control: 'boolean',
-    description: 'Passes no tasks, which renders `labels.empty`.',
-  },
-  filters: {
-    control: 'boolean',
-    description:
-      'Passes `onStatusFilterChange`, `onPriorityFilterChange` and `onAssigneeFilterChange`; on, the filter menu opens the right slot with one submenu per property and a count badge.',
-  },
-  groupBy: {
-    control: 'inline-radio',
-    description:
-      'The initial `groupBy`; the group menu changes it too. The Kanban reads Prioridade unless it is Status.',
-    options: ['none', 'priority', 'status', 'project'],
+      'Text of `labels.create`, the primary action, last in the toolbar.',
   },
   headerActions: {
     control: 'boolean',
-    description: 'Passes `onCreate`; on, the `Action` closes the toolbar.',
-  },
-  mode: {
-    control: 'inline-radio',
     description:
-      'The initial layout; the layout menu changes it too and calls `onModeChange`.',
-    options: ['list', 'kanban'],
-  },
-  openable: {
-    control: 'boolean',
-    description: 'Passes `onOpen`; on, a row and a Kanban card open the task.',
+      'Passes `onCreate`; on, the primary action closes the toolbar.',
   },
   title: {
     control: 'text',
     description:
-      'Text of `labels.title`: the heading, the name of the section and of the list.',
+      'Text of `labels.title`: the heading, the name of the section and of the collection.',
   },
 }

@@ -1,231 +1,379 @@
 import {
-  ArrowsDownUpIcon,
-  CircleHalfIcon,
-  FlagIcon,
-  FolderIcon,
-  ShapesIcon,
+  CalendarDotsIcon,
+  CellSignalHighIcon,
+  ClockCounterClockwiseIcon,
+  CubeIcon,
+  type Icon as PhosphorIcon,
+  RadioButtonIcon,
+  RowsIcon,
+  SortAscendingIcon,
+  StackIcon,
+  TagIcon,
+  TextTIcon,
+  UserCircleIcon,
   UserIcon,
 } from '@phosphor-icons/react'
-import { MenuSeparator } from '@tc96/ui/menu'
-import { FilterRadioSubmenu } from '@tc96/ui/patterns/collection/shared/components/collection-filter-submenu'
 import { CollectionSearchField } from '@tc96/ui/patterns/collection/shared/components/collection-search-field'
-import { SortRadioSubmenu } from '@tc96/ui/patterns/collection/shared/components/collection-sort-submenu'
-import { DataTableColumnsSubmenu } from '@tc96/ui/patterns/data-table/data-table-columns-submenu'
-import type { DataTableTable } from '@tc96/ui/patterns/data-table/data-table-features'
-import { ViewSettingsSection } from '@tc96/ui/patterns/view-settings/components'
-import { DataCollectionSettingsToolbar } from '../../shared/collection/data-collection-settings-toolbar'
-import { DataCollectionToolbarButton } from '../../shared/collection/data-collection-toolbar'
-import { dataPriorities } from '../../shared/properties/data-priority'
+import { CollectionToolbar } from '@tc96/ui/patterns/toolbar/components/collection-toolbar'
 import {
-  tasks1GroupBys,
-  tasks1NoGroup,
-  tasks1Sorts,
-  tasks1Statuses,
-} from './tasks-1-options'
-import type {
-  Tasks1GroupBy,
-  Tasks1Labels,
-  Tasks1Option,
-  Tasks1Person,
-  Tasks1Priority,
-  Tasks1Sort,
-  Tasks1Status,
-  Tasks1Task,
-} from './types'
+  CollectionToolbarHeading,
+  CollectionToolbarTitle,
+} from '@tc96/ui/patterns/toolbar/components/collection-toolbar-heading'
+import {
+  ViewSettings,
+  ViewSettingsFieldSection,
+  type ViewSettingsMode,
+  type ViewSettingsOption,
+  ViewSettingsSection,
+  ViewSettingsSubmenu,
+} from '@tc96/ui/patterns/view-settings/components'
+import {
+  PropertyMetaIcon,
+  priorityMeta,
+  workflowStatusMeta,
+} from '@tc96/ui/property-meta'
+import {
+  DataCollectionToolbarButton,
+  dataCollectionModeIcons,
+} from '../../shared/collection/data-collection-toolbar'
+import {
+  type TasksColumnId,
+  type TasksFilterId,
+  type TasksGroupBy,
+  type TasksKanbanGroupBy,
+  type TasksMode,
+  type TasksOption,
+  type TasksPerson,
+  type TasksPriorityFilter,
+  type TasksSort,
+  type TasksStatus,
+  tasksColumnIds,
+  tasksKanbanGroupBys,
+  tasksNoGroup,
+  tasksPriorityFilters,
+  tasksStatuses,
+} from '../shared'
+import { tasksTableToggleableColumns } from '../shared/tasks-columns'
+import { tasksListToggleableColumns } from '../shared/tasks-records'
+import type { Tasks1Labels } from './types'
 
 export interface Tasks1ToolbarProps {
   assigneeFilter: string | null
-  assignees: readonly Tasks1Person[]
-  groupBy: Tasks1GroupBy | null
+  filters: readonly TasksFilterId[]
+  groupBy: TasksGroupBy | null
+  groupBys: readonly TasksGroupBy[]
+  kanbanGroupBy: TasksKanbanGroupBy
+  kindFilter: string | null
+  kinds: readonly TasksOption[]
   labels: Tasks1Labels
   loading: boolean
+  mode: TasksMode
+  modes: readonly TasksMode[]
   onAssigneeFilterChange?: (assigneeId: string | null) => void
   onCreate?: () => void
-  onGroupByChange: (groupBy: Tasks1GroupBy | null) => void
-  onPriorityFilterChange?: (priority: Tasks1Priority | null) => void
-  onProjectFilterChange?: (projectId: string | null) => void
   onSavePreference?: () => void
+  onGroupByChange: (groupBy: TasksGroupBy | null) => void
+  onKindFilterChange?: (kindId: string | null) => void
+  onModeChange: (mode: TasksMode) => void
+  onPriorityFilterChange?: (priority: TasksPriorityFilter | null) => void
   onSearchChange?: (search: string) => void
-  onSortChange?: (sort: Tasks1Sort) => void
-  onStatusFilterChange?: (status: Tasks1Status | null) => void
-  priorityFilter: Tasks1Priority | null
-  projectFilter: string | null
-  projects: readonly Tasks1Option[]
+  onSortChange?: (sort: TasksSort) => void
+  onStatusFilterChange?: (status: TasksStatus | null) => void
+  onVisibleColumnsChange?: (columns: TasksColumnId[]) => void
+  people: readonly TasksPerson[]
+  priorityFilter: TasksPriorityFilter | null
   search: string
-  sort: Tasks1Sort
-  statusFilter: Tasks1Status | null
-  table: DataTableTable<Tasks1Task>
+  sort: TasksSort
+  sorts: readonly TasksSort[]
+  statusFilter: TasksStatus | null
+  visibleColumns: ReadonlySet<TasksColumnId>
 }
+
+type Tasks1GroupOption = TasksGroupBy | typeof tasksNoGroup
+
+const optionIcon = 'size-4'
+
+const modeIcons = {
+  datatable: dataCollectionModeIcons.table,
+  kanban: dataCollectionModeIcons.kanban,
+  list: dataCollectionModeIcons.list,
+} as const satisfies Record<TasksMode, ViewSettingsMode['icon']>
+
+const sortIcons = {
+  due: CalendarDotsIcon,
+  kind: CubeIcon,
+  priority: CellSignalHighIcon,
+  title: TextTIcon,
+  updated: ClockCounterClockwiseIcon,
+} as const satisfies Record<TasksSort, PhosphorIcon>
+
+const columnIcons = {
+  assignees: UserIcon,
+  creator: UserIcon,
+  due: CalendarDotsIcon,
+  kind: CubeIcon,
+  priority: CellSignalHighIcon,
+  status: RadioButtonIcon,
+  tags: TagIcon,
+  title: TextTIcon,
+  updated: ClockCounterClockwiseIcon,
+} as const satisfies Record<TasksColumnId, PhosphorIcon>
+
+const groupIcons = {
+  kind: CubeIcon,
+  none: RowsIcon,
+  priority: CellSignalHighIcon,
+  status: RadioButtonIcon,
+} as const satisfies Record<Tasks1GroupOption, PhosphorIcon>
 
 const pick = <TValue extends string>(
   values: readonly TValue[],
   value: string,
 ): TValue | null => values.find((item) => item === value) ?? null
 
+const iconOption = <TValue extends string>(
+  value: TValue,
+  label: string,
+  Icon: PhosphorIcon,
+): ViewSettingsOption<TValue> => ({
+  icon: <Icon aria-hidden="true" />,
+  label,
+  value,
+})
+
 export function Tasks1Toolbar({
   assigneeFilter,
-  assignees,
+  filters,
   groupBy,
+  groupBys,
+  kanbanGroupBy,
+  kindFilter,
+  kinds,
   labels,
   loading,
+  mode,
+  modes,
   onAssigneeFilterChange,
   onCreate,
   onGroupByChange,
+  onKindFilterChange,
+  onModeChange,
   onPriorityFilterChange,
-  onProjectFilterChange,
   onSavePreference,
   onSearchChange,
   onSortChange,
   onStatusFilterChange,
+  onVisibleColumnsChange,
+  people,
   priorityFilter,
-  projectFilter,
-  projects,
   search,
   sort,
+  sorts,
   statusFilter,
-  table,
+  visibleColumns,
 }: Readonly<Tasks1ToolbarProps>) {
-  const showStatus = Boolean(onStatusFilterChange)
-  const showPriority = Boolean(onPriorityFilterChange)
-  const showProject = Boolean(onProjectFilterChange) && projects.length > 0
-  const showAssignee = Boolean(onAssigneeFilterChange) && assignees.length > 0
-  const hasFilters = showStatus || showPriority || showProject || showAssignee
+  const showStatus = filters.includes('status') && Boolean(onStatusFilterChange)
+  const showPriority =
+    filters.includes('priority') && Boolean(onPriorityFilterChange)
+  const showAssignee =
+    filters.includes('assignee') &&
+    Boolean(onAssigneeFilterChange) &&
+    people.length > 0
+  const showKind =
+    filters.includes('kind') && Boolean(onKindFilterChange) && kinds.length > 0
+  const hasFilters = showStatus || showPriority || showAssignee || showKind
   const activeFilterCount =
     (showStatus && statusFilter ? 1 : 0) +
     (showPriority && priorityFilter ? 1 : 0) +
-    (showProject && projectFilter ? 1 : 0) +
-    (showAssignee && assigneeFilter ? 1 : 0)
+    (showAssignee && assigneeFilter ? 1 : 0) +
+    (showKind && kindFilter ? 1 : 0)
+  const groupValues: readonly Tasks1GroupOption[] =
+    mode === 'kanban'
+      ? tasksKanbanGroupBys.filter((item) => groupBys.includes(item))
+      : [tasksNoGroup, ...groupBys]
+  const showGroup = groupBys.length > 0
+  const showSort = Boolean(onSortChange) && sorts.length > 0
+  const viewModes = modes.map(
+    (value): ViewSettingsMode<TasksMode> => ({
+      icon: modeIcons[value],
+      label: labels.modes[value],
+      value,
+    }),
+  )
+  const fields = (
+    mode === 'datatable'
+      ? tasksTableToggleableColumns
+      : tasksListToggleableColumns
+  ).map((id) => ({
+    icon: columnIcons[id],
+    id,
+    label: labels.columns[id],
+    visible: visibleColumns.has(id),
+  }))
 
   return (
-    <DataCollectionSettingsToolbar
-      actions={
-        onCreate ? (
-          <DataCollectionToolbarButton onClick={onCreate} variant="default">
-            {labels.create}
-          </DataCollectionToolbarButton>
-        ) : null
+    <CollectionToolbar
+      aria-label={labels.toolbar}
+      className="min-h-14 flex-wrap gap-y-3"
+      left={
+        <CollectionToolbarHeading>
+          <CollectionToolbarTitle>{labels.title}</CollectionToolbarTitle>
+        </CollectionToolbarHeading>
       }
-      activeFilterCount={activeFilterCount}
-      labels={labels}
-      loading={loading}
-      onClearFilters={() => {
-        if (showStatus) onStatusFilterChange?.(null)
-        if (showPriority) onPriorityFilterChange?.(null)
-        if (showProject) onProjectFilterChange?.(null)
-        if (showAssignee) onAssigneeFilterChange?.(null)
-      }}
-      onSavePreference={onSavePreference}
-      savePreferenceLabel={labels.savePreference}
-      search={
-        onSearchChange ? (
-          <CollectionSearchField
-            label={labels.search}
-            onCommit={onSearchChange}
-            placeholder={labels.search}
-            value={search}
-          />
-        ) : null
+      right={
+        loading ? undefined : (
+          <>
+            {onSearchChange ? (
+              <CollectionSearchField
+                label={labels.search}
+                onCommit={onSearchChange}
+                placeholder={labels.search}
+                value={search}
+              />
+            ) : null}
+            <ViewSettings
+              activeFilterCount={activeFilterCount}
+              clearLabel={labels.clearFilters}
+              label={labels.layout}
+              mode={mode}
+              modes={viewModes}
+              onClearFilters={
+                hasFilters
+                  ? () => {
+                      if (showStatus) onStatusFilterChange?.(null)
+                      if (showPriority) onPriorityFilterChange?.(null)
+                      if (showAssignee) onAssigneeFilterChange?.(null)
+                      if (showKind) onKindFilterChange?.(null)
+                    }
+                  : undefined
+              }
+              onModeChange={onModeChange}
+              onSavePreference={onSavePreference}
+              savePreferenceLabel={labels.savePreference}
+            >
+              {showGroup || showSort ? (
+                <ViewSettingsSection label={labels.layoutBy}>
+                  {showGroup ? (
+                    <ViewSettingsSubmenu<Tasks1GroupOption>
+                      icon={StackIcon}
+                      label={labels.groupBy}
+                      onValueChange={(value) =>
+                        onGroupByChange(pick(groupBys, value))
+                      }
+                      options={groupValues.map((item) =>
+                        iconOption(
+                          item,
+                          labels.groupings[item],
+                          groupIcons[item],
+                        ),
+                      )}
+                      value={
+                        mode === 'kanban'
+                          ? kanbanGroupBy
+                          : (groupBy ?? tasksNoGroup)
+                      }
+                    />
+                  ) : null}
+                  {showSort ? (
+                    <ViewSettingsSubmenu<TasksSort>
+                      icon={SortAscendingIcon}
+                      label={labels.sortBy}
+                      onValueChange={(value) => onSortChange?.(value)}
+                      options={sorts.map((item) =>
+                        iconOption(item, labels.sorts[item], sortIcons[item]),
+                      )}
+                      value={sort}
+                    />
+                  ) : null}
+                </ViewSettingsSection>
+              ) : null}
+              {hasFilters ? (
+                <ViewSettingsSection label={labels.filter}>
+                  {showStatus ? (
+                    <ViewSettingsSubmenu<TasksStatus>
+                      icon={RadioButtonIcon}
+                      label={labels.filterBy.status}
+                      onValueChange={(value) => onStatusFilterChange?.(value)}
+                      options={tasksStatuses.map((status) => ({
+                        icon: (
+                          <PropertyMetaIcon
+                            className={optionIcon}
+                            meta={workflowStatusMeta[status]}
+                          />
+                        ),
+                        label: labels.statuses[status],
+                        value: status,
+                      }))}
+                      value={statusFilter ?? undefined}
+                    />
+                  ) : null}
+                  {showPriority ? (
+                    <ViewSettingsSubmenu<TasksPriorityFilter>
+                      icon={CellSignalHighIcon}
+                      label={labels.filterBy.priority}
+                      onValueChange={(value) => onPriorityFilterChange?.(value)}
+                      options={tasksPriorityFilters.map((priority) => ({
+                        icon: (
+                          <PropertyMetaIcon
+                            className={optionIcon}
+                            meta={priorityMeta[priority]}
+                          />
+                        ),
+                        label:
+                          priority === 'none'
+                            ? labels.noPriority
+                            : labels.priorities[priority],
+                        value: priority,
+                      }))}
+                      value={priorityFilter ?? undefined}
+                    />
+                  ) : null}
+                  {showAssignee ? (
+                    <ViewSettingsSubmenu
+                      icon={UserIcon}
+                      label={labels.filterBy.assignee}
+                      onValueChange={(value) => onAssigneeFilterChange?.(value)}
+                      options={people.map((person) =>
+                        iconOption(person.id, person.label, UserCircleIcon),
+                      )}
+                      value={assigneeFilter ?? undefined}
+                    />
+                  ) : null}
+                  {showKind ? (
+                    <ViewSettingsSubmenu
+                      icon={CubeIcon}
+                      label={labels.filterBy.kind}
+                      onValueChange={(value) => onKindFilterChange?.(value)}
+                      options={kinds.map((kind) =>
+                        iconOption(kind.id, kind.label, CubeIcon),
+                      )}
+                      value={kindFilter ?? undefined}
+                    />
+                  ) : null}
+                </ViewSettingsSection>
+              ) : null}
+              {onVisibleColumnsChange ? (
+                <ViewSettingsFieldSection
+                  fields={fields}
+                  label={labels.visibleColumns}
+                  onVisibleChange={(id, visible) =>
+                    onVisibleColumnsChange(
+                      tasksColumnIds.filter((column) =>
+                        column === id ? visible : visibleColumns.has(column),
+                      ),
+                    )
+                  }
+                />
+              ) : null}
+            </ViewSettings>
+            {onCreate ? (
+              <DataCollectionToolbarButton onClick={onCreate} variant="default">
+                {labels.create}
+              </DataCollectionToolbarButton>
+            ) : null}
+          </>
+        )
       }
-    >
-      {onSortChange ? (
-        <>
-          <ViewSettingsSection label={labels.sort}>
-            <SortRadioSubmenu<Tasks1Sort>
-              icon={ArrowsDownUpIcon}
-              label={labels.sortBy}
-              onValueChange={onSortChange}
-              options={tasks1Sorts.map(
-                (item) => [item, labels.sorts[item]] as const,
-              )}
-              value={sort}
-            />
-          </ViewSettingsSection>
-          <MenuSeparator />
-        </>
-      ) : null}
-      <ViewSettingsSection label={labels.grouping}>
-        <SortRadioSubmenu<string>
-          icon={ShapesIcon}
-          label={labels.groupBy}
-          onValueChange={(value) =>
-            onGroupByChange(pick(tasks1GroupBys, value))
-          }
-          options={[
-            [tasks1NoGroup, labels.groupings.none] as const,
-            ...tasks1GroupBys.map(
-              (item) => [item, labels.groupings[item]] as const,
-            ),
-          ]}
-          value={groupBy ?? tasks1NoGroup}
-        />
-      </ViewSettingsSection>
-      <MenuSeparator />
-      <ViewSettingsSection label={labels.columnsSection}>
-        <DataTableColumnsSubmenu label={labels.visibleColumns} table={table} />
-      </ViewSettingsSection>
-      {hasFilters ? (
-        <>
-          <MenuSeparator />
-          <ViewSettingsSection label={labels.filters}>
-            {showStatus ? (
-              <FilterRadioSubmenu
-                clearLabel={labels.allStatuses}
-                icon={CircleHalfIcon}
-                label={labels.status}
-                onValueChange={(value) =>
-                  onStatusFilterChange?.(pick(tasks1Statuses, value))
-                }
-                options={tasks1Statuses.map(
-                  (item) => [item, labels.statuses[item]] as const,
-                )}
-                value={statusFilter ?? ''}
-              />
-            ) : null}
-            {showPriority ? (
-              <FilterRadioSubmenu
-                clearLabel={labels.allPriorities}
-                icon={FlagIcon}
-                label={labels.columns.priority}
-                onValueChange={(value) =>
-                  onPriorityFilterChange?.(pick(dataPriorities, value))
-                }
-                options={dataPriorities.map(
-                  (item) => [item, labels.priorities[item]] as const,
-                )}
-                value={priorityFilter ?? ''}
-              />
-            ) : null}
-            {showProject ? (
-              <FilterRadioSubmenu
-                clearLabel={labels.allProjects}
-                icon={FolderIcon}
-                label={labels.columns.project}
-                onValueChange={(value) =>
-                  onProjectFilterChange?.(value || null)
-                }
-                options={projects.map(
-                  (project) => [project.id, project.label] as const,
-                )}
-                value={projectFilter ?? ''}
-              />
-            ) : null}
-            {showAssignee ? (
-              <FilterRadioSubmenu
-                clearLabel={labels.allAssignees}
-                icon={UserIcon}
-                label={labels.columns.assignees}
-                onValueChange={(value) =>
-                  onAssigneeFilterChange?.(value || null)
-                }
-                options={assignees.map(
-                  (assignee) => [assignee.id, assignee.label] as const,
-                )}
-                value={assigneeFilter ?? ''}
-              />
-            ) : null}
-          </ViewSettingsSection>
-        </>
-      ) : null}
-    </DataCollectionSettingsToolbar>
+    />
   )
 }

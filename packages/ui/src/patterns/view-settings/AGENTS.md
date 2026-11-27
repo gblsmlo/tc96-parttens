@@ -13,7 +13,7 @@ Import direction: `components/` → `@tc96/ui/<component>`, `@tc96/utils`, `@pho
 
 ## Dependents
 
-- Blocks import `@tc96/ui/patterns/view-settings/components` (the `components/index.ts` barrel, mapped in `packages/ui/package.json` `exports`), never a component file; `Tasks3`, `Tasks4` and `ViewSettings5` build their toolbars on `ViewSettingsMenuButton` and `ViewSettingsRadioMenu`, and `ViewSettings1` to `ViewSettings4` on `ViewSettingsFilterSection`.
+- Blocks import `@tc96/ui/patterns/view-settings/components` (the `components/index.ts` barrel, mapped in `packages/ui/package.json` `exports`), never a component file; the task blocks `Tasks1` to `Tasks6` put their view settings in one `ViewSettings` with `ViewSettingsSubmenu` and `ViewSettingsFieldSection`, `ViewSettings5` builds its toolbar on `ViewSettingsMenuButton` and `ViewSettingsRadioMenu`, and `ViewSettings1` to `ViewSettings4` on `ViewSettingsFilterSection`.
 - The `collection` entry of `docs/architecture/public-api-exports.json` no longer lists `ViewSettings*`; the root `parttens` entry does.
 - The `collection` registry item ships this folder through `itemAreas` in `packages/registry/src/manifest.ts`.
 

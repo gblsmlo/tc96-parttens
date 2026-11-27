@@ -1,26 +1,8 @@
-export {
-  Tasks2,
-  tasks2GroupBys,
-  tasks2Modes,
-  tasks2Sorts,
-  tasks2Statuses,
-} from './tasks-2'
+export * from '../shared'
+export { Tasks2 } from './tasks-2'
 export type {
-  Tasks2ColumnId,
   Tasks2CreateOption,
-  Tasks2GroupBy,
-  Tasks2KanbanGroupBy,
   Tasks2Labels,
   Tasks2LabelsOverride,
-  Tasks2Mode,
-  Tasks2Option,
-  Tasks2Person,
-  Tasks2Priority,
   Tasks2Props,
-  Tasks2Sort,
-  Tasks2SortColumn,
-  Tasks2SortDirection,
-  Tasks2Status,
-  Tasks2Tag,
-  Tasks2Task,
 } from './types'

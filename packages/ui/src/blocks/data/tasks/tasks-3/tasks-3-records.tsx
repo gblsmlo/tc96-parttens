@@ -17,24 +17,26 @@ import {
 import { IconLabelProperty } from '@tc96/ui/patterns/properties/display/icon-label/icon-label-property'
 import { cn } from '@tc96/utils'
 import { DataCollectionKanbanCard } from '../../shared/collection/data-collection-record-parts'
-import {
-  Tasks3AssigneesField,
-  Tasks3DueField,
-  type Tasks3FieldContext,
-  Tasks3PriorityMark,
-  Tasks3ProjectField,
-  Tasks3StatusMark,
-  Tasks3Tags,
-  Tasks3UpdatedField,
-} from './tasks-3-fields'
-import { tasks3FieldWidth, tasks3LeadingWidth } from './tasks-3-options'
 import type {
-  Tasks3Labels,
-  Tasks3Sort,
-  Tasks3SortColumn,
-  Tasks3SortDirection,
-  Tasks3Task,
-} from './types'
+  TasksColumnId,
+  TasksSort,
+  TasksSortColumn,
+  TasksSortDirection,
+  TasksTask,
+} from '../shared'
+import {
+  TasksAssigneesField,
+  TasksDueField,
+  type TasksFieldContext,
+  TasksKindField,
+  TasksPriorityMark,
+  TasksStatusMark,
+  TasksTags,
+  TasksTagsField,
+  TasksUpdatedField,
+} from '../shared/tasks-fields'
+import { tasks3FieldWidth, tasks3LeadingWidth } from './tasks-3-options'
+import type { Tasks3Labels } from './types'
 
 export interface Tasks3ListHeaderSelection {
   checked: boolean
@@ -44,20 +46,22 @@ export interface Tasks3ListHeaderSelection {
 
 export interface Tasks3ListHeaderProps {
   labels: Tasks3Labels
+  visibleColumns: ReadonlySet<TasksColumnId>
   selection?: Tasks3ListHeaderSelection
-  onSort?: (column: Tasks3SortColumn) => void
-  sort: Tasks3Sort
-  sortDirection: Tasks3SortDirection
+  onSort?: (column: TasksSortColumn) => void
+  sort: TasksSort
+  sortDirection: TasksSortDirection
 }
 
 export function Tasks3ListHeader({
   labels,
+  visibleColumns,
   onSort,
   selection,
   sort,
   sortDirection,
 }: Readonly<Tasks3ListHeaderProps>) {
-  const sortable = (column: Tasks3SortColumn) => {
+  const sortable = (column: TasksSortColumn) => {
     const direction = sort === column ? sortDirection : null
     return {
       onSort: onSort ? () => onSort(column) : undefined,
@@ -86,35 +90,44 @@ export function Tasks3ListHeader({
       <ListViewHeaderCell always className="flex-1" {...sortable('title')}>
         {labels.columns.title}
       </ListViewHeaderCell>
-      <ListViewHeaderCell
-        always
-        className={tasks3FieldWidth.due}
-        {...sortable('due')}
-      >
-        {labels.columns.due}
-      </ListViewHeaderCell>
-      <ListViewHeaderCell
-        className={tasks3FieldWidth.project}
-        {...sortable('project')}
-      >
-        {labels.columns.project}
-      </ListViewHeaderCell>
-      <ListViewHeaderCell className={tasks3FieldWidth.assignees}>
-        {labels.columns.assignees}
-      </ListViewHeaderCell>
-      <ListViewHeaderCell
-        className={tasks3FieldWidth.updated}
-        {...sortable('updated')}
-      >
-        {labels.columns.updated}
-      </ListViewHeaderCell>
+      {visibleColumns.has('due') ? (
+        <ListViewHeaderCell
+          always
+          className={tasks3FieldWidth.due}
+          {...sortable('due')}
+        >
+          {labels.columns.due}
+        </ListViewHeaderCell>
+      ) : null}
+      {visibleColumns.has('kind') ? (
+        <ListViewHeaderCell
+          className={tasks3FieldWidth.kind}
+          {...sortable('kind')}
+        >
+          {labels.columns.kind}
+        </ListViewHeaderCell>
+      ) : null}
+      {visibleColumns.has('assignees') ? (
+        <ListViewHeaderCell className={tasks3FieldWidth.assignees}>
+          {labels.columns.assignees}
+        </ListViewHeaderCell>
+      ) : null}
+      {visibleColumns.has('updated') ? (
+        <ListViewHeaderCell
+          className={tasks3FieldWidth.updated}
+          {...sortable('updated')}
+        >
+          {labels.columns.updated}
+        </ListViewHeaderCell>
+      ) : null}
     </ListViewHeader>
   )
 }
 
 export const renderTasks3ListRow =
-  (context: Tasks3FieldContext) => (task: Tasks3Task) => {
-    const { labels, onOpen, onSelectedChange, selectedIds } = context
+  (context: TasksFieldContext) => (task: TasksTask) => {
+    const { labels, onOpen, onSelectedChange, selectedIds, visibleColumns } =
+      context
     const selected = selectedIds.has(task.id)
     return (
       <ListRow
@@ -133,7 +146,7 @@ export const renderTasks3ListRow =
               }
             />
           ) : (
-            <Tasks3PriorityMark context={context} item={task} />
+            <TasksPriorityMark context={context} item={task} />
           )}
         </ListRowLeading>
         <ListRowBody>
@@ -153,57 +166,84 @@ export const renderTasks3ListRow =
                     task.title
                   )
                 }
-                leading={<Tasks3StatusMark context={context} item={task} />}
+                leading={<TasksStatusMark context={context} item={task} />}
                 variant="plain"
               />
             </ListRowTitle>
-            <span className="hidden shrink-0 md:flex">
-              <Tasks3Tags context={context} item={task} />
-            </span>
+            {visibleColumns.has('tags') ? (
+              <span className="hidden shrink-0 md:flex">
+                <TasksTagsField context={context} item={task} />
+              </span>
+            ) : null}
           </ListRowHeader>
         </ListRowBody>
         <ListRowTrailing className="gap-3">
-          <ListRowField always className={tasks3FieldWidth.due}>
-            <Tasks3DueField context={context} item={task} />
-          </ListRowField>
-          <ListRowField className={tasks3FieldWidth.project}>
-            <Tasks3ProjectField context={context} item={task} />
-          </ListRowField>
-          <ListRowField className={tasks3FieldWidth.assignees}>
-            <Tasks3AssigneesField context={context} item={task} />
-          </ListRowField>
-          <ListRowField className={tasks3FieldWidth.updated}>
-            <Tasks3UpdatedField context={context} item={task} />
-          </ListRowField>
+          {visibleColumns.has('due') ? (
+            <ListRowField always className={tasks3FieldWidth.due}>
+              <TasksDueField context={context} item={task} />
+            </ListRowField>
+          ) : null}
+          {visibleColumns.has('kind') ? (
+            <ListRowField className={tasks3FieldWidth.kind}>
+              <TasksKindField context={context} item={task} />
+            </ListRowField>
+          ) : null}
+          {visibleColumns.has('assignees') ? (
+            <ListRowField className={tasks3FieldWidth.assignees}>
+              <TasksAssigneesField context={context} item={task} />
+            </ListRowField>
+          ) : null}
+          {visibleColumns.has('updated') ? (
+            <ListRowField className={tasks3FieldWidth.updated}>
+              <TasksUpdatedField context={context} item={task} />
+            </ListRowField>
+          ) : null}
         </ListRowTrailing>
       </ListRow>
     )
   }
 
 export const renderTasks3KanbanCard =
-  (context: Tasks3FieldContext) => (task: Tasks3Task) => {
-    const { labels, onAssigneesChange, onDueChange, onOpen, projects } = context
-    const project = projects.find((item) => item.id === task.projectId)
+  (context: TasksFieldContext) => (task: TasksTask) => {
+    const {
+      labels,
+      onAssigneesChange,
+      onDueChange,
+      onOpen,
+      kinds,
+      visibleColumns,
+    } = context
+    const kind = visibleColumns.has('kind')
+      ? kinds.find((item) => item.id === task.kindId)
+      : undefined
     return (
       <DataCollectionKanbanCard
-        caption={project ? [project.label] : []}
+        caption={kind ? [kind.label] : []}
         fields={[
-          {
-            id: 'due',
-            interactive: Boolean(onDueChange),
-            label: labels.columns.due,
-            value: <Tasks3DueField context={context} item={task} />,
-          },
-          {
-            id: 'assignees',
-            interactive: Boolean(onAssigneesChange),
-            label: labels.columns.assignees,
-            value: <Tasks3AssigneesField context={context} item={task} />,
-          },
+          ...(visibleColumns.has('due')
+            ? [
+                {
+                  id: 'due',
+                  interactive: Boolean(onDueChange),
+                  label: labels.columns.due,
+                  value: <TasksDueField context={context} item={task} />,
+                },
+              ]
+            : []),
+          ...(visibleColumns.has('assignees')
+            ? [
+                {
+                  id: 'assignees',
+                  interactive: Boolean(onAssigneesChange),
+                  label: labels.columns.assignees,
+                  value: <TasksAssigneesField context={context} item={task} />,
+                },
+              ]
+            : []),
         ]}
         footer={
-          task.tagIds.length > 0 ? (
-            <Tasks3Tags context={context} item={task} />
+          visibleColumns.has('tags') && task.tagIds.length > 0 ? (
+            <TasksTags context={context} item={task} />
           ) : undefined
         }
         onOpen={onOpen ? () => onOpen(task.id) : undefined}

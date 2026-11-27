@@ -26,64 +26,65 @@ import {
   useStableHandler,
 } from '../../shared/collection/use-controllable'
 import { dataPriorities } from '../../shared/properties/data-priority'
-import { resolveTasks4Labels } from './labels'
-import { findTasks4Priority, type Tasks4FieldContext } from './tasks-4-fields'
 import {
-  tasks4DefaultSortDirection,
-  tasks4GroupBys,
-  tasks4NoGroup,
-  tasks4Statuses,
-} from './tasks-4-options'
+  type TasksColumnId,
+  type TasksGroupBy,
+  type TasksKanbanGroupBy,
+  type TasksMode,
+  type TasksOption,
+  type TasksPriorityFilter,
+  type TasksSort,
+  type TasksSortColumn,
+  type TasksSortDirection,
+  type TasksStatus,
+  type TasksTask,
+  tasksColumnIds,
+  tasksDefaultSortDirection,
+  tasksFilterIds,
+  tasksGroupBys,
+  tasksModes,
+  tasksNoGroup,
+  tasksSorts,
+  tasksStatuses,
+} from '../shared'
+import {
+  orderTasksByGrouping,
+  tasksCollectionMode,
+} from '../shared/tasks-collection'
+import { createTasksCells, createTasksColumns } from '../shared/tasks-columns'
+import {
+  findTasksPriority,
+  type TasksFieldContext,
+} from '../shared/tasks-fields'
+import { createTasksSelectionActions } from '../shared/tasks-selection-actions'
+import { resolveTasks4Labels } from './labels'
 import {
   renderTasks4KanbanCard,
   renderTasks4ListRow,
   Tasks4ListHeader,
 } from './tasks-4-records'
-import { createTasks4SelectionActions } from './tasks-4-selection-actions'
 import { Tasks4Skeleton } from './tasks-4-skeleton'
 import { Tasks4Toolbar } from './tasks-4-toolbar'
-import type {
-  Tasks4GroupBy,
-  Tasks4KanbanGroupBy,
-  Tasks4Labels,
-  Tasks4Mode,
-  Tasks4Option,
-  Tasks4PriorityFilter,
-  Tasks4Props,
-  Tasks4Sort,
-  Tasks4SortColumn,
-  Tasks4SortDirection,
-  Tasks4Status,
-  Tasks4Task,
-} from './types'
+import type { Tasks4Labels, Tasks4Props } from './types'
 
-export {
-  tasks4GroupBys,
-  tasks4Modes,
-  tasks4PriorityFilters,
-  tasks4Sorts,
-  tasks4Statuses,
-} from './tasks-4-options'
-
-type Tasks4Grouping = DataCollectionDefinition<Tasks4Task>['groupings'][number]
+type Tasks4Grouping = DataCollectionDefinition<TasksTask>['groupings'][number]
 
 const tasks4AllView = 'all'
 const tasks4Views = [tasks4AllView] as const
 
 const noPeople: NonNullable<Tasks4Props['people']> = []
-const noOptions: NonNullable<Tasks4Props['projects']> = []
+const noOptions: NonNullable<Tasks4Props['kinds']> = []
 const noTags: NonNullable<Tasks4Props['tags']> = []
 const noIds: string[] = []
-const noColumns: [] = []
 const groupIcon = 'size-4'
 
 function createTasks4Groupings(
   labels: Tasks4Labels,
-  projects: readonly Tasks4Option[],
+  kinds: readonly TasksOption[],
 ): Tasks4Grouping[] {
   return [
     {
-      getGroupId: (task) => task.priority ?? tasks4NoGroup,
+      getGroupId: (task) => task.priority ?? tasksNoGroup,
       id: 'priority',
       label: labels.groupings.priority,
       options: [
@@ -101,7 +102,7 @@ function createTasks4Groupings(
           icon: (
             <PropertyMetaIcon className={groupIcon} meta={priorityMeta.none} />
           ),
-          id: tasks4NoGroup,
+          id: tasksNoGroup,
           label: labels.noPriority,
         },
       ],
@@ -110,7 +111,7 @@ function createTasks4Groupings(
       getGroupId: (task) => task.status,
       id: 'status',
       label: labels.groupings.status,
-      options: tasks4Statuses.map((status) => ({
+      options: tasksStatuses.map((status) => ({
         icon: (
           <PropertyMetaIcon
             className={groupIcon}
@@ -122,23 +123,23 @@ function createTasks4Groupings(
       })),
     },
     {
-      getGroupId: (task) => task.projectId ?? tasks4NoGroup,
-      id: 'project',
-      label: labels.groupings.project,
+      getGroupId: (task) => task.kindId ?? tasksNoGroup,
+      id: 'kind',
+      label: labels.groupings.kind,
       options: [
-        ...projects.map((project) => ({
+        ...kinds.map((kind) => ({
           icon: <CubeIcon aria-hidden="true" />,
-          id: project.id,
-          label: project.label,
+          id: kind.id,
+          label: kind.label,
         })),
-        { id: tasks4NoGroup, label: labels.noProject },
+        { id: tasksNoGroup, label: labels.noKind },
       ],
     },
   ]
 }
 
-const pickGroupBy = (value: string | null): Tasks4GroupBy | null =>
-  tasks4GroupBys.find((item) => item === value) ?? null
+const pickGroupBy = (value: string | null): TasksGroupBy | null =>
+  tasksGroupBys.find((item) => item === value) ?? null
 
 export function Tasks4({
   assigneeFilter: assigneeFilterProp,
@@ -146,17 +147,22 @@ export function Tasks4({
   collapsedGroupIds: collapsedGroupIdsProp,
   error,
   filtered = false,
+  filters = tasksFilterIds,
   groupBy: groupByProp,
+  groupBys = tasksGroupBys,
   labels: labelsProp,
   locale = defaultDataCollectionLocale,
+  kindFilter: kindFilterProp,
+  kinds = noOptions,
   mode: modeProp,
+  modes = tasksModes,
   now: nowProp,
   onAssigneeFilterChange,
   onAssigneesChange,
   onBulkAssigneesChange,
   onBulkDelete,
   onBulkPriorityChange,
-  onBulkProjectChange,
+  onBulkKindChange,
   onBulkStatusChange,
   onCollapsedGroupIdsChange,
   onCreate,
@@ -166,7 +172,9 @@ export function Tasks4({
   onOpen,
   onPriorityChange,
   onPriorityFilterChange,
-  onProjectChange,
+  onKindChange,
+  onKindFilterChange,
+  onTagsChange,
   onRetry,
   onSavedViewCreate,
   onSavedViewDelete,
@@ -174,14 +182,15 @@ export function Tasks4({
   onSavedViewRename,
   onSavedViewSelect,
   onSavedViewUpdate,
+  onSavePreference,
   onSelectedIdsChange,
   onSortChange,
   onStatusChange,
   onStatusFilterChange,
+  onVisibleColumnsChange,
   pending,
   people = noPeople,
   priorityFilter: priorityFilterProp,
-  projects = noOptions,
   savedViewId,
   savedViewModified,
   savedViews,
@@ -190,10 +199,12 @@ export function Tasks4({
   selectedIds: selectedIdsProp,
   sort: sortProp,
   sortDirection: sortDirectionProp,
+  sorts = tasksSorts,
   statusFilter: statusFilterProp,
   tags = noTags,
   tasks,
   timeZone = defaultDataCollectionTimeZone,
+  visibleColumns: visibleColumnsProp,
 }: Readonly<Tasks4Props>) {
   const labels = useMemo(() => resolveTasks4Labels(labelsProp), [labelsProp])
   const [mountedAt] = useState(() => new Date())
@@ -201,35 +212,41 @@ export function Tasks4({
     () => (nowProp ? new Date(nowProp) : mountedAt),
     [mountedAt, nowProp],
   )
-  const [mode, setMode] = useControllable<Tasks4Mode>(
+  const [modeState, setMode] = useControllable<TasksMode>(
     modeProp,
     'list',
     onModeChange,
   )
+  const offeredModes = tasksModes.filter((item) => modes.includes(item))
+  const mode =
+    offeredModes.find((item) => item === modeState) ??
+    offeredModes[0] ??
+    modeState
   const [sortState, setSortState] = useControllable<{
-    direction: Tasks4SortDirection
-    sort: Tasks4Sort
+    direction: TasksSortDirection
+    sort: TasksSort
   }>(
     sortProp
       ? {
-          direction: sortDirectionProp ?? tasks4DefaultSortDirection[sortProp],
+          direction: sortDirectionProp ?? tasksDefaultSortDirection[sortProp],
           sort: sortProp,
         }
       : undefined,
-    { direction: tasks4DefaultSortDirection.due, sort: 'due' },
+    { direction: tasksDefaultSortDirection.due, sort: 'due' },
     onSortChange
       ? (next) => onSortChange(next.sort, next.direction)
       : undefined,
   )
   const { direction: sortDirection, sort } = sortState
-  const setSort = (next: Tasks4Sort) =>
-    setSortState({ direction: tasks4DefaultSortDirection[next], sort: next })
-  const sortByColumn = (column: Tasks4SortColumn) =>
+  const setSort = (next: TasksSort) =>
+    setSortState({ direction: tasksDefaultSortDirection[next], sort: next })
+  const sortByColumn = (column: TasksSortColumn) =>
     setSortState(
       column === sort
         ? { direction: sortDirection === 'asc' ? 'desc' : 'asc', sort }
-        : { direction: tasks4DefaultSortDirection[column], sort: column },
+        : { direction: tasksDefaultSortDirection[column], sort: column },
     )
+  const sortColumn = useStableHandler(onSortChange ? sortByColumn : undefined)
   const [selectedIds, setSelectedIds] = useControllable<string[]>(
     selectedIdsProp,
     noIds,
@@ -239,7 +256,7 @@ export function Tasks4({
     onBulkAssigneesChange ||
       onBulkDelete ||
       onBulkPriorityChange ||
-      onBulkProjectChange ||
+      onBulkKindChange ||
       onBulkStatusChange,
   )
   const selectedSet = useMemo(() => new Set(selectedIds), [selectedIds])
@@ -253,40 +270,59 @@ export function Tasks4({
           )
       : undefined,
   )
-  const [groupBy, setGroupBy] = useControllable<Tasks4GroupBy | null>(
+  const [groupBy, setGroupBy] = useControllable<TasksGroupBy | null>(
     groupByProp,
     'priority',
     onGroupByChange,
   )
-  const [statusFilter, setStatusFilter] = useControllable<Tasks4Status | null>(
+  const [statusFilter, setStatusFilter] = useControllable<TasksStatus | null>(
     statusFilterProp,
     null,
     onStatusFilterChange,
   )
   const [priorityFilter, setPriorityFilter] =
-    useControllable<Tasks4PriorityFilter | null>(
+    useControllable<TasksPriorityFilter | null>(
       priorityFilterProp,
       null,
       onPriorityFilterChange,
     )
+  const [visibleColumnList, setVisibleColumnList] = useControllable<
+    readonly TasksColumnId[]
+  >(
+    visibleColumnsProp,
+    tasksColumnIds,
+    onVisibleColumnsChange
+      ? (next) => onVisibleColumnsChange([...next])
+      : undefined,
+  )
+  const visibleColumns = useMemo<ReadonlySet<TasksColumnId>>(
+    () => new Set<TasksColumnId>([...visibleColumnList, 'title']),
+    [visibleColumnList],
+  )
   const [assigneeFilter, setAssigneeFilter] = useControllable<string | null>(
     assigneeFilterProp,
     null,
     onAssigneeFilterChange,
+  )
+  const [kindFilter, setKindFilter] = useControllable<string | null>(
+    kindFilterProp,
+    null,
+    onKindFilterChange,
   )
 
   const openTask = useStableHandler(onOpen)
   const changeAssignees = useStableHandler(onAssigneesChange)
   const changeDue = useStableHandler(onDueChange)
   const changePriority = useStableHandler(onPriorityChange)
-  const changeProject = useStableHandler(onProjectChange)
+  const changeKind = useStableHandler(onKindChange)
+  const changeTags = useStableHandler(onTagsChange)
   const changeStatus = useStableHandler(onStatusChange)
 
   const tagById = useMemo(
     () => new Map(tags.map((tag) => [tag.id, tag])),
     [tags],
   )
-  const context = useMemo<Tasks4FieldContext>(
+  const context = useMemo<TasksFieldContext>(
     () => ({
       labels,
       locale,
@@ -294,57 +330,101 @@ export function Tasks4({
       onAssigneesChange: changeAssignees,
       onDueChange: changeDue,
       onOpen: openTask,
-      onProjectChange: changeProject,
+      onKindChange: changeKind,
+      onPriorityChange: changePriority,
       onSelectedChange: toggleSelected,
       onStatusChange: changeStatus,
+      onTagsChange: changeTags,
+      kinds,
       people,
-      projects,
       selectedIds: selectedSet,
       tagById,
       timeZone,
+      visibleColumns,
     }),
     [
       changeAssignees,
       changeDue,
-      changeProject,
+      changeKind,
+      changePriority,
       changeStatus,
+      changeTags,
       labels,
       locale,
       now,
       openTask,
+      kinds,
       people,
-      projects,
       selectedSet,
       tagById,
       timeZone,
       toggleSelected,
+      visibleColumns,
     ],
   )
 
-  const kanbanGroupBy: Tasks4KanbanGroupBy =
+  const kanbanGroupBy: TasksKanbanGroupBy =
     groupBy === 'status' ? 'status' : 'priority'
   const activeGroupBy = mode === 'kanban' ? kanbanGroupBy : groupBy
 
   const groupings = useMemo(
-    () => createTasks4Groupings(labels, projects),
-    [labels, projects],
+    () => createTasks4Groupings(labels, kinds),
+    [kinds, labels],
   )
-  const collection = useMemo<DataCollectionDefinition<Tasks4Task>>(
+  const records = useMemo(
+    () =>
+      mode === 'datatable'
+        ? orderTasksByGrouping(
+            tasks,
+            groupings.find(({ id }) => id === activeGroupBy),
+          )
+        : tasks,
+    [activeGroupBy, groupings, mode, tasks],
+  )
+  const collection = useMemo<DataCollectionDefinition<TasksTask>>(
     () => ({
       getKey: (task) => task.id,
       getLabel: (task) => task.title,
       groupings,
-      records: tasks,
+      records,
     }),
-    [groupings, tasks],
+    [groupings, records],
   )
-  const { table } = useDataTable<Tasks4Task>({
-    columns: noColumns,
-    data: tasks,
+  const columns = useMemo(
+    () =>
+      createTasksColumns({
+        cells: createTasksCells(context),
+        labels,
+        onSort: sortColumn,
+        selectable,
+        sort,
+        sortDirection,
+      }),
+    [context, labels, selectable, sort, sortColumn, sortDirection],
+  )
+  const rowSelection = useMemo(
+    () => Object.fromEntries(selectedIds.map((id) => [id, true as const])),
+    [selectedIds],
+  )
+  const columnVisibility = useMemo(
+    () =>
+      Object.fromEntries(
+        tasksColumnIds.map((id) => [id, visibleColumns.has(id)]),
+      ),
+    [visibleColumns],
+  )
+  const { table } = useDataTable<TasksTask>({
+    columnVisibility,
+    columns,
+    data: records,
+    enableRowSelection: selectable,
     getRowId: (task) => task.id,
+    onRowSelectionChange: (selection) =>
+      setSelectedIds(Object.keys(selection).filter((id) => selection[id])),
+    rowSelection,
   })
 
-  const kanban = useMemo<CollectionKanbanViewProps<Tasks4Task>>(
+  const kanban = useMemo<CollectionKanbanViewProps<TasksTask>>(
     () => ({
       emptyGroupLabel: labels.emptyColumn,
       onRecordMove:
@@ -353,14 +433,14 @@ export function Tasks4({
           ? ({ card, sourceGroup, targetGroup }) => {
               if (sourceGroup.id === targetGroup.id) return false
               if (targetGroup.grouping === 'status') {
-                const status = tasks4Statuses.find(
+                const status = tasksStatuses.find(
                   (item) => item === targetGroup.value,
                 )
                 if (status && status !== card.status)
                   changeStatus?.(card.id, status)
               }
               if (targetGroup.grouping === 'priority') {
-                const priority = findTasks4Priority(targetGroup.value)
+                const priority = findTasksPriority(targetGroup.value)
                 if (priority !== card.priority)
                   changePriority?.(card.id, priority)
               }
@@ -392,28 +472,40 @@ export function Tasks4({
       toolbar={
         <Tasks4Toolbar
           assigneeFilter={assigneeFilter}
+          filters={filters}
           groupBy={groupBy}
+          groupBys={groupBys}
           kanbanGroupBy={kanbanGroupBy}
+          kindFilter={kindFilter}
+          kinds={kinds}
           labels={labels}
           loading={Boolean(loadState)}
           mode={mode}
+          modes={offeredModes}
           onAssigneeFilterChange={
             onAssigneeFilterChange ? setAssigneeFilter : undefined
           }
           onCreate={onCreate}
           onGroupByChange={setGroupBy}
+          onKindFilterChange={onKindFilterChange ? setKindFilter : undefined}
           onModeChange={setMode}
           onPriorityFilterChange={
             onPriorityFilterChange ? setPriorityFilter : undefined
           }
+          onSavePreference={onSavePreference}
           onSortChange={onSortChange ? setSort : undefined}
           onStatusFilterChange={
             onStatusFilterChange ? setStatusFilter : undefined
           }
+          onVisibleColumnsChange={
+            onVisibleColumnsChange ? setVisibleColumnList : undefined
+          }
           people={people}
           priorityFilter={priorityFilter}
           sort={sort}
+          sorts={sorts}
           statusFilter={statusFilter}
+          visibleColumns={visibleColumns}
           viewSwitcher={
             <DataCollectionViewSwitcher<typeof tasks4AllView>
               label={labels.viewList}
@@ -439,18 +531,20 @@ export function Tasks4({
       }
     >
       {loadState ?? (
-        <DataCollection<Tasks4Task>
+        <DataCollection<TasksTask>
           collapseEmptyGroups
           collapsedGroupIds={collapsedGroupIdsProp}
           collection={collection}
           emptyMessage={filtered ? labels.noResult : labels.empty}
           getGroupToggleLabel={labels.groupToggle}
+          getRowOpenLabel={(task) => labels.openTask(task.title)}
           groupBy={activeGroupBy}
           kanban={kanban}
           label={labels.title}
           listHeader={
             <Tasks4ListHeader
               labels={labels}
+              visibleColumns={visibleColumns}
               selection={
                 selectable && tasks.length > 0
                   ? {
@@ -470,7 +564,7 @@ export function Tasks4({
               sortDirection={sortDirection}
             />
           }
-          mode={mode}
+          mode={tasksCollectionMode[mode]}
           onCollapsedGroupIdsChange={
             onCollapsedGroupIdsChange
               ? (groupIds) => onCollapsedGroupIdsChange([...groupIds])
@@ -480,22 +574,48 @@ export function Tasks4({
           onOpen={openTask ? (task) => openTask(task.id) : undefined}
           renderKanbanRecord={renderTasks4KanbanCard(context)}
           renderListRecord={renderTasks4ListRow(context)}
+          selectionActions={
+            selectable
+              ? ({ clearSelection, selectedCount, selectedRows }) => (
+                  <ActionBar
+                    actions={createTasksSelectionActions({
+                      kinds,
+                      labels,
+                      onBulkAssigneesChange,
+                      onBulkDelete,
+                      onBulkKindChange,
+                      onBulkPriorityChange,
+                      onBulkStatusChange,
+                      onDone: clearSelection,
+                      people,
+                      selectedRows,
+                    })}
+                    clearSelectionLabel={labels.clearSelection}
+                    formatSelection={labels.selectedCount}
+                    label={labels.selectionActions}
+                    onClearSelection={clearSelection}
+                    selectedCount={selectedCount}
+                    selectedRows={selectedRows}
+                  />
+                )
+              : undefined
+          }
           table={table}
         />
       )}
       {!loadState && mode === 'list' && selectable ? (
         <div className="pointer-events-none sticky bottom-3 flex justify-center">
           <ActionBar
-            actions={createTasks4SelectionActions({
+            actions={createTasksSelectionActions({
               labels,
               onBulkAssigneesChange,
               onBulkDelete,
               onBulkPriorityChange,
-              onBulkProjectChange,
+              onBulkKindChange,
               onBulkStatusChange,
               onDone: () => setSelectedIds(noIds),
+              kinds,
               people,
-              projects,
               selectedRows,
             })}
             className="pointer-events-auto"

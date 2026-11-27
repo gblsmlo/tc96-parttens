@@ -1,17 +1,18 @@
 import type {
-  Tasks1Option,
-  Tasks1Person,
-  Tasks1Task,
+  TasksOption,
+  TasksPerson,
+  TasksTag,
+  TasksTask,
 } from '@tc96/ui/blocks/data/tasks/tasks-1'
 
-export const projects: Tasks1Option[] = [
+export const kinds: TasksOption[] = [
   { id: 'website', label: 'Website redesign' },
   { id: 'mobile', label: 'Mobile app 2.0' },
   { id: 'billing', label: 'Billing migration' },
   { id: 'onboarding', label: 'Customer onboarding' },
 ]
 
-export const assignees: Tasks1Person[] = [
+export const people: TasksPerson[] = [
   { id: 'ana', label: 'Ana Ferraz' },
   { id: 'bruno', label: 'Bruno Lacerda' },
   { id: 'carla', label: 'Carla Mendes' },
@@ -19,21 +20,23 @@ export const assignees: Tasks1Person[] = [
   { id: 'elisa', label: 'Elisa Prado' },
 ]
 
-export const tags: Tasks1Option[] = [
-  { id: 'bug', label: 'Bug' },
-  { id: 'design', label: 'Design' },
-  { id: 'backend', label: 'Backend' },
-  { id: 'docs', label: 'Docs' },
+export const tags: TasksTag[] = [
+  { id: 'bug', label: 'Bug', tone: 'danger' },
+  { id: 'design', label: 'Design', tone: 'success' },
+  { id: 'backend', label: 'Backend', tone: 'info' },
+  { id: 'docs', label: 'Docs', tone: 'neutral' },
 ]
 
-export const tasks: Tasks1Task[] = [
+export const tasks: TasksTask[] = [
   {
     assigneeIds: ['ana', 'carla'],
+    creatorId: 'ana',
+
     dueAt: '2026-11-20',
     id: 'task-101',
     overdue: true,
     priority: 'urgent',
-    projectId: 'billing',
+    kindId: 'billing',
     status: 'in-progress',
     tagIds: ['backend', 'bug'],
     title: 'Fix duplicate charges on annual plans',
@@ -41,10 +44,12 @@ export const tasks: Tasks1Task[] = [
   },
   {
     assigneeIds: ['bruno'],
+    creatorId: 'bruno',
+
     dueAt: '2026-11-28',
     id: 'task-102',
     priority: 'high',
-    projectId: 'website',
+    kindId: 'website',
     status: 'todo',
     tagIds: ['design'],
     title: 'Redesign the pricing page hero',
@@ -52,10 +57,12 @@ export const tasks: Tasks1Task[] = [
   },
   {
     assigneeIds: ['diego'],
+    creatorId: 'carla',
+
     dueAt: '2026-12-02',
     id: 'task-103',
     priority: 'medium',
-    projectId: 'mobile',
+    kindId: 'mobile',
     status: 'in-progress',
     tagIds: [],
     title: 'Add offline mode to the task list',
@@ -63,21 +70,25 @@ export const tasks: Tasks1Task[] = [
   },
   {
     assigneeIds: [],
+    creatorId: 'diego',
+
     dueAt: null,
     id: 'task-104',
     priority: null,
-    projectId: null,
-    status: 'backlog',
+    kindId: null,
+    status: 'todo',
     tagIds: ['docs'],
     title: 'Write the API rate limit guide',
     updatedAt: '2026-11-24T09:12:00.000Z',
   },
   {
     assigneeIds: ['elisa', 'ana'],
+    creatorId: 'elisa',
+
     dueAt: '2026-11-22',
     id: 'task-105',
     priority: 'low',
-    projectId: 'onboarding',
+    kindId: 'onboarding',
     status: 'done',
     tagIds: [],
     title: 'Record the welcome walkthrough video',
@@ -85,11 +96,13 @@ export const tasks: Tasks1Task[] = [
   },
   {
     assigneeIds: ['carla'],
+    creatorId: 'ana',
+
     dueAt: '2026-11-21',
     id: 'task-106',
     overdue: true,
     priority: 'high',
-    projectId: 'billing',
+    kindId: 'billing',
     status: 'todo',
     tagIds: ['backend'],
     title: 'Migrate invoices to the new ledger',
@@ -97,10 +110,12 @@ export const tasks: Tasks1Task[] = [
   },
   {
     assigneeIds: ['bruno', 'diego', 'elisa'],
+    creatorId: 'bruno',
+
     dueAt: '2026-12-05',
     id: 'task-107',
     priority: 'medium',
-    projectId: 'website',
+    kindId: 'website',
     status: 'in-progress',
     tagIds: ['design', 'docs'],
     title: 'Update the design tokens documentation',
@@ -108,21 +123,25 @@ export const tasks: Tasks1Task[] = [
   },
   {
     assigneeIds: ['ana'],
+    creatorId: 'carla',
+
     dueAt: '2026-11-15',
     id: 'task-108',
     priority: 'medium',
-    projectId: 'mobile',
-    status: 'canceled',
+    kindId: 'mobile',
+    status: 'done',
     tagIds: [],
     title: 'Prototype the tablet layout',
     updatedAt: '2026-11-21T08:00:00.000Z',
   },
   {
     assigneeIds: ['diego'],
+    creatorId: 'diego',
+
     dueAt: '2026-11-27',
     id: 'task-109',
     priority: 'urgent',
-    projectId: 'mobile',
+    kindId: 'mobile',
     status: 'todo',
     tagIds: ['bug'],
     title: 'Crash when opening a shared link',
@@ -130,21 +149,25 @@ export const tasks: Tasks1Task[] = [
   },
   {
     assigneeIds: ['elisa'],
+    creatorId: 'elisa',
+
     dueAt: '2026-12-10',
     id: 'task-110',
     priority: 'low',
-    projectId: 'onboarding',
-    status: 'backlog',
+    kindId: 'onboarding',
+    status: 'todo',
     tagIds: [],
     title: 'Translate the onboarding checklist',
     updatedAt: '2026-11-20T17:22:00.000Z',
   },
   {
     assigneeIds: ['bruno'],
+    creatorId: 'ana',
+
     dueAt: '2026-11-18',
     id: 'task-111',
     priority: 'high',
-    projectId: 'website',
+    kindId: 'website',
     status: 'done',
     tagIds: [],
     title: 'Ship the new blog template',
@@ -152,10 +175,12 @@ export const tasks: Tasks1Task[] = [
   },
   {
     assigneeIds: ['carla', 'elisa'],
+    creatorId: 'bruno',
+
     dueAt: '2026-12-01',
     id: 'task-112',
     priority: 'medium',
-    projectId: 'billing',
+    kindId: 'billing',
     status: 'in-progress',
     tagIds: ['backend'],
     title: 'Reconcile failed payment webhooks',
@@ -164,7 +189,7 @@ export const tasks: Tasks1Task[] = [
 ]
 
 export interface Tasks1Page {
-  items: Tasks1Task[]
+  items: TasksTask[]
   total: number
 }
 

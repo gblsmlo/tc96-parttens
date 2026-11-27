@@ -1,124 +1,123 @@
 import {
-  CalendarBlankIcon,
   CalendarDotsIcon,
   CellSignalHighIcon,
   ClockCounterClockwiseIcon,
-  FunnelSimpleIcon,
+  CubeIcon,
   type Icon as PhosphorIcon,
   RadioButtonIcon,
   RowsIcon,
-  ScalesIcon,
-  ShapesIcon,
   SortAscendingIcon,
   StackIcon,
+  TagIcon,
   TextTIcon,
   UserCircleIcon,
   UserIcon,
 } from '@phosphor-icons/react'
-import { Badge } from '@tc96/ui/badge'
-import { Button } from '@tc96/ui/button'
-import {
-  Menu,
-  MenuItem,
-  MenuPopup,
-  MenuRadioGroup,
-  MenuRadioItem,
-  MenuSeparator,
-  MenuTrigger,
-} from '@tc96/ui/menu'
 import { Action } from '@tc96/ui/patterns/collection/shared/components/collection-action'
 import { CollectionToolbar } from '@tc96/ui/patterns/toolbar/components/collection-toolbar'
 import {
+  ViewSettings,
   ViewSettingsFieldSection,
+  type ViewSettingsMode,
   type ViewSettingsOption,
   ViewSettingsSection,
   ViewSettingsSubmenu,
 } from '@tc96/ui/patterns/view-settings/components'
-import { PropertyMetaIcon, priorityMeta } from '@tc96/ui/property-meta'
-import { ToolbarButton } from '@tc96/ui/toolbar'
+import {
+  PropertyMetaIcon,
+  priorityMeta,
+  workflowStatusMeta,
+} from '@tc96/ui/property-meta'
 import type { ReactNode } from 'react'
 import { dataCollectionModeIcons } from '../../shared/collection/data-collection-toolbar'
 import {
-  isTasks6FieldId,
-  tasks6ColumnFields,
-  tasks6GroupBys,
-  tasks6Modes,
-  tasks6NoGroup,
-  tasks6PriorityFilters,
-} from './tasks-6-options'
-import type {
-  Tasks6FieldId,
-  Tasks6GroupBy,
-  Tasks6KanbanGroupBy,
-  Tasks6Labels,
-  Tasks6Mode,
-  Tasks6Person,
-  Tasks6PriorityFilter,
-  Tasks6Sort,
-  Tasks6SortOption,
-  Tasks6Status,
-  Tasks6StatusOption,
-} from './types'
+  type TasksColumnId,
+  type TasksFilterId,
+  type TasksGroupBy,
+  type TasksKanbanGroupBy,
+  type TasksMode,
+  type TasksOption,
+  type TasksPerson,
+  type TasksPriorityFilter,
+  type TasksSort,
+  type TasksStatus,
+  tasksColumnIds,
+  tasksKanbanGroupBys,
+  tasksNoGroup,
+  tasksPriorityFilters,
+  tasksStatuses,
+} from '../shared'
+import { tasksTableToggleableColumns } from '../shared/tasks-columns'
+import { tasksListToggleableColumns } from '../shared/tasks-records'
+import type { Tasks6Labels } from './types'
 
 export interface Tasks6ToolbarProps {
-  activeFilterCount?: number
   assigneeFilter: string | null
-  filters?: ReactNode
-  groupBy: Tasks6GroupBy | null
-  groupBys: readonly Tasks6GroupBy[]
-  kanbanGroupBy: Tasks6KanbanGroupBy
-  kanbanGroupBys: readonly Tasks6KanbanGroupBy[]
-  fields: readonly Tasks6FieldId[]
+  filters: readonly TasksFilterId[]
+  groupBy: TasksGroupBy | null
+  groupBys: readonly TasksGroupBy[]
+  kanbanGroupBy: TasksKanbanGroupBy
+  kindFilter: string | null
+  kinds: readonly TasksOption[]
   labels: Tasks6Labels
   loading: boolean
-  mode: Tasks6Mode
+  mode: TasksMode
+  modes: readonly TasksMode[]
   onAssigneeFilterChange?: (assigneeId: string | null) => void
-  onClearFilters?: () => void
   onCreate?: () => void
-  onFieldVisibleChange: (id: Tasks6FieldId, visible: boolean) => void
-  onGroupByChange: (groupBy: Tasks6GroupBy | null) => void
-  onModeChange: (mode: Tasks6Mode) => void
-  onPriorityFilterChange?: (priority: Tasks6PriorityFilter | null) => void
-  onSortChange?: (sort: Tasks6Sort) => void
-  onStatusFilterChange?: (status: Tasks6Status | null) => void
-  people: readonly Tasks6Person[]
-  priorityFilter: Tasks6PriorityFilter | null
-  sort: Tasks6Sort
-  sortOptions: readonly Tasks6SortOption[]
-  statuses: readonly Tasks6StatusOption[]
-  statusFilter: Tasks6Status | null
+  onGroupByChange: (groupBy: TasksGroupBy | null) => void
+  onKindFilterChange?: (kindId: string | null) => void
+  onModeChange: (mode: TasksMode) => void
+  onPriorityFilterChange?: (priority: TasksPriorityFilter | null) => void
+  onSavePreference?: () => void
+  onSortChange?: (sort: TasksSort) => void
+  onStatusFilterChange?: (status: TasksStatus | null) => void
+  onVisibleColumnsChange?: (columns: TasksColumnId[]) => void
+  people: readonly TasksPerson[]
+  priorityFilter: TasksPriorityFilter | null
+  sort: TasksSort
+  sorts: readonly TasksSort[]
+  statusFilter: TasksStatus | null
   viewSwitcher: ReactNode
+  visibleColumns: ReadonlySet<TasksColumnId>
 }
 
-type Tasks6GroupOption = Tasks6GroupBy | typeof tasks6NoGroup
+type Tasks6GroupOption = TasksGroupBy | typeof tasksNoGroup
 
 const optionIcon = 'size-4'
 
-export const tasks6SortIcons: Record<string, PhosphorIcon> = {
+const modeIcons = {
+  datatable: dataCollectionModeIcons.table,
+  kanban: dataCollectionModeIcons.kanban,
+  list: dataCollectionModeIcons.list,
+} as const satisfies Record<TasksMode, ViewSettingsMode['icon']>
+
+const sortIcons = {
   due: CalendarDotsIcon,
+  kind: CubeIcon,
   priority: CellSignalHighIcon,
-  project: ScalesIcon,
   title: TextTIcon,
   updated: ClockCounterClockwiseIcon,
-}
+} as const satisfies Record<TasksSort, PhosphorIcon>
+
+const columnIcons = {
+  assignees: UserIcon,
+  creator: UserIcon,
+  due: CalendarDotsIcon,
+  kind: CubeIcon,
+  priority: CellSignalHighIcon,
+  status: RadioButtonIcon,
+  tags: TagIcon,
+  title: TextTIcon,
+  updated: ClockCounterClockwiseIcon,
+} as const satisfies Record<TasksColumnId, PhosphorIcon>
 
 const groupIcons = {
+  kind: CubeIcon,
   none: RowsIcon,
   priority: CellSignalHighIcon,
-  project: ScalesIcon,
   status: RadioButtonIcon,
 } as const satisfies Record<Tasks6GroupOption, PhosphorIcon>
-
-const fieldIcons = {
-  assignees: UserIcon,
-  due: CalendarDotsIcon,
-  priority: CellSignalHighIcon,
-  project: ScalesIcon,
-  start: CalendarBlankIcon,
-  status: RadioButtonIcon,
-  type: ShapesIcon,
-  updated: ClockCounterClockwiseIcon,
-} as const satisfies Record<Tasks6FieldId, PhosphorIcon>
 
 const pick = <TValue extends string>(
   values: readonly TValue[],
@@ -135,125 +134,74 @@ const iconOption = <TValue extends string>(
   value,
 })
 
-interface Tasks6MenuProps {
-  children: ReactNode
-  icon: PhosphorIcon
-  label: string
-  trailing?: ReactNode
-}
-
-function Tasks6Menu({
-  children,
-  icon: Icon,
-  label,
-  trailing,
-}: Readonly<Tasks6MenuProps>) {
-  return (
-    <Menu>
-      <MenuTrigger
-        render={
-          <ToolbarButton
-            render={
-              <Button
-                aria-label={label}
-                size={trailing ? 'default' : 'icon'}
-                type="button"
-                variant="ghost"
-              />
-            }
-          />
-        }
-      >
-        <Icon aria-hidden="true" />
-        {trailing}
-      </MenuTrigger>
-      <MenuPopup align="end">{children}</MenuPopup>
-    </Menu>
-  )
-}
-
-interface Tasks6RadioMenuProps<TValue extends string> {
-  icon: PhosphorIcon
-  label: string
-  onValueChange: (value: TValue) => void
-  options: readonly ViewSettingsOption<TValue>[]
-  section: string
-  value: TValue
-}
-
-function Tasks6RadioMenu<TValue extends string>({
-  icon,
-  label,
-  onValueChange,
-  options,
-  section,
-  value,
-}: Readonly<Tasks6RadioMenuProps<TValue>>) {
-  return (
-    <Tasks6Menu icon={icon} label={label}>
-      <ViewSettingsSection label={section}>
-        <MenuRadioGroup
-          onValueChange={(next: TValue) => onValueChange(next)}
-          value={value}
-        >
-          {options.map((option) => (
-            <MenuRadioItem closeOnClick key={option.value} value={option.value}>
-              {option.icon}
-              {option.label}
-            </MenuRadioItem>
-          ))}
-        </MenuRadioGroup>
-      </ViewSettingsSection>
-    </Tasks6Menu>
-  )
-}
-
 export function Tasks6Toolbar({
-  activeFilterCount: activeFilterCountProp,
   assigneeFilter,
-  fields,
   filters,
   groupBy,
   groupBys,
   kanbanGroupBy,
-  kanbanGroupBys,
+  kindFilter,
+  kinds,
   labels,
   loading,
   mode,
+  modes,
   onAssigneeFilterChange,
-  onClearFilters,
   onCreate,
-  onFieldVisibleChange,
   onGroupByChange,
+  onKindFilterChange,
   onModeChange,
   onPriorityFilterChange,
+  onSavePreference,
   onSortChange,
   onStatusFilterChange,
+  onVisibleColumnsChange,
   people,
   priorityFilter,
   sort,
-  sortOptions,
-  statuses,
+  sorts,
   statusFilter,
   viewSwitcher,
+  visibleColumns,
 }: Readonly<Tasks6ToolbarProps>) {
-  const showStatus = !filters && Boolean(onStatusFilterChange)
-  const showPriority = !filters && Boolean(onPriorityFilterChange)
+  const showStatus = filters.includes('status') && Boolean(onStatusFilterChange)
+  const showPriority =
+    filters.includes('priority') && Boolean(onPriorityFilterChange)
   const showAssignee =
-    !filters && Boolean(onAssigneeFilterChange) && people.length > 0
-  const hasFilters =
-    Boolean(filters) || showStatus || showPriority || showAssignee
+    filters.includes('assignee') &&
+    Boolean(onAssigneeFilterChange) &&
+    people.length > 0
+  const showKind =
+    filters.includes('kind') && Boolean(onKindFilterChange) && kinds.length > 0
+  const hasFilters = showStatus || showPriority || showAssignee || showKind
   const activeFilterCount =
-    activeFilterCountProp ??
     (showStatus && statusFilter ? 1 : 0) +
-      (showPriority && priorityFilter ? 1 : 0) +
-      (showAssignee && assigneeFilter ? 1 : 0)
+    (showPriority && priorityFilter ? 1 : 0) +
+    (showAssignee && assigneeFilter ? 1 : 0) +
+    (showKind && kindFilter ? 1 : 0)
   const groupValues: readonly Tasks6GroupOption[] =
     mode === 'kanban'
-      ? kanbanGroupBys
-      : groupBys.length > 0
-        ? [tasks6NoGroup, ...groupBys]
-        : []
+      ? tasksKanbanGroupBys.filter((item) => groupBys.includes(item))
+      : [tasksNoGroup, ...groupBys]
+  const showGroup = groupBys.length > 0
+  const showSort = Boolean(onSortChange) && sorts.length > 0
+  const viewModes = modes.map(
+    (value): ViewSettingsMode<TasksMode> => ({
+      icon: modeIcons[value],
+      label: labels.modes[value],
+      value,
+    }),
+  )
+  const fields = (
+    mode === 'datatable'
+      ? tasksTableToggleableColumns
+      : tasksListToggleableColumns
+  ).map((id) => ({
+    icon: columnIcons[id],
+    id,
+    label: labels.columns[id],
+    visible: visibleColumns.has(id),
+  }))
 
   return (
     <CollectionToolbar
@@ -261,165 +209,148 @@ export function Tasks6Toolbar({
       className="min-h-14 flex-wrap gap-y-3"
       left={viewSwitcher}
       right={
-        <>
-          {hasFilters ? (
-            <Tasks6Menu
-              icon={FunnelSimpleIcon}
-              label={
-                activeFilterCount > 0
-                  ? labels.activeFilters(activeFilterCount)
-                  : labels.filter
+        loading ? undefined : (
+          <>
+            <ViewSettings
+              activeFilterCount={activeFilterCount}
+              clearLabel={labels.clearFilters}
+              label={labels.layout}
+              mode={mode}
+              modes={viewModes}
+              onClearFilters={
+                hasFilters
+                  ? () => {
+                      if (showStatus) onStatusFilterChange?.(null)
+                      if (showPriority) onPriorityFilterChange?.(null)
+                      if (showAssignee) onAssigneeFilterChange?.(null)
+                      if (showKind) onKindFilterChange?.(null)
+                    }
+                  : undefined
               }
-              trailing={
-                activeFilterCount > 0 ? (
-                  <Badge aria-hidden="true">{activeFilterCount}</Badge>
-                ) : undefined
-              }
+              onModeChange={onModeChange}
+              onSavePreference={onSavePreference}
+              savePreferenceLabel={labels.savePreference}
             >
-              <ViewSettingsSection label={labels.filterProperties}>
-                {filters}
-                {showStatus ? (
-                  <ViewSettingsSubmenu<Tasks6Status>
-                    icon={RadioButtonIcon}
-                    label={labels.filterBy.status}
-                    onValueChange={(value) => onStatusFilterChange?.(value)}
-                    options={statuses.map((status) => ({
-                      icon: (
-                        <PropertyMetaIcon
-                          className={optionIcon}
-                          meta={status.meta}
-                        />
+              {showGroup || showSort ? (
+                <ViewSettingsSection label={labels.layoutBy}>
+                  {showGroup ? (
+                    <ViewSettingsSubmenu<Tasks6GroupOption>
+                      icon={StackIcon}
+                      label={labels.groupBy}
+                      onValueChange={(value) =>
+                        onGroupByChange(pick(groupBys, value))
+                      }
+                      options={groupValues.map((item) =>
+                        iconOption(
+                          item,
+                          labels.groupings[item],
+                          groupIcons[item],
+                        ),
+                      )}
+                      value={
+                        mode === 'kanban'
+                          ? kanbanGroupBy
+                          : (groupBy ?? tasksNoGroup)
+                      }
+                    />
+                  ) : null}
+                  {showSort ? (
+                    <ViewSettingsSubmenu<TasksSort>
+                      icon={SortAscendingIcon}
+                      label={labels.sortBy}
+                      onValueChange={(value) => onSortChange?.(value)}
+                      options={sorts.map((item) =>
+                        iconOption(item, labels.sorts[item], sortIcons[item]),
+                      )}
+                      value={sort}
+                    />
+                  ) : null}
+                </ViewSettingsSection>
+              ) : null}
+              {hasFilters ? (
+                <ViewSettingsSection label={labels.filter}>
+                  {showStatus ? (
+                    <ViewSettingsSubmenu<TasksStatus>
+                      icon={RadioButtonIcon}
+                      label={labels.filterBy.status}
+                      onValueChange={(value) => onStatusFilterChange?.(value)}
+                      options={tasksStatuses.map((status) => ({
+                        icon: (
+                          <PropertyMetaIcon
+                            className={optionIcon}
+                            meta={workflowStatusMeta[status]}
+                          />
+                        ),
+                        label: labels.statuses[status],
+                        value: status,
+                      }))}
+                      value={statusFilter ?? undefined}
+                    />
+                  ) : null}
+                  {showPriority ? (
+                    <ViewSettingsSubmenu<TasksPriorityFilter>
+                      icon={CellSignalHighIcon}
+                      label={labels.filterBy.priority}
+                      onValueChange={(value) => onPriorityFilterChange?.(value)}
+                      options={tasksPriorityFilters.map((priority) => ({
+                        icon: (
+                          <PropertyMetaIcon
+                            className={optionIcon}
+                            meta={priorityMeta[priority]}
+                          />
+                        ),
+                        label:
+                          priority === 'none'
+                            ? labels.noPriority
+                            : labels.priorities[priority],
+                        value: priority,
+                      }))}
+                      value={priorityFilter ?? undefined}
+                    />
+                  ) : null}
+                  {showAssignee ? (
+                    <ViewSettingsSubmenu
+                      icon={UserIcon}
+                      label={labels.filterBy.assignee}
+                      onValueChange={(value) => onAssigneeFilterChange?.(value)}
+                      options={people.map((person) =>
+                        iconOption(person.id, person.label, UserCircleIcon),
+                      )}
+                      value={assigneeFilter ?? undefined}
+                    />
+                  ) : null}
+                  {showKind ? (
+                    <ViewSettingsSubmenu
+                      icon={CubeIcon}
+                      label={labels.filterBy.kind}
+                      onValueChange={(value) => onKindFilterChange?.(value)}
+                      options={kinds.map((kind) =>
+                        iconOption(kind.id, kind.label, CubeIcon),
+                      )}
+                      value={kindFilter ?? undefined}
+                    />
+                  ) : null}
+                </ViewSettingsSection>
+              ) : null}
+              {onVisibleColumnsChange ? (
+                <ViewSettingsFieldSection
+                  fields={fields}
+                  label={labels.filterProperties}
+                  onVisibleChange={(id, visible) =>
+                    onVisibleColumnsChange(
+                      tasksColumnIds.filter((column) =>
+                        column === id ? visible : visibleColumns.has(column),
                       ),
-                      label: status.label,
-                      value: status.id,
-                    }))}
-                    value={statusFilter ?? undefined}
-                  />
-                ) : null}
-                {showPriority ? (
-                  <ViewSettingsSubmenu<Tasks6PriorityFilter>
-                    icon={CellSignalHighIcon}
-                    label={labels.filterBy.priority}
-                    onValueChange={(value) => onPriorityFilterChange?.(value)}
-                    options={tasks6PriorityFilters.map((priority) => ({
-                      icon: (
-                        <PropertyMetaIcon
-                          className={optionIcon}
-                          meta={priorityMeta[priority]}
-                        />
-                      ),
-                      label:
-                        priority === 'none'
-                          ? labels.noPriority
-                          : labels.priorities[priority],
-                      value: priority,
-                    }))}
-                    value={priorityFilter ?? undefined}
-                  />
-                ) : null}
-                {showAssignee ? (
-                  <ViewSettingsSubmenu
-                    icon={UserIcon}
-                    label={labels.filterBy.assignee}
-                    onValueChange={(value) => onAssigneeFilterChange?.(value)}
-                    options={people.map((person) =>
-                      iconOption(person.id, person.label, UserCircleIcon),
-                    )}
-                    value={assigneeFilter ?? undefined}
-                  />
-                ) : null}
-              </ViewSettingsSection>
-              <MenuSeparator />
-              <MenuItem
-                disabled={activeFilterCount === 0}
-                onClick={() => {
-                  if (onClearFilters) return onClearFilters()
-                  if (showStatus) onStatusFilterChange?.(null)
-                  if (showPriority) onPriorityFilterChange?.(null)
-                  if (showAssignee) onAssigneeFilterChange?.(null)
-                }}
-              >
-                {labels.clearFilters}
-              </MenuItem>
-            </Tasks6Menu>
-          ) : null}
-          <Tasks6RadioMenu<Tasks6Mode>
-            icon={dataCollectionModeIcons[mode]}
-            label={labels.layout}
-            onValueChange={onModeChange}
-            options={tasks6Modes.map((item) =>
-              iconOption(
-                item,
-                labels.modes[item],
-                dataCollectionModeIcons[item],
-              ),
-            )}
-            section={labels.layoutBy}
-            value={mode}
-          />
-          {onSortChange ? (
-            <Tasks6Menu icon={SortAscendingIcon} label={labels.sort}>
-              <ViewSettingsSection label={labels.sortBy}>
-                <MenuRadioGroup
-                  onValueChange={(next: Tasks6Sort) => onSortChange(next)}
-                  value={sort}
-                >
-                  {sortOptions.map((item) => {
-                    const option = iconOption(
-                      item.id,
-                      item.label,
-                      item.icon ??
-                        tasks6SortIcons[item.id] ??
-                        SortAscendingIcon,
                     )
-                    return (
-                      <MenuRadioItem closeOnClick key={item.id} value={item.id}>
-                        {option.icon}
-                        {option.label}
-                      </MenuRadioItem>
-                    )
-                  })}
-                </MenuRadioGroup>
-              </ViewSettingsSection>
-              <ViewSettingsFieldSection
-                fields={tasks6ColumnFields.map((id) => ({
-                  icon: fieldIcons[id],
-                  id,
-                  label: labels.columns[id],
-                  visible: fields.includes(id),
-                }))}
-                label={labels.visibility}
-                onVisibleChange={(id, visible) => {
-                  if (isTasks6FieldId(id)) onFieldVisibleChange(id, visible)
-                }}
-              />
-            </Tasks6Menu>
-          ) : null}
-          {groupValues.length > 0 ? (
-            <Tasks6RadioMenu<Tasks6GroupOption>
-              icon={StackIcon}
-              label={labels.group}
-              onValueChange={(value) =>
-                onGroupByChange(pick(tasks6GroupBys, value))
-              }
-              options={groupValues.map((item) =>
-                iconOption(item, labels.groupings[item], groupIcons[item]),
-              )}
-              section={labels.groupBy}
-              value={
-                mode === 'kanban' ? kanbanGroupBy : (groupBy ?? tasks6NoGroup)
-              }
-            />
-          ) : null}
-          {onCreate ? (
-            <Action
-              className="data-disabled:pointer-events-none data-disabled:opacity-64"
-              disabled={loading}
-              label={labels.create}
-              onClick={onCreate}
-            />
-          ) : null}
-        </>
+                  }
+                />
+              ) : null}
+            </ViewSettings>
+            {onCreate ? (
+              <Action label={labels.create} onClick={onCreate} />
+            ) : null}
+          </>
+        )
       }
     />
   )

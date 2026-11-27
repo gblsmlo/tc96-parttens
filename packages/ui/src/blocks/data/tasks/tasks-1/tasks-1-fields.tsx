@@ -4,7 +4,6 @@ import {
   calendarDateFromDate,
   calendarDateKey,
 } from '@tc96/ui/helpers/calendar-date'
-import { propertyToneClassName } from '@tc96/ui/lib/property-tone'
 import {
   Menu,
   MenuPopup,
@@ -13,47 +12,15 @@ import {
   MenuTrigger,
 } from '@tc96/ui/menu'
 import { DateProperty } from '@tc96/ui/patterns/properties/display/date/date-property'
-import { PeopleProperty } from '@tc96/ui/patterns/properties/display/people/people-property'
+import { IconLabelProperty } from '@tc96/ui/patterns/properties/display/icon-label/icon-label-property'
 import { SelectProperty } from '@tc96/ui/patterns/properties/display/select/select-property'
 import { TagsProperty } from '@tc96/ui/patterns/properties/display/tags/tags-property'
-import { cn } from '@tc96/utils'
-import {
-  dataPriorities,
-  dataPriorityAppearance,
-} from '../../shared/properties/data-priority'
-import {
-  DataDate,
-  dataSelectOptions,
-} from '../../shared/properties/data-properties'
-import { tasks1StatusAppearance, tasks1Statuses } from './tasks-1-options'
-import type {
-  Tasks1Labels,
-  Tasks1Option,
-  Tasks1Person,
-  Tasks1Priority,
-  Tasks1Status,
-  Tasks1Task,
-} from './types'
-
-export interface Tasks1FieldContext {
-  assignees: readonly Tasks1Person[]
-  labels: Tasks1Labels
-  locale: string
-  onAssigneesChange?: (taskId: string, assigneeIds: string[]) => void
-  onDueChange?: (taskId: string, dueAt: string | null) => void
-  onPriorityChange?: (taskId: string, priority: Tasks1Priority | null) => void
-  onProjectChange?: (taskId: string, projectId: string | null) => void
-  onStatusChange?: (taskId: string, status: Tasks1Status) => void
-  onTagsChange?: (taskId: string, tagIds: string[]) => void
-  projects: readonly Tasks1Option[]
-  tags: readonly Tasks1Option[]
-  timeZone: string
-}
-
-interface FieldProps {
-  context: Tasks1FieldContext
-  item: Tasks1Task
-}
+import { PropertyMetaIcon, workflowStatusMeta } from '@tc96/ui/property-meta'
+import type { ReactNode } from 'react'
+import { DataDate } from '../../shared/properties/data-properties'
+import { type TasksStatus, type TasksTask, tasksStatuses } from '../shared'
+import { createTasksCells, type TasksCells } from '../shared/tasks-columns'
+import type { TasksFieldContext, TasksFieldProps } from '../shared/tasks-fields'
 
 const serializeDay = (date: Date) => calendarDateKey(calendarDateFromDate(date))
 
@@ -64,23 +31,16 @@ const dateDisplayOf = (value: string | null, timeZone: string) =>
     ? { timeZone: 'UTC', value: `${value}T12:00:00.000Z` }
     : { timeZone, value }
 
-const findPriority = (value: string | null): Tasks1Priority | null =>
-  dataPriorities.find((priority) => priority === value) ?? null
+const findStatus = (value: unknown): TasksStatus | null =>
+  tasksStatuses.find((status) => status === value) ?? null
 
-const findStatus = (value: unknown): Tasks1Status | null =>
-  tasks1Statuses.find((status) => status === value) ?? null
-
-function Tasks1StatusIcon({ status }: Readonly<{ status: Tasks1Status }>) {
-  const { icon: Icon, tone } = tasks1StatusAppearance[status]
+function Tasks1StatusIcon({ status }: Readonly<{ status: TasksStatus }>) {
   return (
-    <Icon
-      aria-hidden="true"
-      className={cn('size-4 shrink-0', propertyToneClassName[tone])}
-    />
+    <PropertyMetaIcon className="size-4" meta={workflowStatusMeta[status]} />
   )
 }
 
-export function Tasks1StatusMark({ context, item }: FieldProps) {
+export function Tasks1StatusMark({ context, item }: TasksFieldProps) {
   const { labels, onStatusChange } = context
   const statusLabel = labels.statuses[item.status]
   if (!onStatusChange)
@@ -113,7 +73,7 @@ export function Tasks1StatusMark({ context, item }: FieldProps) {
           }}
           value={item.status}
         >
-          {tasks1Statuses.map((status) => (
+          {tasksStatuses.map((status) => (
             <MenuRadioItem key={status} value={status}>
               <Tasks1StatusIcon status={status} />
               {labels.statuses[status]}
@@ -125,8 +85,9 @@ export function Tasks1StatusMark({ context, item }: FieldProps) {
   )
 }
 
-export function Tasks1TagsField({ context, item }: FieldProps) {
-  const { labels, onTagsChange, tags } = context
+export function Tasks1TagsField({ context, item }: TasksFieldProps) {
+  const { labels, onTagsChange, tagById } = context
+  const tags = [...tagById.values()]
   if (onTagsChange)
     return (
       <TagsProperty
@@ -155,7 +116,7 @@ export function Tasks1TagsField({ context, item }: FieldProps) {
   )
 }
 
-export function Tasks1DueField({ context, item }: FieldProps) {
+export function Tasks1DueField({ context, item }: TasksFieldProps) {
   const { labels, locale, onDueChange, timeZone } = context
   return (
     <DateProperty
@@ -174,85 +135,32 @@ export function Tasks1DueField({ context, item }: FieldProps) {
   )
 }
 
-export function Tasks1ProjectField({ context, item }: FieldProps) {
-  const { labels, onProjectChange, projects } = context
+export function Tasks1KindField({ context, item }: TasksFieldProps) {
+  const { kinds, labels, onKindChange } = context
   return (
     <SelectProperty
-      allowEmpty={Boolean(onProjectChange)}
-      ariaLabel={labels.columns.project}
-      labels={{ emptyOption: labels.noProject }}
+      allowEmpty={Boolean(onKindChange)}
+      ariaLabel={labels.columns.kind}
+      labels={{ emptyOption: labels.noKind }}
       onValueChange={
-        onProjectChange
-          ? (projectId) => {
-              if (projectId !== item.projectId)
-                onProjectChange(item.id, projectId)
+        onKindChange
+          ? (kindId) => {
+              if (kindId !== item.kindId) onKindChange(item.id, kindId)
             }
           : undefined
       }
-      options={projects.map((project) => ({
-        label: project.label,
-        value: project.id,
+      options={kinds.map((kind) => ({
+        label: kind.label,
+        value: kind.id,
       }))}
-      placeholder={labels.noProject}
-      value={item.projectId}
+      placeholder={labels.noKind}
+      value={item.kindId}
       variant="plain"
     />
   )
 }
 
-export function Tasks1AssigneesField({ context, item }: FieldProps) {
-  const { assignees, labels, onAssigneesChange } = context
-  return (
-    <PeopleProperty
-      ariaLabel={labels.columns.assignees}
-      display="stack"
-      labels={labels.peoplePicker}
-      onValueChange={
-        onAssigneesChange
-          ? (assigneeIds) => onAssigneesChange(item.id, [...assigneeIds])
-          : undefined
-      }
-      options={assignees.map((assignee) => ({
-        imageUrl: assignee.imageUrl,
-        label: assignee.label,
-        value: assignee.id,
-      }))}
-      placeholder={labels.unassigned}
-      readOnly={!onAssigneesChange}
-      value={item.assigneeIds}
-      variant="plain"
-    />
-  )
-}
-
-export function Tasks1PriorityField({ context, item }: FieldProps) {
-  const { labels, onPriorityChange } = context
-  return (
-    <SelectProperty
-      allowEmpty={Boolean(onPriorityChange)}
-      ariaLabel={labels.columns.priority}
-      labels={{ emptyOption: labels.noPriority }}
-      onValueChange={
-        onPriorityChange
-          ? (value) => {
-              const priority = findPriority(value)
-              if (priority !== item.priority)
-                onPriorityChange(item.id, priority)
-            }
-          : undefined
-      }
-      options={dataSelectOptions(
-        dataPriorities,
-        labels.priorities,
-        dataPriorityAppearance,
-      )}
-      placeholder={labels.noPriority}
-      value={item.priority}
-    />
-  )
-}
-
-export function Tasks1UpdatedField({ context, item }: FieldProps) {
+export function Tasks1UpdatedField({ context, item }: TasksFieldProps) {
   const { labels, locale, timeZone } = context
   return (
     <DataDate
@@ -265,4 +173,26 @@ export function Tasks1UpdatedField({ context, item }: FieldProps) {
       withTime
     />
   )
+}
+
+export function createTasks1Cells(context: TasksFieldContext): TasksCells {
+  const field =
+    (Field: (props: TasksFieldProps) => ReactNode) => (task: TasksTask) => (
+      <Field context={context} item={task} />
+    )
+  return {
+    ...createTasksCells(context),
+    due: field(Tasks1DueField),
+    kind: field(Tasks1KindField),
+    tags: field(Tasks1TagsField),
+    title: (task) => (
+      <IconLabelProperty
+        className="gap-2 font-medium text-foreground"
+        label={task.title}
+        leading={<Tasks1StatusMark context={context} item={task} />}
+        variant="plain"
+      />
+    ),
+    updated: field(Tasks1UpdatedField),
+  }
 }

@@ -1,29 +1,3 @@
-export {
-  Tasks4,
-  tasks4GroupBys,
-  tasks4Modes,
-  tasks4PriorityFilters,
-  tasks4Sorts,
-  tasks4Statuses,
-} from './tasks-4'
-export type {
-  Tasks4ColumnId,
-  Tasks4FilterId,
-  Tasks4GroupBy,
-  Tasks4KanbanGroupBy,
-  Tasks4Labels,
-  Tasks4LabelsOverride,
-  Tasks4Mode,
-  Tasks4Option,
-  Tasks4Person,
-  Tasks4Priority,
-  Tasks4PriorityFilter,
-  Tasks4Props,
-  Tasks4SavedView,
-  Tasks4Sort,
-  Tasks4SortColumn,
-  Tasks4SortDirection,
-  Tasks4Status,
-  Tasks4Tag,
-  Tasks4Task,
-} from './types'
+export * from '../shared'
+export { Tasks4 } from './tasks-4'
+export type { Tasks4Labels, Tasks4LabelsOverride, Tasks4Props } from './types'

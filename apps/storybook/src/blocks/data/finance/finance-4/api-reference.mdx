@@ -5,7 +5,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 # Finance4
 
-The financial entries of a law firm in one collection, with the toolbar of `Tasks4`. Each entry has a description, a kind (fee, expense, expense reimbursement, client money in or out), a client, a case, a responsible lawyer, a due date, an amount and a situation (open, overdue, renegotiated, settled, canceled). It renders as Lista, Tabela or Quadro (Kanban by situation). Install it with `npx @tc96/cli add finance-4`.
+The financial entries of a law firm in one collection, with one toolbar menu per setting: the filter with its count, the layout, the sort and the grouping. Each entry has a description, a kind (fee, expense, expense reimbursement, client money in or out), a client, a case, a responsible lawyer, a due date, an amount and a situation (open, overdue, renegotiated, settled, canceled). It renders as Lista, Tabela or Quadro (Kanban by situation). Install it with `npx @tc96/cli add finance-4`.
 
 The toolbar `left` slot holds the view switcher (`labels.viewList`): three fixed views, Todos, A receber and A pagar (`labels.views`, with an optional count each), then the saved views, with create, update, rename, duplicate and delete when their callbacks are passed. The page has no `h2`; the section keeps its name from `labels.title`. The `right` slot holds, in this order: the filter menu (Situação, Tipo, Responsável), the layout menu, the sort menu (Vencimento, Valor, Atualização, Cliente), the group menu (Situação, Tipo, Cliente, Processo; only Situação in the Kanban) and the primary `Action` (`labels.create`).
 
