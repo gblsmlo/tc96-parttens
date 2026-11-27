@@ -1,0 +1,111 @@
+import { Canvas, Meta } from '@storybook/addon-docs/blocks'
+import * as ApiReferenceStories from './api-reference.stories.tsx'
+
+<Meta of={ApiReferenceStories} name="API Reference" />
+
+# RecordProperties1
+
+The properties of one record as label and value rows, one column in a narrow container and two from the `@lg` container width up. Reach for it at the top of a record details page or panel to show status, priority, type, owner and tags. Install it with `npx @tc96/cli add record-properties-1`.
+
+The block keeps no state and never fetches. Each row's value is the app's: the item's `render` returns a property display (`SelectProperty`, `PersonProperty`, `TagsProperty`, `DateProperty`) with its own value and handler. The catalog only names a property: it gives the row its label and label icon.
+
+The other pages of `Blocks/Application/Record Properties/RecordProperties1`: [Playground](?path=/story/blocks-application-record-properties-recordproperties1-playground--playground) to try the controls, [Variants](?path=/story/blocks-application-record-properties-recordproperties1-variants--mixed-label-icons) for the label icon and custom property variants and [Usages](?path=/story/blocks-application-record-properties-recordproperties1-usages--task-details-page) for a task details page.
+
+## Import
+
+```tsx
+import {
+  createRecordProperties1Catalog,
+  RecordProperties1,
+} from '@tc96/ui/blocks/application/record-properties/record-properties-1'
+```
+
+The same path exports the types listed under Exports.
+
+## Anatomy
+
+Five catalog rows; Status and Prioridade pass `icon: null`.
+
+<Canvas of={ApiReferenceStories.Anatomy} />
+
+```tsx
+<RecordProperties1
+  catalog={createRecordProperties1Catalog({ owner: 'Responsável', type: 'Tipo' })}
+  items={[
+    { catalogKey: 'status', icon: null, id: 'status', render: () => <SelectProperty {...status} /> },
+    { catalogKey: 'owner', id: 'owner', render: () => <PersonProperty {...owner} /> },
+    { icon: CalendarCheckIcon, id: 'review', label: 'Revisão', render: () => <DateProperty {...review} /> },
+  ]}
+/>
+```
+
+## RecordProperties1
+
+| Prop | Type | Default | Description |
+| --- | --- | --- | --- |
+| `items` | `RecordProperties1Item<TKey>[]` | required | The rows, in order. |
+| `catalog` | `RecordProperties1Catalog<TKey>` | `defaultRecordProperties1Catalog` | Label and icon per catalog key. Pass your own to translate or add keys; `TKey` follows its keys. |
+| `showLabelIcons` | `boolean` | `true` | `false` hides every label icon. |
+| `labels` | `Partial<RecordProperties1Labels>` | English texts | Overrides the texts of the block; see Labels below. |
+| `ariaLabel` | `string` | - | Names the rows as a `group`; without it the wrapper has no role. |
+| `className` | `string` | - | Merged into the root classes. |
+
+## RecordProperties1Item
+
+An item is either a catalog item or a custom item; TypeScript requires `label` on a custom item.
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | `string` | Identifies the row. |
+| `render` | `() => ReactNode` | The value: a property display with its own value and handler. |
+| `catalogKey` | `TKey` | The catalog entry that gives the label and icon. Leave it out for a custom property. |
+| `label` | `string` | Required without `catalogKey`; with it, overrides the catalog label. |
+| `icon` | `PropertyIcon \| null` | Overrides the catalog icon; `null` renders no icon on this row. |
+| `pending` | `boolean` | Shows a skeleton in place of the value and does not call `render`; the label stays. |
+
+## Labels
+
+| Key | Type | Default |
+| --- | --- | --- |
+| `loadingValue` | `(label: string) => string` | `` (label) => `Loading ${label}` ``; the accessible name of a pending value |
+
+## Catalog
+
+`createRecordProperties1Catalog(labels?)` returns the default catalog with the labels you pass. The icons come from `propertyDisplayIcons` (`@tc96/ui/patterns/properties/core`).
+
+| Key | Icon | Default label |
+| --- | --- | --- |
+| `status` | `status` | `"Status"` |
+| `priority` | `priority` | `"Priority"` |
+| `type` | `type` | `"Type"` |
+| `owner` | `person` | `"Owner"` |
+| `tags` | `tags` | `"Tags"` |
+| `dueDate` | `date` | `"Due date"` |
+| `createdAt` | `schedule` | `"Created"` |
+
+To add a key for the whole app, spread the default catalog: `{ ...createRecordProperties1Catalog(labels), stage: { icon: FlagIcon, label: 'Etapa' } }`.
+
+## Exports
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `RecordProperties1` | `component` | The properties rows. |
+| `createRecordProperties1Catalog` | `function` | The default catalog with the given labels. |
+| `defaultRecordProperties1Catalog` | `const` | The default catalog with English labels. |
+| `defaultRecordProperties1CatalogLabels` | `const` | The English labels of the default catalog. |
+| `RecordProperties1Props` | `type` | The props of the block. |
+| `defaultRecordProperties1Labels` | `const` | The English labels of the block. |
+| `resolveRecordProperties1Labels` | `function` | Merges partial labels over the defaults. |
+| `RecordProperties1Labels` | `type` | The keys of `labels`. |
+| `RecordProperties1Item` | `type` | A row: `RecordProperties1CatalogItem` or `RecordProperties1CustomItem`. |
+| `RecordProperties1Catalog` | `type` | Label and icon per key. |
+| `RecordProperties1CatalogEntry` | `type` | One catalog entry. |
+| `RecordProperties1CatalogLabels` | `type` | The labels of the default keys. |
+| `RecordProperties1DefaultKey` | `type` | The keys of the default catalog. |
+
+## Accessibility and theme
+
+- Each row is a description list (`dt` label, `dd` value) from `RecordGroupRow`; the label icon is `aria-hidden`.
+- A pending value is a `status` with `aria-busy="true"`, named by `labels.loadingValue`.
+- Each property display carries its own accessible name through its `ariaLabel`.
+- The block carries no color, radius or shadow of its own: the theme belongs to the app.
