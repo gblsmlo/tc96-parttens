@@ -1,6 +1,7 @@
-import { PushPinSlashIcon } from '@phosphor-icons/react'
+import { PushPinIcon } from '@phosphor-icons/react'
 import { Button } from '@tc96/ui/button'
 import { Card, CardDescription, CardTitle } from '@tc96/ui/card'
+import { Tooltip, TooltipPopup, TooltipTrigger } from '@tc96/ui/tooltip'
 import { useId } from 'react'
 import { DataCollectionCaption } from '../../shared/collection/data-collection-record-parts'
 import {
@@ -70,16 +71,23 @@ export function Documents5Pinned({
               </CardDescription>
             </div>
             {onPinnedChange ? (
-              <Button
-                aria-label={labels.unpinRecord(item.name)}
-                className="relative z-10"
-                onClick={() => onPinnedChange(item.id, false)}
-                size="icon-sm"
-                type="button"
-                variant="ghost"
-              >
-                <PushPinSlashIcon aria-hidden="true" />
-              </Button>
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <Button
+                      aria-label={labels.unpinRecord(item.name)}
+                      className="relative z-10"
+                      onClick={() => onPinnedChange(item.id, false)}
+                      size="icon-sm"
+                      type="button"
+                      variant="ghost"
+                    />
+                  }
+                >
+                  <PushPinIcon aria-hidden="true" weight="fill" />
+                </TooltipTrigger>
+                <TooltipPopup>{labels.unpin}</TooltipPopup>
+              </Tooltip>
             ) : null}
           </Card>
         ))}
