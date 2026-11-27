@@ -420,3 +420,12 @@ export async function expectEveryTasksLayout(canvasElement: HTMLElement) {
     canvasElement.querySelector('[data-slot="kanban-column"]'),
   ).toBeNull()
 }
+
+export async function expectColumnsSectionLabel(canvasElement: HTMLElement) {
+  const canvas = within(canvasElement)
+  await userEvent.click(
+    await canvas.findByRole('button', { name: 'Visualização' }),
+  )
+  await expect(await screen.findByText('Colunas exibidas')).toBeVisible()
+  await expect(screen.queryByText('Propriedades')).not.toBeInTheDocument()
+}

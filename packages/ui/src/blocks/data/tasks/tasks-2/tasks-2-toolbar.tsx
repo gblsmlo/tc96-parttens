@@ -392,7 +392,7 @@ export function Tasks2Toolbar({
               {onVisibleColumnsChange ? (
                 <ViewSettingsFieldSection
                   fields={fields}
-                  label={labels.filterProperties}
+                  label={labels.visibleColumns}
                   onVisibleChange={(id, visible) =>
                     onVisibleColumnsChange(
                       tasksColumnIds.filter((column) =>

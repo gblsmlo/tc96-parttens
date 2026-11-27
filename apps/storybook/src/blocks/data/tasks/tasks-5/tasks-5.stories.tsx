@@ -1,6 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { expect, screen, userEvent, within } from 'storybook/test'
-import { expectEveryTasksLayout } from '../tasks-story.ts'
+import {
+  expectColumnsSectionLabel,
+  expectEveryTasksLayout,
+} from '../tasks-story.ts'
 import {
   type Tasks5Controls,
   tasks5ControlArgs,
@@ -72,5 +75,12 @@ export const EveryLayout: Story = {
   tags: ['!dev'],
   play: async ({ canvasElement }) => {
     await expectEveryTasksLayout(canvasElement)
+  },
+}
+
+export const ColumnsSectionLabel: Story = {
+  tags: ['!dev'],
+  play: async ({ canvasElement }) => {
+    await expectColumnsSectionLabel(canvasElement)
   },
 }

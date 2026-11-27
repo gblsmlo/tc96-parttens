@@ -40,7 +40,6 @@ export const defaultTasksLabels: TasksLabels = {
     priority: 'Priority',
     status: 'Status',
   },
-  filterProperties: 'Properties',
   group: 'Group',
   groupBy: 'Group by',
   groupings: {
