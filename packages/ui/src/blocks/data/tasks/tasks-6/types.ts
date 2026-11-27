@@ -3,6 +3,7 @@ import type {
   TagsPropertyLabels,
 } from '@tc96/ui/patterns/properties/core'
 import type { PropertyMeta, PropertyTone } from '@tc96/ui/property-meta'
+import type { ReactNode } from 'react'
 import type {
   DataCollectionFormatProps,
   DataCollectionLoadLabels,
@@ -76,7 +77,7 @@ export interface Tasks6Task {
   status: Tasks6Status
   tagIds: string[]
   title: string
-  updatedAt: string
+  updatedAt?: string
 }
 
 export type Tasks6ColumnId =
@@ -162,9 +163,13 @@ export type Tasks6LabelsOverride = Partial<
 export interface Tasks6Props
   extends DataCollectionLoadProps,
     DataCollectionFormatProps {
+  actionBar?: ReactNode
+  activeFilterCount?: number
   assigneeFilter?: string | null
   className?: string
   filtered?: boolean
+  filters?: ReactNode
+  footer?: ReactNode
   kanbanGroupBy?: Tasks6KanbanGroupBy
   labels?: Tasks6LabelsOverride
   mode?: Tasks6Mode
@@ -179,6 +184,7 @@ export interface Tasks6Props
   ) => void
   onBulkProjectChange?: (taskIds: string[], projectId: string | null) => void
   onBulkStatusChange?: (taskIds: string[], status: Tasks6Status) => void
+  onClearFilters?: () => void
   onCreate?: () => void
   onDueChange?: (taskId: string, dueAt: string | null) => void
   onKanbanGroupByChange?: (groupBy: Tasks6KanbanGroupBy) => void

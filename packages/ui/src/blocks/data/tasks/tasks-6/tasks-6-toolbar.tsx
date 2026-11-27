@@ -42,12 +42,15 @@ import type {
 } from './types'
 
 export interface Tasks6ToolbarProps {
+  activeFilterCount?: number
   assigneeFilter: string | null
   kanbanGroupBy: Tasks6KanbanGroupBy
   labels: Tasks6Labels
   loading: boolean
+  filters?: ReactNode
   mode: Tasks6Mode
   onAssigneeFilterChange?: (assigneeId: string | null) => void
+  onClearFilters?: () => void
   onCreate?: () => void
   onKanbanGroupByChange: (groupBy: Tasks6KanbanGroupBy) => void
   onModeChange: (mode: Tasks6Mode) => void
@@ -96,12 +99,15 @@ const allOption = (label: string): ViewSettingsOption => ({
 const fromAll = (value: string) => (value === tasks6All ? null : value)
 
 export function Tasks6Toolbar({
+  activeFilterCount: activeFilterCountProp,
   assigneeFilter,
+  filters,
   kanbanGroupBy,
   labels,
   loading,
   mode,
   onAssigneeFilterChange,
+  onClearFilters,
   onCreate,
   onKanbanGroupByChange,
   onModeChange,
@@ -119,11 +125,22 @@ export function Tasks6Toolbar({
   const showStatus = Boolean(onStatusFilterChange)
   const showPriority = Boolean(onPriorityFilterChange)
   const showAssignee = Boolean(onAssigneeFilterChange) && people.length > 0
-  const hasFilters = showStatus || showPriority || showAssignee
+  const builtInFilters = showStatus || showPriority || showAssignee
+  const hasFilters = Boolean(filters) || builtInFilters
   const activeFilterCount =
+    activeFilterCountProp ??
     (showStatus && statusFilter ? 1 : 0) +
-    (showPriority && priorityFilter ? 1 : 0) +
-    (showAssignee && assigneeFilter ? 1 : 0)
+      (showPriority && priorityFilter ? 1 : 0) +
+      (showAssignee && assigneeFilter ? 1 : 0)
+  const clearFilters =
+    onClearFilters ??
+    (builtInFilters
+      ? () => {
+          if (showStatus) onStatusFilterChange?.(null)
+          if (showPriority) onPriorityFilterChange?.(null)
+          if (showAssignee) onAssigneeFilterChange?.(null)
+        }
+      : undefined)
 
   return (
     <CollectionToolbar
@@ -137,15 +154,7 @@ export function Tasks6Toolbar({
               activeFilterCount={activeFilterCount}
               clearLabel={labels.clearFilters}
               label={labels.display}
-              onClearFilters={
-                hasFilters
-                  ? () => {
-                      if (showStatus) onStatusFilterChange?.(null)
-                      if (showPriority) onPriorityFilterChange?.(null)
-                      if (showAssignee) onAssigneeFilterChange?.(null)
-                    }
-                  : undefined
-              }
+              onClearFilters={clearFilters}
             >
               <ViewSettingsSection label={labels.display}>
                 <ViewSettingsSubmenu<Tasks6Mode>
@@ -195,7 +204,8 @@ export function Tasks6Toolbar({
                 <>
                   <MenuSeparator />
                   <ViewSettingsSection label={labels.filterProperties}>
-                    {showStatus ? (
+                    {filters}
+                    {!filters && showStatus ? (
                       <ViewSettingsSubmenu
                         icon={RadioButtonIcon}
                         label={labels.filterBy.status}
@@ -218,7 +228,7 @@ export function Tasks6Toolbar({
                         value={statusFilter ?? tasks6All}
                       />
                     ) : null}
-                    {showPriority ? (
+                    {!filters && showPriority ? (
                       <ViewSettingsSubmenu
                         icon={CellSignalHighIcon}
                         label={labels.filterBy.priority}
@@ -248,7 +258,7 @@ export function Tasks6Toolbar({
                         value={priorityFilter ?? tasks6All}
                       />
                     ) : null}
-                    {showAssignee ? (
+                    {!filters && showAssignee ? (
                       <ViewSettingsSubmenu
                         icon={UserIcon}
                         label={labels.filterBy.assignee}

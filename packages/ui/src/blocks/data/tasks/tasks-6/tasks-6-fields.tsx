@@ -312,6 +312,7 @@ export function formatTasks6Updated(
 
 export function Tasks6UpdatedField({ context, item }: FieldProps) {
   const { locale, now, timeZone } = context
+  if (!item.updatedAt) return null
   return (
     <IconLabelProperty
       className="text-muted-foreground tabular-nums"

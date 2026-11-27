@@ -124,10 +124,14 @@ const directionOf = (
   tasks6DefaultSortDirection[tasks6Sorts.find((item) => item === sort) ?? 'due']
 
 export function Tasks6({
+  actionBar,
+  activeFilterCount,
   assigneeFilter: assigneeFilterProp,
   className,
   error,
   filtered = false,
+  filters,
+  footer,
   kanbanGroupBy: kanbanGroupByProp,
   labels: labelsProp,
   locale = defaultDataCollectionLocale,
@@ -140,6 +144,7 @@ export function Tasks6({
   onBulkPriorityChange,
   onBulkProjectChange,
   onBulkStatusChange,
+  onClearFilters,
   onCreate,
   onDueChange,
   onKanbanGroupByChange,
@@ -390,6 +395,9 @@ export function Tasks6({
       title={labels.title}
       toolbar={
         <Tasks6Toolbar
+          activeFilterCount={activeFilterCount}
+          filters={filters}
+          onClearFilters={onClearFilters}
           assigneeFilter={assigneeFilter}
           kanbanGroupBy={kanbanGroupBy}
           labels={labels}
@@ -449,6 +457,7 @@ export function Tasks6({
           <DataCollection<Tasks6Task>
             collection={collection}
             emptyMessage={filtered ? labels.noResult : labels.empty}
+            footer={footer}
             groupBy={activeGroupBy}
             kanban={kanban}
             label={labels.title}
@@ -484,7 +493,8 @@ export function Tasks6({
           />
         </div>
       )}
-      {!loadState && mode === 'list' && selectable ? (
+      {!loadState && actionBar ? actionBar : null}
+      {!loadState && !actionBar && mode === 'list' && selectable ? (
         <div className="pointer-events-none sticky bottom-3 flex justify-center">
           <ActionBar
             actions={createTasks6SelectionActions({
