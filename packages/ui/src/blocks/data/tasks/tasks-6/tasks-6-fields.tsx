@@ -56,6 +56,21 @@ export interface Tasks6FieldContext {
   timeZone: string
 }
 
+export const fieldContextOf = (
+  context: Tasks6FieldContext,
+  task: Tasks6Task,
+): Tasks6FieldContext =>
+  task.readOnly
+    ? {
+        ...context,
+        onAssigneesChange: undefined,
+        onDueChange: undefined,
+        onProjectChange: undefined,
+        onStatusChange: undefined,
+        onTagsChange: undefined,
+      }
+    : context
+
 interface FieldProps {
   context: Tasks6FieldContext
   item: Tasks6Task

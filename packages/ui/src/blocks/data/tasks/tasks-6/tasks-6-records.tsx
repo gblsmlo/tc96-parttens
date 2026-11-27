@@ -18,6 +18,7 @@ import { IconLabelProperty } from '@tc96/ui/patterns/properties/display/icon-lab
 import { cn } from '@tc96/utils'
 import { DataCollectionKanbanCard } from '../../shared/collection/data-collection-record-parts'
 import {
+  fieldContextOf,
   Tasks6AssigneesField,
   Tasks6DueField,
   type Tasks6FieldContext,
@@ -117,7 +118,8 @@ export function Tasks6ListHeader({
 }
 
 export const renderTasks6ListRow =
-  (context: Tasks6FieldContext) => (task: Tasks6Task) => {
+  (listContext: Tasks6FieldContext) => (task: Tasks6Task) => {
+    const context = fieldContextOf(listContext, task)
     const { labels, onOpen, onSelectedChange, selectedIds } = context
     const selected = selectedIds.has(task.id)
     return (
@@ -185,7 +187,8 @@ export const renderTasks6ListRow =
   }
 
 export const renderTasks6KanbanCard =
-  (context: Tasks6FieldContext) => (task: Tasks6Task) => {
+  (cardContext: Tasks6FieldContext) => (task: Tasks6Task) => {
+    const context = fieldContextOf(cardContext, task)
     const { labels, onAssigneesChange, onDueChange, onOpen, projects } = context
     const project = projects.find((item) => item.id === task.projectId)
     return (

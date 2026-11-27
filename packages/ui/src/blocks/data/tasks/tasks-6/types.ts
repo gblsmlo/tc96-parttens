@@ -74,6 +74,7 @@ export interface Tasks6Task {
   overdue?: boolean
   priority: Tasks6Priority | null
   projectId?: string | null
+  readOnly?: boolean
   status: Tasks6Status
   tagIds: string[]
   title: string
