@@ -134,11 +134,17 @@ export function DueField({
 export function EstimateField({
   onChange,
   task,
-}: Readonly<{ onChange: UpdateTask; task: Task }>) {
+  variant,
+}: Readonly<{
+  onChange: UpdateTask
+  task: Task
+  variant?: 'badge' | 'plain'
+}>) {
   return (
     <TextProperty
       ariaLabel="Estimativa"
       editing="inline"
+      variant={variant}
       onCommit={(value) => {
         const hours = Number.parseFloat(value ?? '')
         onChange(task.id, {
