@@ -236,7 +236,8 @@ export function Tasks6({
     onSelectedIdsChange,
   )
   const selectable = Boolean(
-    onBulkAssigneesChange ||
+    actionBar ||
+      onBulkAssigneesChange ||
       onBulkDelete ||
       onBulkPriorityChange ||
       onBulkProjectChange ||
@@ -390,6 +391,7 @@ export function Tasks6({
 
   return (
     <DataCollectionFrame
+      aria-busy={pending || undefined}
       className={className}
       data-block="tasks-6"
       title={labels.title}
@@ -446,18 +448,17 @@ export function Tasks6({
         />
       }
     >
-      {loadState ?? (
-        <div
-          className={cn(
-            'flex min-h-0 flex-1 flex-col transition-opacity',
-            pending && 'pointer-events-none opacity-60',
-          )}
-          data-slot="tasks-6-body"
-        >
+      <div
+        className={cn(
+          'flex min-h-0 flex-1 flex-col transition-opacity',
+          pending && 'pointer-events-none opacity-60',
+        )}
+        data-slot="tasks-6-body"
+      >
+        {loadState ?? (
           <DataCollection<Tasks6Task>
             collection={collection}
             emptyMessage={filtered ? labels.noResult : labels.empty}
-            footer={footer}
             groupBy={activeGroupBy}
             kanban={kanban}
             label={labels.title}
@@ -491,35 +492,36 @@ export function Tasks6({
             renderListRecord={renderTasks6ListRow(context)}
             table={table}
           />
-        </div>
-      )}
-      {!loadState && actionBar ? actionBar : null}
-      {!loadState && !actionBar && mode === 'list' && selectable ? (
-        <div className="pointer-events-none sticky bottom-3 flex justify-center">
-          <ActionBar
-            actions={createTasks6SelectionActions({
-              labels,
-              onBulkAssigneesChange,
-              onBulkDelete,
-              onBulkPriorityChange,
-              onBulkProjectChange,
-              onBulkStatusChange,
-              onDone: () => setSelectedIds(noIds),
-              people,
-              projects,
-              selectedRows,
-              statuses,
-            })}
-            className="pointer-events-auto"
-            clearSelectionLabel={labels.clearSelection}
-            formatSelection={labels.selectedCount}
-            label={labels.selectionActions}
-            onClearSelection={() => setSelectedIds(noIds)}
-            selectedCount={selectedRows.length}
-            selectedRows={selectedRows}
-          />
-        </div>
-      ) : null}
+        )}
+        {!loadState && mode === 'list' && selectable ? (
+          <div className="pointer-events-none sticky bottom-3 flex justify-center *:pointer-events-auto">
+            {actionBar ?? (
+              <ActionBar
+                actions={createTasks6SelectionActions({
+                  labels,
+                  onBulkAssigneesChange,
+                  onBulkDelete,
+                  onBulkPriorityChange,
+                  onBulkProjectChange,
+                  onBulkStatusChange,
+                  onDone: () => setSelectedIds(noIds),
+                  people,
+                  projects,
+                  selectedRows,
+                  statuses,
+                })}
+                clearSelectionLabel={labels.clearSelection}
+                formatSelection={labels.selectedCount}
+                label={labels.selectionActions}
+                onClearSelection={() => setSelectedIds(noIds)}
+                selectedCount={selectedRows.length}
+                selectedRows={selectedRows}
+              />
+            )}
+          </div>
+        ) : null}
+      </div>
+      {footer}
     </DataCollectionFrame>
   )
 }

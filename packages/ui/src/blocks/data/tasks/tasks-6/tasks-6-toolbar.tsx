@@ -148,141 +148,140 @@ export function Tasks6Toolbar({
       className="min-h-14 flex-wrap gap-y-3"
       left={viewSwitcher}
       right={
-        loading ? undefined : (
-          <>
-            <ViewSettings
-              activeFilterCount={activeFilterCount}
-              clearLabel={labels.clearFilters}
-              label={labels.display}
-              onClearFilters={clearFilters}
-            >
-              <ViewSettingsSection label={labels.display}>
-                <ViewSettingsSubmenu<Tasks6Mode>
-                  label={labels.layout}
-                  onValueChange={onModeChange}
-                  options={tasks6Modes.map((item) =>
+        <>
+          <ViewSettings
+            activeFilterCount={activeFilterCount}
+            clearLabel={labels.clearFilters}
+            label={labels.display}
+            onClearFilters={clearFilters}
+          >
+            <ViewSettingsSection label={labels.display}>
+              <ViewSettingsSubmenu<Tasks6Mode>
+                label={labels.layout}
+                onValueChange={onModeChange}
+                options={tasks6Modes.map((item) =>
+                  iconOption(
+                    item,
+                    labels.modes[item],
+                    dataCollectionModeIcons[item],
+                  ),
+                )}
+                value={mode}
+              />
+              {onSortChange ? (
+                <ViewSettingsSubmenu
+                  icon={SortAscendingIcon}
+                  label={labels.sortBy}
+                  onValueChange={onSortChange}
+                  options={sortOptions.map((item) =>
                     iconOption(
-                      item,
-                      labels.modes[item],
-                      dataCollectionModeIcons[item],
+                      item.id,
+                      item.label,
+                      sortIcons[item.id] ?? SortAscendingIcon,
                     ),
                   )}
-                  value={mode}
+                  value={sort}
                 />
-                {onSortChange ? (
-                  <ViewSettingsSubmenu
-                    icon={SortAscendingIcon}
-                    label={labels.sortBy}
-                    onValueChange={onSortChange}
-                    options={sortOptions.map((item) =>
-                      iconOption(
-                        item.id,
-                        item.label,
-                        sortIcons[item.id] ?? SortAscendingIcon,
-                      ),
-                    )}
-                    value={sort}
-                  />
-                ) : null}
-                {mode === 'kanban' ? (
-                  <ViewSettingsSubmenu<Tasks6KanbanGroupBy>
-                    icon={StackIcon}
-                    label={labels.kanbanGroupBy}
-                    onValueChange={onKanbanGroupByChange}
-                    options={tasks6KanbanGroupBys.map((item) =>
-                      iconOption(
-                        item,
-                        labels.groupings[item],
-                        groupIcons[item],
-                      ),
-                    )}
-                    value={kanbanGroupBy}
-                  />
-                ) : null}
-              </ViewSettingsSection>
-              {hasFilters ? (
-                <>
-                  <MenuSeparator />
-                  <ViewSettingsSection label={labels.filterProperties}>
-                    {filters}
-                    {!filters && showStatus ? (
-                      <ViewSettingsSubmenu
-                        icon={RadioButtonIcon}
-                        label={labels.filterBy.status}
-                        onValueChange={(value) =>
-                          onStatusFilterChange?.(fromAll(value))
-                        }
-                        options={[
-                          allOption(labels.filterAll.status),
-                          ...statuses.map((status) => ({
-                            icon: (
-                              <PropertyMetaIcon
-                                className={optionIcon}
-                                meta={status.meta}
-                              />
-                            ),
-                            label: status.label,
-                            value: status.id,
-                          })),
-                        ]}
-                        value={statusFilter ?? tasks6All}
-                      />
-                    ) : null}
-                    {!filters && showPriority ? (
-                      <ViewSettingsSubmenu
-                        icon={CellSignalHighIcon}
-                        label={labels.filterBy.priority}
-                        onValueChange={(value) =>
-                          onPriorityFilterChange?.(
-                            tasks6PriorityFilters.find(
-                              (item) => item === value,
-                            ) ?? null,
-                          )
-                        }
-                        options={[
-                          allOption(labels.filterAll.priority),
-                          ...tasks6PriorityFilters.map((priority) => ({
-                            icon: (
-                              <PropertyMetaIcon
-                                className={optionIcon}
-                                meta={priorityMeta[priority]}
-                              />
-                            ),
-                            label:
-                              priority === 'none'
-                                ? labels.noPriority
-                                : labels.priorities[priority],
-                            value: priority,
-                          })),
-                        ]}
-                        value={priorityFilter ?? tasks6All}
-                      />
-                    ) : null}
-                    {!filters && showAssignee ? (
-                      <ViewSettingsSubmenu
-                        icon={UserIcon}
-                        label={labels.filterBy.assignee}
-                        onValueChange={(value) =>
-                          onAssigneeFilterChange?.(fromAll(value))
-                        }
-                        options={[
-                          allOption(labels.filterAll.assignee),
-                          ...people.map((person) =>
-                            iconOption(person.id, person.label, UserCircleIcon),
-                          ),
-                        ]}
-                        value={assigneeFilter ?? tasks6All}
-                      />
-                    ) : null}
-                  </ViewSettingsSection>
-                </>
               ) : null}
-            </ViewSettings>
-            {onCreate ? (
-              <Action label={labels.create} onClick={onCreate} />
+              {mode === 'kanban' ? (
+                <ViewSettingsSubmenu<Tasks6KanbanGroupBy>
+                  icon={StackIcon}
+                  label={labels.kanbanGroupBy}
+                  onValueChange={onKanbanGroupByChange}
+                  options={tasks6KanbanGroupBys.map((item) =>
+                    iconOption(item, labels.groupings[item], groupIcons[item]),
+                  )}
+                  value={kanbanGroupBy}
+                />
+              ) : null}
+            </ViewSettingsSection>
+            {hasFilters ? (
+              <>
+                <MenuSeparator />
+                <ViewSettingsSection label={labels.filterProperties}>
+                  {filters}
+                  {!filters && showStatus ? (
+                    <ViewSettingsSubmenu
+                      icon={RadioButtonIcon}
+                      label={labels.filterBy.status}
+                      onValueChange={(value) =>
+                        onStatusFilterChange?.(fromAll(value))
+                      }
+                      options={[
+                        allOption(labels.filterAll.status),
+                        ...statuses.map((status) => ({
+                          icon: (
+                            <PropertyMetaIcon
+                              className={optionIcon}
+                              meta={status.meta}
+                            />
+                          ),
+                          label: status.label,
+                          value: status.id,
+                        })),
+                      ]}
+                      value={statusFilter ?? tasks6All}
+                    />
+                  ) : null}
+                  {!filters && showPriority ? (
+                    <ViewSettingsSubmenu
+                      icon={CellSignalHighIcon}
+                      label={labels.filterBy.priority}
+                      onValueChange={(value) =>
+                        onPriorityFilterChange?.(
+                          tasks6PriorityFilters.find(
+                            (item) => item === value,
+                          ) ?? null,
+                        )
+                      }
+                      options={[
+                        allOption(labels.filterAll.priority),
+                        ...tasks6PriorityFilters.map((priority) => ({
+                          icon: (
+                            <PropertyMetaIcon
+                              className={optionIcon}
+                              meta={priorityMeta[priority]}
+                            />
+                          ),
+                          label:
+                            priority === 'none'
+                              ? labels.noPriority
+                              : labels.priorities[priority],
+                          value: priority,
+                        })),
+                      ]}
+                      value={priorityFilter ?? tasks6All}
+                    />
+                  ) : null}
+                  {!filters && showAssignee ? (
+                    <ViewSettingsSubmenu
+                      icon={UserIcon}
+                      label={labels.filterBy.assignee}
+                      onValueChange={(value) =>
+                        onAssigneeFilterChange?.(fromAll(value))
+                      }
+                      options={[
+                        allOption(labels.filterAll.assignee),
+                        ...people.map((person) =>
+                          iconOption(person.id, person.label, UserCircleIcon),
+                        ),
+                      ]}
+                      value={assigneeFilter ?? tasks6All}
+                    />
+                  ) : null}
+                </ViewSettingsSection>
+              </>
             ) : null}
-          </>
-        )
+          </ViewSettings>
+          {onCreate ? (
+            <Action
+              className="data-disabled:pointer-events-none data-disabled:opacity-64"
+              disabled={loading}
+              label={labels.create}
+              onClick={onCreate}
+            />
+          ) : null}
+        </>
       }
     />
   )
