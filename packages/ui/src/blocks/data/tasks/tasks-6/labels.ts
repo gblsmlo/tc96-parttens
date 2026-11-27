@@ -36,6 +36,7 @@ export const defaultTasks6Labels: Tasks6Labels = {
   },
   complete: 'Concluir',
   create: 'Nova tarefa',
+  defaultView: 'Todas as tarefas',
   delete: 'Excluir',
   empty: 'Nenhuma tarefa ainda.',
   emptyColumn: 'Nenhuma tarefa nesta coluna.',

@@ -441,7 +441,7 @@ export function Tasks6({
               savedViewsLoading={savedViewsLoading}
               savedViewsPending={savedViewsPending}
               view={tasks6AllView}
-              viewLabels={{ [tasks6AllView]: labels.title }}
+              viewLabels={{ [tasks6AllView]: labels.defaultView }}
               views={tasks6Views}
             />
           }

@@ -101,6 +101,7 @@ export interface Tasks6Labels extends DataCollectionLoadLabels {
   columns: Record<Tasks6ColumnId, string>
   complete: string
   create: string
+  defaultView: string
   delete: string
   empty: string
   emptyColumn: string
