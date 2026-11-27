@@ -17,6 +17,7 @@ export const tasksStatuses: readonly TasksStatus[] = [
   'todo',
   'in-progress',
   'done',
+  'canceled',
 ]
 
 export const tasksPriorityFilters: readonly TasksPriorityFilter[] = [

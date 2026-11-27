@@ -44,6 +44,23 @@ export const Tasks6: Story = {
   },
 }
 
+export const CanceledStatus: Story = {
+  tags: ['!dev'],
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const [trigger] = await canvas.findAllByRole('button', {
+      name: /Alterar status/,
+    })
+    await userEvent.click(trigger)
+    await userEvent.click(
+      await screen.findByRole('menuitemradio', { name: 'Cancelada' }),
+    )
+    await expect(
+      (await canvas.findAllByRole('button', { name: /Alterar status/ }))[0],
+    ).toHaveAccessibleName('Status: Cancelada. Alterar status')
+  },
+}
+
 export const OnlyChosenSorts: Story = {
   args: { sorts: ['due', 'title'] },
   tags: ['!dev'],

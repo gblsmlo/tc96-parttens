@@ -115,6 +115,7 @@ export const defaultTasksLabels: TasksLabels = {
   },
   status: 'Status',
   statuses: {
+    canceled: 'Canceled',
     done: 'Done',
     'in-progress': 'In progress',
     todo: 'To do',
