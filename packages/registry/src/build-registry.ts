@@ -1,3 +1,4 @@
+import { existsSync, readFileSync } from 'node:fs'
 import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { dirname, join, relative, resolve } from 'node:path'
 import { defaultPreset, presets, themeRegistryItem } from '@tc96/themes'
@@ -124,8 +125,30 @@ for (const [name, entry] of entries) {
       )
       .map((area) => resolve(`packages/ui/src/patterns/${area}/index.ts`))
       .find((barrel) => !seen.has(barrel))
+  // A consumer keeps a folder barrel from an earlier install, so the barrel
+  // ships once the item carries every file it re-exports.
+  const coveredFolderBarrel = () =>
+    [...seen]
+      .filter((file) => relative(uiSource, file).startsWith('patterns/'))
+      .map((file) => join(dirname(file), 'index.ts'))
+      .find(
+        (barrel) =>
+          !seen.has(barrel) &&
+          existsSync(barrel) &&
+          ts
+            .preProcessFile(readFileSync(barrel, 'utf8'))
+            .importedFiles.every(({ fileName }) => {
+              const target = ts.resolveModuleName(
+                fileName,
+                barrel,
+                parsed.options,
+                ts.sys,
+              ).resolvedModule?.resolvedFileName
+              return !!target && seen.has(resolve(target))
+            }),
+      )
   for (;;) {
-    const file = pending.pop() ?? usedAreaBarrel()
+    const file = pending.pop() ?? usedAreaBarrel() ?? coveredFolderBarrel()
     if (!file) break
     if (seen.has(file)) continue
     seen.add(file)

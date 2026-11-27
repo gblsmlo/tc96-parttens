@@ -231,7 +231,7 @@ test('preserves an existing file that differs and keeps installed components', a
   try {
     expect(install(root).status).toBe(0)
     await writeFile(proof, 'export const proof = "mine"\n')
-    const result = install(root)
+    const result = install(root, '--yes')
     expect(result.status).toBe(0)
     expect(result.stdout).toContain(
       'Preserved 1 existing files that differ from the registry:\n  src/patterns/checklist/proof.ts',
@@ -240,6 +240,39 @@ test('preserves an existing file that differs and keeps installed components', a
       'Every ui component the patterns use is already installed',
     )
     expect(await readFile(proof, 'utf8')).toBe('export const proof = "mine"\n')
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
+
+test('stops without a terminal when an existing file differs', async () => {
+  const root = await installConsumer()
+  const proof = join(root, 'src/patterns/checklist/proof.ts')
+  try {
+    expect(install(root).status).toBe(0)
+    await writeFile(proof, 'export const proof = "mine"\n')
+    const result = install(root)
+    expect(result.status).not.toBe(0)
+    expect(result.stderr).toContain(
+      '1 existing files differ from the registry and there is no terminal to ask:\n  src/patterns/checklist/proof.ts',
+    )
+    expect(await readFile(proof, 'utf8')).toBe('export const proof = "mine"\n')
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
+
+test('--overwrite replaces an existing file that differs', async () => {
+  const root = await installConsumer()
+  const proof = join(root, 'src/patterns/checklist/proof.ts')
+  try {
+    expect(install(root).status).toBe(0)
+    const original = await readFile(proof, 'utf8')
+    await writeFile(proof, 'export const proof = "mine"\n')
+    const result = install(root, '--overwrite')
+    expect(result.status).toBe(0)
+    expect(await readFile(proof, 'utf8')).toBe(original)
+    expect(install(root, '--overwrite', '--yes').status).not.toBe(0)
   } finally {
     await rm(root, { recursive: true, force: true })
   }
@@ -468,7 +501,7 @@ test('a type error an installed block already had does not stop an update', asyn
       join(root, 'src/blocks/broken.ts'),
       'export const broken: string = 1\n',
     )
-    const result = install(root)
+    const result = install(root, '--yes')
     expect(result.status).toBe(0)
     expect(result.stdout).toContain(
       'Checking 2 installed block files against the updated patterns.',

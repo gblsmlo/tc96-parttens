@@ -50,7 +50,7 @@ import {
   themeNames,
   writeTheme,
 } from './theme'
-import { addFolderExports } from './workspace'
+import { addFolderExports, importedFolders } from './workspace'
 
 const defaultRegistryDirectory = join(
   dirname(fileURLToPath(import.meta.url)),
@@ -79,6 +79,7 @@ Options:
   --view          print the new files without writing them.
   --diff          print the changes to existing files without writing them.
   --yes           preserve existing files that differ without asking.
+  --overwrite     replace existing files that differ without asking.
   --force         install even when the patterns do not type-check against your components.
   --theme <name>  also install a theme. see add --theme.
   -h, --help      display help for command
@@ -155,6 +156,7 @@ async function main() {
         '--view',
         '--yes',
         '--preserve-existing',
+        '--overwrite',
       ].includes(argument)
     )
       flags.add(argument)
@@ -335,23 +337,32 @@ async function main() {
       )
     return
   }
+  const overwrite = flags.has('--overwrite')
+  const preserve = flags.has('--yes') || flags.has('--preserve-existing')
+  if (overwrite && preserve)
+    throw new Error('--overwrite cannot be combined with --yes')
+  const conflicts = planned.filter((file) => file.status === 'conflict')
+  if (conflicts.length && !overwrite && !preserve && !process.stdin.isTTY)
+    throw new Error(
+      `${conflicts.length} existing files differ from the registry and there is no terminal to ask:\n${conflicts.map((file) => `  ${show(file.path)}`).join('\n')}\nPass --overwrite to replace them or --yes to keep them.`,
+    )
   const terminal =
-    process.stdin.isTTY &&
-    !flags.has('--yes') &&
-    !flags.has('--preserve-existing')
+    process.stdin.isTTY && !overwrite && !preserve
       ? createInterface({ input: process.stdin, output: process.stdout })
       : undefined
   const result = await writeFiles(
     planned,
-    terminal &&
-      (async (path) =>
-        /^y(es)?$/i.test(
-          (
-            await terminal.question(
-              `${show(path)} differs from the registry. Overwrite it? (y/N) `,
-            )
-          ).trim(),
-        )),
+    overwrite
+      ? async () => true
+      : terminal &&
+          (async (path) =>
+            /^y(es)?$/i.test(
+              (
+                await terminal.question(
+                  `${show(path)} differs from the registry. Overwrite it? (y/N) `,
+                )
+              ).trim(),
+            )),
   ).finally(() => terminal?.close())
   console.log(`Wrote ${result.written.length} files.`)
   if (result.preserved.length)
@@ -365,6 +376,19 @@ async function main() {
   )
   if (exported.length)
     console.log(`Added to the ui package exports: ${exported.join(', ')}.`)
+  const patternExports = addFolderExports(
+    workspace,
+    configuration.aliases.patterns,
+    importedFolders(
+      workspace,
+      configuration.aliases.patterns,
+      planned.map((file) => file.content),
+    ),
+  )
+  if (patternExports.length)
+    console.log(
+      `Added to the patterns package exports: ${patternExports.join(', ')}.`,
+    )
   if (dependencies.length) installDependencies(workspace, dependencies, target)
   const after = await checkCompatibility(workspace, item, true, {
     dependents,
