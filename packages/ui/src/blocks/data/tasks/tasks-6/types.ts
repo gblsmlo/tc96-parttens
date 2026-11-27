@@ -58,6 +58,7 @@ export type Tasks6Person = DataCollectionPerson
 export type Tasks6SavedView = DataCollectionSavedView
 
 export interface Tasks6Option {
+  group?: string
   id: string
   label: string
 }

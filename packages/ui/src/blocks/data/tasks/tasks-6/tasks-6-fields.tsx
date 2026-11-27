@@ -243,6 +243,27 @@ export function Tasks6DueField({ context, item }: FieldProps) {
   )
 }
 
+const projectOption = (project: Tasks6Option) => ({
+  icon: CubeIcon,
+  label: project.label,
+  tone: 'neutral' as const,
+  value: project.id,
+})
+
+const projectOptionsOf = (projects: readonly Tasks6Option[]) => {
+  if (!projects.some((project) => project.group))
+    return { options: projects.map(projectOption) }
+  const labels = [...new Set(projects.map((project) => project.group ?? ''))]
+  return {
+    groups: labels.map((label) => ({
+      label,
+      options: projects
+        .filter((project) => (project.group ?? '') === label)
+        .map(projectOption),
+    })),
+  }
+}
+
 export function Tasks6ProjectField({ context, item }: FieldProps) {
   const { labels, onProjectChange, projects } = context
   return (
@@ -258,12 +279,7 @@ export function Tasks6ProjectField({ context, item }: FieldProps) {
             }
           : undefined
       }
-      options={projects.map((project) => ({
-        icon: CubeIcon,
-        label: project.label,
-        tone: 'neutral',
-        value: project.id,
-      }))}
+      {...projectOptionsOf(projects)}
       placeholder={labels.noProject}
       value={item.projectId ?? null}
       variant="plain"
