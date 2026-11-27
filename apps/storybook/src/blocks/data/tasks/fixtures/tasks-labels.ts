@@ -43,7 +43,6 @@ export const tasksLabelsPtBR: TasksLabels = {
     priority: 'Prioridade',
     status: 'Status',
   },
-  filterProperties: 'Propriedades',
   group: 'Agrupar',
   groupBy: 'Agrupar por',
   groupings: {

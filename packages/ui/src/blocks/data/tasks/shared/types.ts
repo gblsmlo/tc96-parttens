@@ -102,7 +102,6 @@ export interface TasksLabels
   empty: string
   emptyColumn: string
   filter: string
-  filterProperties: string
   group: string
   groupBy: string
   groupToggle: (group: string, collapsed: boolean) => string
