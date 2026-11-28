@@ -1,7 +1,8 @@
 'use client'
 
-import { DotsThreeIcon } from '@phosphor-icons/react'
+import { DotsThreeIcon, WarningCircleIcon } from '@phosphor-icons/react'
 import { Menu, MenuCheckboxItem, MenuPopup, MenuTrigger } from '@tc96/ui/menu'
+import { Skeleton } from '@tc96/ui/skeleton'
 import { cn } from '@tc96/utils'
 import type React from 'react'
 import { Fragment, useState } from 'react'
@@ -27,9 +28,12 @@ export interface PropertyCollectionProps {
   ariaLabel?: string
   className?: string
   defaultVisible?: readonly string[]
+  error?: boolean
   labels?: Partial<PropertyCollectionLabels>
+  loading?: boolean
   readOnly?: boolean
   visible?: readonly string[]
+  onRetry?: () => void
   onVisibleChange?: (visible: readonly string[]) => void
 }
 
@@ -37,8 +41,11 @@ export function PropertyCollection({
   ariaLabel,
   className,
   defaultVisible,
+  error = false,
   items,
   labels: labelOverrides,
+  loading = false,
+  onRetry,
   onVisibleChange,
   readOnly = false,
   visible,
@@ -57,6 +64,8 @@ export function PropertyCollection({
 
   const visibleIds = visible ?? uncontrolledVisible
   const visibleSet = new Set(visibleIds)
+  const visibleItems = items.filter((item) => visibleSet.has(item.id))
+  const failed = error && !loading
 
   const toggle = (id: string) => {
     const next = items
@@ -72,16 +81,47 @@ export function PropertyCollection({
 
   return (
     <PropertyRow
+      aria-busy={loading ? 'true' : undefined}
       ariaLabel={ariaLabel}
       className={cn('flex flex-wrap items-center gap-x-1 gap-y-0.5', className)}
       slot="property-collection"
     >
-      {items
-        .filter((item) => visibleSet.has(item.id))
-        .map((item) => (
+      {loading ? (
+        <output
+          aria-busy="true"
+          aria-label={labels.loading}
+          className="contents"
+          data-slot="property-collection-loading"
+        >
+          {visibleItems.map((item) => (
+            <Skeleton aria-hidden className="h-6 w-20" key={item.id} />
+          ))}
+        </output>
+      ) : failed ? (
+        <>
+          <span
+            className="inline-flex h-6 min-w-0 items-center gap-1.5 text-destructive-foreground text-sm"
+            data-slot="property-collection-error"
+            role="alert"
+          >
+            <WarningCircleIcon aria-hidden className="size-4 shrink-0" />
+            {labels.error}
+          </span>
+          {onRetry ? (
+            <PropertySurface
+              onClick={onRetry}
+              render={<button type="button" />}
+            >
+              {labels.retry}
+            </PropertySurface>
+          ) : null}
+        </>
+      ) : (
+        visibleItems.map((item) => (
           <Fragment key={item.id}>{item.render()}</Fragment>
-        ))}
-      {readOnly ? null : (
+        ))
+      )}
+      {readOnly || loading || failed ? null : (
         <Menu>
           <MenuTrigger
             aria-label={labels.trigger}

@@ -1,17 +1,11 @@
 import {
-  CalendarDotsIcon,
-  CellSignalHighIcon,
-  RadioButtonIcon,
-  TagIcon,
-  UserCircleIcon,
-} from '@phosphor-icons/react'
-import {
   DateProperty,
   PersonProperty,
   PropertyCollection,
   SelectProperty,
   TagsProperty,
 } from '@tc96/ui/patterns'
+import { propertyDisplayIcons } from '@tc96/ui/patterns/properties/core'
 import { useState } from 'react'
 import type { PropertiesControls } from './properties-controls'
 import {
@@ -26,13 +20,16 @@ function TaskProperties({
   ariaLabel,
   defaultVisible,
   empty,
+  error,
   icons,
   labelsTrigger,
+  loading,
+  onRetry,
   readOnly,
   variant,
 }: Readonly<PropertiesControls>) {
   const [status, setStatus] = useState<string | null>(
-    empty ? null : 'inProgress',
+    empty ? null : 'in-progress',
   )
   const [priority, setPriority] = useState<string | null>(empty ? null : 'high')
   const [assignee, setAssignee] = useState<string | null>(
@@ -48,10 +45,11 @@ function TaskProperties({
   return (
     <PropertyCollection
       ariaLabel={ariaLabel}
+      error={error}
       items={[
         {
           defaultVisible: defaultVisible.includes('status'),
-          icon: icons ? RadioButtonIcon : undefined,
+          icon: icons ? propertyDisplayIcons.status : undefined,
           id: 'status',
           label: 'Status',
           render: () => (
@@ -67,7 +65,7 @@ function TaskProperties({
         },
         {
           defaultVisible: defaultVisible.includes('priority'),
-          icon: icons ? CellSignalHighIcon : undefined,
+          icon: icons ? propertyDisplayIcons.priority : undefined,
           id: 'priority',
           label: 'Priority',
           render: () => (
@@ -83,7 +81,7 @@ function TaskProperties({
         },
         {
           defaultVisible: defaultVisible.includes('assignee'),
-          icon: icons ? UserCircleIcon : undefined,
+          icon: icons ? propertyDisplayIcons.person : undefined,
           id: 'assignee',
           label: 'Assignee',
           render: () => (
@@ -99,7 +97,7 @@ function TaskProperties({
         },
         {
           defaultVisible: defaultVisible.includes('dueDate'),
-          icon: icons ? CalendarDotsIcon : undefined,
+          icon: icons ? propertyDisplayIcons.date : undefined,
           id: 'dueDate',
           label: 'Due date',
           render: () => (
@@ -116,7 +114,7 @@ function TaskProperties({
         },
         {
           defaultVisible: defaultVisible.includes('tags'),
-          icon: icons ? TagIcon : undefined,
+          icon: icons ? propertyDisplayIcons.tags : undefined,
           id: 'tags',
           label: 'Tags',
           render: () => (
@@ -132,6 +130,8 @@ function TaskProperties({
           ),
         },
       ]}
+      loading={loading}
+      onRetry={onRetry}
       readOnly={readOnly}
       labels={{ ...ptBRPropertyLabels.collection, trigger: labelsTrigger }}
     />
@@ -148,7 +148,7 @@ export function ComposedProperties(args: Readonly<PropertiesControls>) {
 }
 
 export function PlainPropertyColumn() {
-  const [status, setStatus] = useState<string | null>('inProgress')
+  const [status, setStatus] = useState<string | null>('in-progress')
   const [dueDate, setDueDate] = useState<string | null>(null)
 
   return (

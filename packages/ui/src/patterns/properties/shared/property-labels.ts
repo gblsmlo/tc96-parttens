@@ -104,6 +104,9 @@ export interface AttachmentPropertyLabels {
 }
 
 export interface PropertyCollectionLabels {
+  error: string
+  loading: string
+  retry: string
   trigger: string
 }
 
@@ -131,7 +134,12 @@ const phoneInputLabels: PhoneInputLabels = {
 
 export const defaultPropertyLabels: PropertyLabels = {
   attachment: { remove: 'Remove attachment' },
-  collection: { trigger: 'Adjust properties' },
+  collection: {
+    error: "Couldn't load the properties.",
+    loading: 'Loading properties…',
+    retry: 'Try again',
+    trigger: 'Adjust properties',
+  },
   date: { clear: 'Clear date', fallback: 'No date' },
   dateRange: {
     clear: 'Clear period',

@@ -7,8 +7,11 @@ export interface PropertiesControls {
   ariaLabel: string
   defaultVisible: TaskItemId[]
   empty: boolean
+  error: boolean
   icons: boolean
   labelsTrigger: string
+  loading: boolean
+  onRetry?: () => void
   readOnly: boolean
   variant: PropertyVariant
 }
@@ -17,8 +20,10 @@ export const propertiesControlArgs: PropertiesControls = {
   ariaLabel: 'Task properties',
   defaultVisible: ['status', 'priority', 'assignee', 'dueDate'],
   empty: false,
+  error: false,
   icons: true,
   labelsTrigger: ptBRPropertyLabels.collection.trigger,
+  loading: false,
   readOnly: false,
   variant: 'badge',
 }
@@ -41,6 +46,11 @@ export const propertiesControlArgTypes: Partial<ArgTypes<PropertiesControls>> =
       description:
         'Passes no value to every display, so each surface renders muted with its placeholder.',
     },
+    error: {
+      control: 'boolean',
+      description:
+        'The `error` of `PropertyCollection`: the values give way to `labels.error` in an alert and, with `onRetry`, a `labels.retry` button; the menu trigger leaves.',
+    },
     icons: {
       control: 'boolean',
       description:
@@ -50,6 +60,11 @@ export const propertiesControlArgTypes: Partial<ArgTypes<PropertiesControls>> =
       control: 'text',
       description:
         '`labels.trigger` of `PropertyCollection`: the accessible name of the menu trigger.',
+    },
+    loading: {
+      control: 'boolean',
+      description:
+        'The `loading` of `PropertyCollection`: one skeleton per visible property, named by `labels.loading`, and no menu trigger. Wins over `error`.',
     },
     readOnly: {
       control: 'boolean',

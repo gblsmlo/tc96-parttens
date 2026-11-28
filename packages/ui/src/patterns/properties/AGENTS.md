@@ -33,6 +33,7 @@ Handlers and surface:
 - `PropertySurface` with `aria-label` and no `role` or `render` gets `role="img"`; with `render={<button />}` the button keeps its role. Select shells render `role="img"` read-only and `role="combobox"` otherwise.
 - `PropertyCollection` reports ids in catalog order, so a property turned back on returns to its place. With `visible` passed, a menu click only calls `onVisibleChange`.
 - The `PropertyCollection` menu lists the catalog with no group label: the owner removed `Propriedades` and the `menuLabel` prop on 2026-10-09.
+- `PropertyCollection` `loading` and `error` (asked by the owner on 2026-11-28) describe the record, which the consumer fetches: `loading` wins over `error`. Both replace the visible values and remove the menu trigger, because the menu toggles values that are not on screen. Loading renders one `h-6` skeleton per visible item, so the row keeps its height; the error renders `labels.error` as `role="alert"` and a retry badge button only with `onRetry`.
 
 Dates:
 
@@ -64,6 +65,7 @@ Editing:
 
 Errors:
 
+- `PropertyCollection` `error` is a failure to load the record, not an invalid value, so it does not break the rule below.
 - A property has no invalid state: `PropertySurface` sets no `aria-invalid` or error styling, no display takes an `invalid` prop and `RecordGroupRow` has no message slot. Field-level errors stay with the consumer, who validates in its own handler and reports through the surface that owns the form (`RecordDialog` shows `errorMessage` as a `role="alert"` above the footer). The exception is the entry lists of `EmailProperty` and `PhoneProperty`: their popups parse typed text with zod, so `PropertyEntryForm` marks the bad row `invalid`. A pick from options or a calendar cannot be malformed, so what the consumer rejects is the record, not the value.
 - The `Failed Submit` stories under `Patterns/Records/RecordDialog` therefore show the alert and the kept values, not an error on a property.
 
@@ -91,6 +93,7 @@ The pattern sets these attributes and styles none of them through a variant:
 | `data-slot="property-surface"`, `data-variant="badge\|plain"` | every `PropertySurface`; a COSS trigger rendered through it replaces the slot (`menu-trigger` on the `PropertyCollection` trigger, `popover-trigger` on the calendar and add triggers, `tooltip-trigger` on a `DateProperty` trigger with `tooltip`), while the Base UI `Select` trigger keeps it |
 | `data-slot="property-icon"` | the icon that names the value: `IconLabelProperty` (so date, date range, text, email, phone, reference), `SelectProperty` option icon, `ScheduleProperty` calendar, the calendar popover trigger, the email and phone trigger. Not the add, remove, copy or repeat icons. `RecordGroupRow` hides it when the row has `leading` |
 | `data-empty="true"` | `PropertySurface` when `muted` |
+| `data-slot="property-collection-loading\|property-collection-error"`, `aria-busy="true"` | the `output` of skeletons and the alert of `PropertyCollection`; `aria-busy` on its `fieldset` while `loading` |
 | `data-overdue="true"` | the `DateProperty` surface (trigger, read-only value, tooltip value) when `isOverdue`, on the same element as `font-medium`; absent otherwise |
 | `data-slot`, `data-variant` | the row of email, people, phone, tags |
 | `data-display="chips\|count"` | `[data-slot=tags-property]` |
@@ -99,7 +102,7 @@ The pattern sets these attributes and styles none of them through a variant:
 | `data-slot="schedule-popup\|schedule-preset\|schedule-sections\|schedule-section-row\|schedule-detail"` | the `ScheduleProperty` popup, its preset buttons, the footer list, one row of it and the drill-in view |
 | `data-slot="schedule-time\|schedule-recurrence\|schedule-reminders"` | the editor of each footer section |
 
-- `PropertySurface` draws a value (not `muted`) in `text-primary` and a placeholder in `text-muted-foreground`, on the badge and on the plain surface; a `className` after it (the select tone) wins. The `Default` theme sets `primary` and `secondary-foreground` to the same stone, so the difference shows there only against the muted placeholder; a preset with a colored `primary` shows it on the badge too. The contrast of `primary` on `secondary` is measured only for the `Default`.
+- `PropertySurface` draws a value (not `muted`) in `text-primary` and a placeholder in `text-muted-foreground`, on the badge and on the plain surface; a `className` after it (the select tone) wins. The muted badge sets `text-muted-foreground` over the `text-foreground` of the COSS `outline` Badge (2026-11-28, `Patterns/Properties/Behavior`, `Empty Muted Text`). The `Default` theme sets `primary` and `secondary-foreground` to the same stone, so the difference shows there only against the muted placeholder; a preset with a colored `primary` shows it on the badge too. The contrast of `primary` on `secondary` is measured only for the `Default`.
 - Colors only from theme tokens, never palette classes: `--*-foreground` is 700 in light and 400 in dark, while a literal `text-*-500` lost contrast on the light background.
 - Every `SelectItem` and `ComboboxItem` in a property (select, person, people, tags, reminders, schedule time, phone country) takes `propertySelectItemClassName` from `shared/property-select-shell.tsx`, which puts the check in the right column with the `MenuRadioItem` grid (`.75rem`, `gap-4`, `pe-2.5`) whatever the child order: `[&>div]` is the text and `[&>span]` the indicator. The workspace `SelectItem` and `ComboboxItem` already render the check on the right (the `packages/ui` exception of 2026-10-20), but a consumer receives the published COSS, with the check on the left, so the class stays. `Patterns/Properties/Display/Select/Behavior` and `Patterns/Properties/Display/Tags/Behavior` assert the position with `esperarIndicadorADireita` (`Selected Option Check On The Right`).
 - The multi-select and phone country popups take `w-max`, so the list is as wide as its longest option; Select popups already grow from the COSS `min-w-(--anchor-width)`.

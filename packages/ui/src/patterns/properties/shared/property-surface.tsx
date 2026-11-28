@@ -56,7 +56,7 @@ export function PropertySurface({
     <Badge
       className={cn(
         propertyBadgeClassName,
-        !muted && 'text-primary',
+        muted ? 'text-muted-foreground' : 'text-primary',
         className,
       )}
       variant={muted ? 'outline' : 'secondary'}

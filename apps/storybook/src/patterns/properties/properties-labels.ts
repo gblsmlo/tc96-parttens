@@ -9,7 +9,12 @@ const ptBRPhoneInputLabels = {
 
 export const ptBRPropertyLabels = {
   attachment: { remove: 'Remover anexo' },
-  collection: { trigger: 'Ajustar propriedades' },
+  collection: {
+    error: 'Não foi possível carregar as propriedades.',
+    loading: 'Carregando propriedades…',
+    retry: 'Tentar novamente',
+    trigger: 'Ajustar propriedades',
+  },
   date: { clear: 'Limpar data', fallback: 'Sem data' },
   dateRange: {
     clear: 'Limpar período',

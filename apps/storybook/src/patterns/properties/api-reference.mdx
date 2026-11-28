@@ -7,7 +7,7 @@ import * as ApiReferenceStories from './api-reference.stories.tsx'
 
 The values of a record shown in place, one display per kind of value: the status, priority, assignee, due date and tags of a task, the owner and next contact of a lead. Each display renders one value on a small surface and, when the consumer passes a handler, edits it in a popup. `PropertyCollection` lines up the displays of a record in one row and lets the user pick which ones show.
 
-The other pages of `Patterns/Properties`: [Playground](?path=/story/patterns-properties-playground--playground) to try the row, its labels, its surface and its visible properties, [Variants](?path=/story/patterns-properties-variants--default) for the `badge` and `plain` surfaces and the row with no values, [Layouts](?path=/story/patterns-properties-layouts--default) for the row and for plain values in one column, [Behavior](?path=/story/patterns-properties-behavior--collection-shows-default-visible-items) for the tests of the row and of the parts every display shares, and [Usages](?path=/story/patterns-properties-usages--task) for the header of a task and of a lead.
+The other pages of `Patterns/Properties`: [Playground](?path=/story/patterns-properties-playground--playground) to try the row, its labels, its surface and its visible properties, [Variants](?path=/story/patterns-properties-variants--default) for the row in its default, loading and error states, the `badge` and `plain` surfaces and the row with no values, and [Behavior](?path=/story/patterns-properties-behavior--collection-shows-default-visible-items) for the tests of the row and of the parts every display shares.
 
 Each display has its own node, with its props, states and tests: [Assigned](?path=/docs/patterns-properties-display-assigned-api-reference--api-reference), [Attachments](?path=/docs/patterns-properties-display-attachments-api-reference--api-reference), [Date](?path=/docs/patterns-properties-display-date-api-reference--api-reference), [Date Range](?path=/docs/patterns-properties-display-daterange-api-reference--api-reference), [Editable Text](?path=/docs/patterns-properties-display-editabletext-api-reference--api-reference), [Email](?path=/docs/patterns-properties-display-email-api-reference--api-reference), [Flag](?path=/docs/patterns-properties-display-flag-api-reference--api-reference), [Icon Label](?path=/docs/patterns-properties-display-iconlabel-api-reference--api-reference), [People](?path=/docs/patterns-properties-display-people-api-reference--api-reference), [Person](?path=/docs/patterns-properties-display-person-api-reference--api-reference), [Phone](?path=/docs/patterns-properties-display-phone-api-reference--api-reference), [PhoneInput](?path=/docs/patterns-properties-display-phoneinput-api-reference--api-reference), [Reference](?path=/docs/patterns-properties-display-reference-api-reference--api-reference), [Schedule](?path=/docs/patterns-properties-display-schedule-api-reference--api-reference), [Select](?path=/docs/patterns-properties-display-select-api-reference--api-reference), [Tags](?path=/docs/patterns-properties-display-tags-api-reference--api-reference) and [Text](?path=/docs/patterns-properties-display-text-api-reference--api-reference). This page documents what they share: the surface, the row, the select and multi-select shells, the add trigger, the entry form and its editor, the calendar popover, the `labels` every display takes and the catalog types: options, icons, change contexts and popup placement.
 
@@ -31,13 +31,13 @@ import {
 <Canvas of={ApiReferenceStories.Anatomy} />
 
 ```tsx
-import { RadioButtonIcon, TagIcon } from '@phosphor-icons/react'
+import { propertyDisplayIcons } from '@tc96/ui/patterns/properties/core'
 
 <PropertyCollection
   ariaLabel="Task properties"
   items={[
-    { defaultVisible: true, icon: RadioButtonIcon, id: 'status', label: 'Status', render: () => <SelectProperty {...status} /> },
-    { icon: TagIcon, id: 'tags', label: 'Tags', render: () => <TagsProperty {...tags} /> },
+    { defaultVisible: true, icon: propertyDisplayIcons.status, id: 'status', label: 'Status', render: () => <SelectProperty {...status} /> },
+    { icon: propertyDisplayIcons.tags, id: 'tags', label: 'Tags', render: () => <TagsProperty {...tags} /> },
   ]}
   labels={{ trigger: 'Ajustar propriedades' }}
 />
@@ -58,11 +58,16 @@ The properties of one record in a row, with a menu to pick which of them show. R
 | `defaultVisible` | `readonly string[]` | ids of the items with `defaultVisible: true` | Sets the ids visible at first when uncontrolled; wins over the items' own `defaultVisible`. |
 | `visible` | `readonly string[]` | - | Sets the visible ids and makes the visibility controlled. |
 | `readOnly` | `boolean` | `false` | When true, removes the menu trigger. The displays keep their own handlers. |
-| `labels` | `Partial<PropertyCollectionLabels>` | English | Overrides the texts, merged over `defaultPropertyLabels.collection`: `trigger` (`"Adjust properties"`) names the menu trigger (`aria-label`). |
+| `loading` | `boolean` | `false` | When true, shows one skeleton per visible item in place of its value and removes the menu trigger. Wins over `error`. |
+| `error` | `boolean` | `false` | When true and not `loading`, shows `labels.error` in place of the values and removes the menu trigger. |
+| `labels` | `Partial<PropertyCollectionLabels>` | English | Overrides the texts, merged over `defaultPropertyLabels.collection`: see [Labels](#labels). |
+| `onRetry` | `() => void` | - | Called by the retry button, which renders only in the error state and only with this handler. |
 | `onVisibleChange` | `(visible: readonly string[]) => void` | - | Called when the user toggles an item, with the visible ids in catalog order. |
 | `className` | `string` | - | Adds classes to the `fieldset`. |
 
 The menu opens below the trigger, aligned to its start, and lists the whole catalog as checkbox items, each with its icon and label, checked when visible; it has no group label. A click toggles the item and keeps the menu open. The ids reach `onVisibleChange` in catalog order, so an item turned back on returns to its place. With `visible` passed, a click only calls `onVisibleChange`: the row changes when the consumer passes the new ids.
+
+`loading` and `error` describe the record, not a value: the consumer sets them while it fetches the record and when that fetch fails. While loading, the row takes `aria-busy="true"` and holds an `output` named by `labels.loading` with one 24px skeleton per visible item, so the row keeps its height and roughly its width. On error, the values give way to `labels.error` in `destructive-foreground` with a warning icon, announced as an alert, followed by a badge button named `labels.retry` when `onRetry` is passed. A property still has no invalid state of its own.
 
 | Attribute | Values | Description |
 | --- | --- | --- |
@@ -70,6 +75,9 @@ The menu opens below the trigger, aligned to its start, and lists the whole cata
 | `data-slot` | `"menu-trigger"` | Selects the trigger: the menu's slot replaces the one of `PropertySurface` |
 | `data-variant` | `"badge"` | Set on the trigger by `PropertySurface` |
 | `data-slot` | `"menu-checkbox-item"` | Selects an item of the menu |
+| `aria-busy` | `"true"` while `loading` | Set on the `fieldset` |
+| `data-slot` | `"property-collection-loading"` | Selects the `output` that holds the skeletons |
+| `data-slot` | `"property-collection-error"` | Selects the alert with `labels.error` |
 
 ### PropertyCollectionItem
 
@@ -90,7 +98,7 @@ The surface every display draws its value on: a chip or plain text with an optio
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
 | `variant` | `"badge"` or `"plain"` | `"badge"` | Controls the look. `"badge"` renders a `Badge`, `secondary`, 24px high; `"plain"` renders inline text with no fill. |
-| `muted` | `boolean` | `false` | When true, marks the value absent: the badge turns `outline`, plain text turns `muted-foreground`. A surface that is not muted draws its text in `primary`. |
+| `muted` | `boolean` | `false` | When true, marks the value absent: the badge turns `outline` and both variants draw their text in `muted-foreground`. A surface that is not muted draws its text in `primary`. |
 | `render` | `React.ReactElement` or `(props, state) => React.ReactElement` | - | Replaces the `span` with another element, keeping the surface's props. |
 
 Also takes every prop of a `span`.
@@ -193,6 +201,9 @@ Every text a display shows or announces comes from a prop, never from a literal 
 | Field | Type | Default | Description |
 | --- | --- | --- | --- |
 | `trigger` | `string` | `"Adjust properties"` | Names the menu trigger of `PropertyCollection` (`aria-label`). |
+| `loading` | `string` | `"Loading properties…"` | Names the skeletons of `PropertyCollection` while `loading`. |
+| `error` | `string` | `"Couldn't load the properties."` | The alert of `PropertyCollection` while `error`. |
+| `retry` | `string` | `"Try again"` | The retry button of `PropertyCollection`, shown with `onRetry`. |
 
 The table above is `PropertyCollectionLabels`; each display page lists its own keys. Texts that carry a value are composed from these words and the value: `<ariaLabel>: <value>`, `<remove> <label>`, `<from> <date>`. Two keys are functions, because their word order depends on the language: `tags.count` is `(count: number) => string`, and `removeEntry` of `email` and `phone` is `(entry: string) => string`.
 

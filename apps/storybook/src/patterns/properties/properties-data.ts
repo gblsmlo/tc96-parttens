@@ -1,41 +1,27 @@
-import {
-  CellSignalHighIcon,
-  CellSignalLowIcon,
-  CellSignalMediumIcon,
-  CheckCircleIcon,
-  CircleIcon,
-  ProhibitIcon,
-  RadioButtonIcon,
-} from '@phosphor-icons/react'
 import type { PersonPropertyOption, PropertyOption } from '@tc96/ui/patterns'
+import {
+  type PriorityLevel,
+  priorityMeta,
+  type WorkflowStatus,
+  workflowStatusMeta,
+} from '@tc96/ui/property-meta'
 
-export const statusOptions: readonly PropertyOption[] = [
-  { icon: CircleIcon, label: 'To do', tone: 'neutral', value: 'todo' },
-  {
-    icon: RadioButtonIcon,
-    label: 'In progress',
-    tone: 'info',
-    value: 'inProgress',
-  },
-  { icon: CheckCircleIcon, label: 'Done', tone: 'success', value: 'done' },
-  {
-    icon: ProhibitIcon,
-    label: 'Canceled',
-    tone: 'neutral',
-    value: 'canceled',
-  },
-]
+export const statusOptions: readonly PropertyOption<WorkflowStatus>[] = (
+  [
+    ['todo', 'To do'],
+    ['in-progress', 'In progress'],
+    ['done', 'Done'],
+    ['canceled', 'Canceled'],
+  ] as const
+).map(([value, label]) => ({ ...workflowStatusMeta[value], label, value }))
 
-export const priorityOptions: readonly PropertyOption[] = [
-  { icon: CellSignalHighIcon, label: 'High', tone: 'danger', value: 'high' },
-  {
-    icon: CellSignalMediumIcon,
-    label: 'Medium',
-    tone: 'warning',
-    value: 'medium',
-  },
-  { icon: CellSignalLowIcon, label: 'Low', tone: 'neutral', value: 'low' },
-]
+export const priorityOptions: readonly PropertyOption<PriorityLevel>[] = (
+  [
+    ['high', 'High'],
+    ['medium', 'Medium'],
+    ['low', 'Low'],
+  ] as const
+).map(([value, label]) => ({ ...priorityMeta[value], label, value }))
 
 export const people: readonly PersonPropertyOption[] = [
   { label: 'Bruno Lima', value: 'person-1' },
