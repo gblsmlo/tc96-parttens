@@ -9,7 +9,7 @@ A read-mostly table over the TanStack Table v9 instance `useDataTable` returns, 
 | `use-data-table.ts` | the hook |
 | `data-table-features.ts` | features and table types |
 | `data-table.tsx`, `data-table-body.tsx` | the root, body, group sections and reorder provider |
-| the other `data-table-*` files | the row, group row, skeleton rows, cells, aggregation, resize handle, columns submenu, the column factories (`createDataTableSelectColumn`, `createDataTableRowDragColumn`), `DataTableExpandToggle`, `data-table-types.ts` and `data-table-align.ts` (the `meta.align` classes) |
+| the other `data-table-*` files | the row, group row, skeleton rows, cells, aggregation, resize handle, columns submenu, the column factories (`createDataTableSelectColumn`, `createDataTableRowDragColumn`), `DataTableExpandToggle`, `data-table-title-cell.tsx` (the first-column parts `DataTableTitleCell`, `DataTableTitle`, `DataTableDescription`, `span`s that duplicate the `ListRow` title and description look on purpose, since `ListRowTitle` renders a heading), `data-table-types.ts` and `data-table-align.ts` (the `meta.align` classes) |
 | `use-horizontal-overflow.ts` | the edge fades |
 
 Import direction: the files import each other and `collection/shared/` (`use-scrollbar-insets`, the table hooks, `group-runs`, `end-reached`, `row-reorder`, `editable-cell`, `format-value`, `interactive-descendants`, `selection-actions`, `row-reorder-provider`, `row-drag-handle`, `editable-input-cell`). It never imports another layout; it shares the DataGrid contract through `collection/shared/`.

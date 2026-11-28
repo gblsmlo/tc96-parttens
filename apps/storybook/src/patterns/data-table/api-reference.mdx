@@ -28,10 +28,9 @@ import {
 <Canvas of={ApiReferenceStories.Anatomy} />
 
 ```tsx
-const { table } = useDataTable({ columns, data, enablePagination: true, getRowId })
+const { table } = useDataTable({ columns, data, getRowId })
 
-<DataTable aria-label="Tarefas" defaultAggregations={{ value: 'sum' }} table={table} />
-<DataGridPagination table={table} />
+<DataTable aria-label="Tarefas" table={table} />
 ```
 
 `DataTable` renders every part itself from the table: the consumer declares the columns, with their `header`, `cell`, `footer` and `meta`. The tree it renders:
@@ -70,6 +69,17 @@ const { table } = useDataTable({ columns, data, enablePagination: true, getRowId
   <div data-slot="data-table-overflow-start" />
   <div data-slot="data-table-overflow-end" />
 </div>
+```
+
+The first column usually holds a title and a description, like a list row. `DataTableTitleCell` stacks them and `DataTableTitle` and `DataTableDescription` style them like `ListRowTitle` and `ListRowDescription`:
+
+```tsx
+cell: ({ row }) => (
+  <DataTableTitleCell>
+    <DataTableTitle>{row.original.title}</DataTableTitle>
+    <DataTableDescription>{row.original.caption}</DataTableDescription>
+  </DataTableTitleCell>
+)
 ```
 
 ## DataTable
@@ -202,6 +212,7 @@ Pagination for a table that paginates, shared with the Data Grid: place it below
 | --- | --- | --- |
 | `dataTableFeatures` | `constant` | The TanStack features and row models `useDataTable` registers. |
 | `DataTableProps`, `DataTableRowSkeletonAnatomy`, `DataTableColumnsSubmenuProps` | `type` | The props of the parts. |
+| `DataTableTitleCell`, `DataTableTitle`, `DataTableDescription` | `component` | The first-column parts: a stacked title and description. |
 | `DataTableColumnDef`, `DataTableTable`, `DataTableFeatures`, `UseDataTableOptions`, `UseDataTableReturn` | `type` | The column, table and hook types. |
 | `DataTableAggregation`, `DataTableAggregations`, `DataTableAggregationLabels`, `DataTableColumnMeta` | `type` | The aggregation types. |
 

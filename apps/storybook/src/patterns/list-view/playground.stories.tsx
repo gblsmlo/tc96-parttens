@@ -5,13 +5,24 @@ import {
   listControlArgs,
   listControlArgTypes,
 } from './list-controls.ts'
-import { ComposedList } from './list-layouts.tsx'
+import { PlaygroundList } from './list-playground.tsx'
 
 const meta = {
-  args: listControlArgs,
-  argTypes: listControlArgTypes,
+  args: {
+    ...listControlArgs,
+    emptyGroupLabel: 'Nenhuma tarefa neste grupo.',
+    emptyMessage: 'Nenhuma tarefa para exibir.',
+  },
+  argTypes: {
+    ...listControlArgTypes,
+    field: {
+      control: 'boolean',
+      description:
+        'Adds a `ListRowField` with the status, priority, due date and assignee properties, all `variant="plain"`; the skeleton follows.',
+    },
+  },
   decorators: [ListCanvas],
-  render: (args) => <ComposedList {...args} />,
+  render: (args) => <PlaygroundList {...args} />,
   tags: ['!autodocs'],
   title: 'Patterns/ListView/Playground',
 } satisfies Meta<ListControls>

@@ -94,7 +94,7 @@ export const RowAnatomy: Story = {
       <ListRowLeading>
         <Slot name="Leading" />
       </ListRowLeading>
-      <ListRowBody className="gap-1">
+      <ListRowBody>
         <ListRowTitle>
           <ListRowOpenTrigger>
             <Slot name="TitleTrigger" />

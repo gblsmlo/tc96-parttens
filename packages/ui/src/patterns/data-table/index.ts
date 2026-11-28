@@ -27,6 +27,16 @@ export { createDataTableRowDragColumn } from './data-table-row-drag-column'
 export type { CreateDataTableSelectColumnOptions } from './data-table-select-column'
 export { createDataTableSelectColumn } from './data-table-select-column'
 export type {
+  DataTableDescriptionProps,
+  DataTableTitleCellProps,
+  DataTableTitleProps,
+} from './data-table-title-cell'
+export {
+  DataTableDescription,
+  DataTableTitle,
+  DataTableTitleCell,
+} from './data-table-title-cell'
+export type {
   DataTableAlign,
   DataTableCellRow,
   DataTableCellValueChange,
