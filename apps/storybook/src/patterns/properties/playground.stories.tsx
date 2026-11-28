@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { fn } from 'storybook/test'
 import {
   type PropertiesControls,
   propertiesControlArgs,
@@ -7,7 +8,7 @@ import {
 import { ComposedProperties } from './properties-layouts'
 
 const meta = {
-  args: propertiesControlArgs,
+  args: { ...propertiesControlArgs, onRetry: fn() },
   argTypes: propertiesControlArgTypes,
   render: (args) => <ComposedProperties {...args} />,
   tags: ['!autodocs'],

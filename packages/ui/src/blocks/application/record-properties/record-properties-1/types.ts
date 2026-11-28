@@ -58,5 +58,4 @@ export interface RecordProperties1Props<
   className?: string
   items: readonly RecordProperties1Item<TKey>[]
   labels?: Partial<RecordProperties1Labels>
-  showLabelIcons?: boolean
 }

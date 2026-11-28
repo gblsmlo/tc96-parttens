@@ -19,6 +19,7 @@ import { ComposedProperties, PlainPropertyColumn } from './properties-layouts'
 
 interface BehaviorArgs {
   action: (value: unknown, context: unknown) => void
+  onRetry: () => void
   onSelect: () => void
   onValueChange: (value: unknown) => void
   onVisibleChange: (visible: readonly string[]) => void
@@ -27,6 +28,7 @@ interface BehaviorArgs {
 const meta = {
   args: {
     action: fn(),
+    onRetry: fn(),
     onSelect: fn(),
     onValueChange: fn(),
     onVisibleChange: fn(),
@@ -158,6 +160,104 @@ export const CollectionReadOnlyHidesTrigger: Story = {
     await expect(canvas.getByText('Em progresso')).toBeVisible()
     await expect(
       canvas.queryByRole('button', { name: 'Ajustar propriedades' }),
+    ).toBeNull()
+  },
+}
+
+export const Loading: Story = {
+  render: () => (
+    <PropertyCollection
+      ariaLabel="Propriedades da Task"
+      items={collectionItems}
+      labels={ptBRPropertyLabels.collection}
+      loading
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+    const loading = canvas.getByRole('status', {
+      name: 'Carregando propriedades…',
+    })
+
+    await expect(
+      canvas.getByRole('group', { name: 'Propriedades da Task' }),
+    ).toHaveAttribute('aria-busy', 'true')
+    await expect(loading).toHaveAttribute('aria-busy', 'true')
+    await expect(
+      loading.querySelectorAll('[data-slot="skeleton"]'),
+    ).toHaveLength(2)
+    await expect(canvas.queryByText('Em progresso')).toBeNull()
+    await expect(
+      canvas.queryByRole('button', { name: 'Ajustar propriedades' }),
+    ).toBeNull()
+  },
+}
+
+export const ErrorRetry: Story = {
+  render: (args) => (
+    <PropertyCollection
+      ariaLabel="Propriedades da Task"
+      error
+      items={collectionItems}
+      labels={ptBRPropertyLabels.collection}
+      onRetry={args.onRetry}
+    />
+  ),
+  play: async ({ args, canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    await expect(canvas.getByRole('alert')).toHaveTextContent(
+      'Não foi possível carregar as propriedades.',
+    )
+    await expect(canvas.queryByText('Em progresso')).toBeNull()
+    await expect(
+      canvas.queryByRole('button', { name: 'Ajustar propriedades' }),
+    ).toBeNull()
+
+    await userEvent.click(
+      canvas.getByRole('button', { name: 'Tentar novamente' }),
+    )
+    await expect(args.onRetry).toHaveBeenCalledOnce()
+  },
+}
+
+export const ErrorWithoutRetry: Story = {
+  render: () => (
+    <PropertyCollection
+      ariaLabel="Propriedades da Task"
+      error
+      items={collectionItems}
+      labels={ptBRPropertyLabels.collection}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    await expect(canvas.getByRole('alert')).toBeVisible()
+    await expect(canvas.queryByRole('button')).toBeNull()
+  },
+}
+
+export const LoadingOverError: Story = {
+  render: (args) => (
+    <PropertyCollection
+      ariaLabel="Propriedades da Task"
+      error
+      items={collectionItems}
+      labels={ptBRPropertyLabels.collection}
+      loading
+      onRetry={args.onRetry}
+    />
+  ),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement)
+
+    await expect(
+      canvas.getByRole('status', { name: 'Carregando propriedades…' }),
+    ).toBeVisible()
+    await expect(canvas.queryByRole('alert')).toBeNull()
+    await expect(
+      canvas.queryByRole('button', { name: 'Tentar novamente' }),
     ).toBeNull()
   },
 }
@@ -306,6 +406,15 @@ const resolveBackground = (canvasElement: HTMLElement, value: string) => {
 const secondaryBackground = (canvasElement: HTMLElement) =>
   resolveBackground(canvasElement, 'var(--secondary)')
 
+const resolveColor = (canvasElement: HTMLElement, value: string) => {
+  const probe = document.createElement('span')
+  probe.style.color = value
+  canvasElement.append(probe)
+  const { color } = getComputedStyle(probe)
+  probe.remove()
+  return color
+}
+
 const backgroundOf = (element: HTMLElement) =>
   getComputedStyle(element).backgroundColor
 
@@ -448,6 +557,19 @@ export const EmptyValuesMarkEverySurfaceEmpty: Story = {
       await expect(surface).toHaveAttribute('data-empty', 'true')
     }
     await expect(trigger).not.toHaveAttribute('data-empty')
+  },
+}
+
+export const EmptyMutedText: Story = {
+  render: () => <ComposedProperties {...propertiesControlArgs} empty />,
+  play: async ({ canvasElement }) => {
+    const { displays } = formationSurfaces(canvasElement)
+    const muted = resolveColor(canvasElement, 'var(--muted-foreground)')
+
+    for (const surface of displays) {
+      await expect(surface).toHaveAttribute('data-variant', 'badge')
+      await expect(getComputedStyle(surface).color).toBe(muted)
+    }
   },
 }
 

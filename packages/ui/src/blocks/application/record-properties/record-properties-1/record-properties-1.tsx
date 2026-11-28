@@ -31,7 +31,6 @@ export function RecordProperties1<
   className,
   items,
   labels: labelsProp,
-  showLabelIcons = true,
 }: Readonly<RecordProperties1Props<TKey>>) {
   const labels = useMemo(
     () => resolveRecordProperties1Labels(labelsProp),
@@ -50,9 +49,7 @@ export function RecordProperties1<
             <RecordGroupRow
               key={item.id}
               label={label}
-              leading={
-                showLabelIcons && Icon ? <Icon aria-hidden="true" /> : undefined
-              }
+              leading={Icon ? <Icon aria-hidden="true" /> : undefined}
             >
               {item.pending ? (
                 <output

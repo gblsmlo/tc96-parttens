@@ -1,4 +1,3 @@
-import { RadioButtonIcon, TagIcon } from '@phosphor-icons/react'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   DateProperty,
@@ -8,6 +7,7 @@ import {
   PropertySurface,
   TagsProperty,
 } from '@tc96/ui/patterns'
+import { propertyDisplayIcons } from '@tc96/ui/patterns/properties/core'
 import { expect, within } from 'storybook/test'
 import { Slot } from '../../test-utils/anatomy-slot'
 import { ptBRPropertyLabels } from './properties-labels.ts'
@@ -47,14 +47,14 @@ export const Anatomy: Story = {
       items={[
         {
           defaultVisible: true,
-          icon: RadioButtonIcon,
+          icon: propertyDisplayIcons.status,
           id: 'first',
           label: 'First',
           render: () => <Slot name="item.render()" />,
         },
         {
           defaultVisible: true,
-          icon: TagIcon,
+          icon: propertyDisplayIcons.tags,
           id: 'second',
           label: 'Second',
           render: () => <Slot name="item.render()" />,
