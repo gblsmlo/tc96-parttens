@@ -88,7 +88,7 @@ export const recordGroupContentVariants = cva(
 )
 
 export const recordGroupRowVariants = cva(
-  `${recordGroupRowHeightClassName} ${recordGroupRowPaddingClassName} items-center gap-2`,
+  `${recordGroupRowHeightClassName} ${recordGroupRowPaddingClassName} items-start gap-2`,
   {
     defaultVariants: { align: 'start' },
     variants: {
@@ -101,7 +101,7 @@ export const recordGroupRowVariants = cva(
 )
 
 export const recordGroupRowLabelVariants = cva(
-  'flex items-center gap-2 text-muted-foreground text-sm',
+  `${recordGroupRowHeightClassName} flex items-center gap-2 text-muted-foreground text-sm`,
   {
     defaultVariants: { align: 'start' },
     variants: {
@@ -114,7 +114,7 @@ export const recordGroupRowLabelVariants = cva(
 )
 
 export const recordGroupRowValueVariants = cva(
-  'flex min-w-0 items-center text-sm',
+  `${recordGroupRowHeightClassName} flex min-w-0 items-center py-[calc((var(--record-group-row-height,calc(var(--spacing)*8))-1.625rem)/2)] text-sm`,
   {
     defaultVariants: { align: 'start', leading: false },
     variants: {

@@ -17,7 +17,7 @@ Import direction: `composition/` → `core.ts`. Composition imports only COSS (`
 
 - `packages/ui/src/patterns/index.ts` re-exports `records/preview/index`.
 - `packages/registry/src/manifest.ts` maps the registry item `record-preview` to the folder `records/preview` in `patternSources`, and `scripts/test-patterns.ts` lists that folder.
-- Nothing else imports this pattern by file path. It replaced the former detail sheet pattern; see the break note in `docs/architecture/tc96-ui.md`.
+- The blocks `RecordPreview1` to `RecordPreview4` (`packages/ui/src/blocks/application/record-preview/record-preview-{n}/record-preview-{n}.tsx`) import `composition/record-preview/record-preview`, `composition/record-preview-action/record-preview-action` and `composition/record-preview-body/record-preview-body` by file path; renaming one of those files breaks it. It replaced the former detail sheet pattern; see the break note in `docs/architecture/tc96-ui.md`.
 
 ## Invariants
 
@@ -51,7 +51,7 @@ bun run typecheck && bun run boundaries:check && bun run overrides:check && bun 
 cd apps/storybook && bunx vitest run --project=storybook src/patterns/records/preview
 ```
 
-The stories are in `apps/storybook/src/patterns/records/preview/`, on the six pages of `Patterns/Records/Preview`, and run axe with `test: 'error'`. Interface tests are `play` functions on the `Behavior` page, in `behavior.stories.tsx` (`RecordPreview`) and `behavior/` (`RecordPreviewAction` and `RecordPreviewBody`); the pattern has no bun tests. `Usages, Tasks` is the combination with `RecordGroup` and the properties.
+The stories are in `apps/storybook/src/patterns/records/preview/`, on the pages of `Patterns/Records/Preview` (no `Usages`: previews with real content are the blocks `RecordPreview1` to `RecordPreview4`, `Blocks/Application/Record Preview`), and run axe with `test: 'error'`. Interface tests are `play` functions on the `Behavior` page, in `behavior.stories.tsx` (`RecordPreview`) and `behavior/` (`RecordPreviewAction` and `RecordPreviewBody`); the pattern has no bun tests.
 
 ## Pointers
 

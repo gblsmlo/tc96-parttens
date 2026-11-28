@@ -210,9 +210,9 @@ Variante `inset`: contraste medido sobre o `card` do tema (alfa do hover compost
 
 Invólucro de `card` e `inset`: contraste medido nas cores computadas da story `Card`, com o fundo do invólucro composto sobre o `background` do tema: claro, rótulo (`muted-foreground`) 5,16:1, valor e título (`foreground`) 13,66:1; escuro, rótulo 4,94:1, valor e título 14,84:1.
 
-Métricas (`RecordGroupMetrics`): contraste medido na story `Usages/Indicators` sobre o `card` do tema do exemplo: rótulo e `target` (`muted-foreground`) 5,73:1 no claro e 5,07:1 no escuro; indicador do `Meter` (`primary`) 15,17:1 e 11,00:1 contra o card.
+Métricas (`RecordGroupMetrics`): contraste medido na story `Usages/Indicators` (hoje o bloco `Blocks/Application/Record Group/RecordGroup9`, com o mesmo conteúdo) sobre o `card` do tema do exemplo: rótulo e `target` (`muted-foreground`) 5,73:1 no claro e 5,07:1 no escuro; indicador do `Meter` (`primary`) 15,17:1 e 11,00:1 contra o card.
 
-`RecordStatusBadge`: o texto é `color` misturado a 90% com `--foreground` sobre o fundo de `color` a 8%, sem mudar token. Com `--warning-foreground` no claro, calculado sobre o `background` do tema: 4,95:1 (4,31:1 com a cor pura, medido pelo axe na usage `Versions`). As stories `Finance …` de `Patterns/Records/Group/Layouts`, a usage `Versions` e as stories `Status Badge …` de `Patterns/Records/Group/Behavior` passam no axe no claro e no escuro; as demais razões não foram medidas.
+`RecordStatusBadge`: o texto é `color` misturado a 90% com `--foreground` sobre o fundo de `color` a 8%, sem mudar token. Com `--warning-foreground` no claro, calculado sobre o `background` do tema: 4,95:1 (4,31:1 com a cor pura, medido pelo axe na usage `Versions`, hoje o bloco `RecordGroup5`). As stories `Finance …` de `Patterns/Records/Group/Layouts`, o bloco `RecordGroup5` e as stories `Status Badge …` de `Patterns/Records/Group/Behavior` passam no axe no claro e no escuro; as demais razões não foram medidas.
 
 `actionsAlign`: contraste medido no botão `ghost` da versão apagada: texto 14,52:1 no claro e 16,03:1 no escuro; no hover (`bg-accent` sobre o fundo) 13,30:1 e 14,49:1; anel de foco 4,54:1 e 3,69:1.
 
